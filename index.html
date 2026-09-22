@@ -113,11 +113,9 @@
     <script>
         // Parámetros de costos confidenciales (no visibles en la interfaz)
         const METRICAS_INTERNAS = {
-            costoGramoFilamento: 0.45,   // Base: $450 MXN / kg
-            costoHoraImpresora: 8.50,    // Energía + desgaste
-            costoNFC: 10.00,
-            costoHerraje: 3.00,
-            costoEmpaque: 4.00
+            costoGramoFilamento: 0.50,   // Base: $450 MXN / kg
+            costoHoraImpresora: 9.0,    // Energía + desgaste
+            costoNFC: 30.00,
         };
 
         const form = document.getElementById('cotizadorForm');
@@ -127,7 +125,7 @@
             const Q = parseInt(document.getElementById('cantidad').value) || 1;
             const horasImpresion = parseFloat(document.getElementById('tiempoHoras').value) || 0;
             const gramosTotales = parseFloat(document.getElementById('pesoTotal').value) || 0;
-            const multiplicadorLinea = parseFloat(document.getElementById('lineaNegocio').value) || 2.8;
+            const multiplicadorLinea = parseFloat(document.getElementById('lineaNegocio').value) || 3;
 
             // Selección de adicionales
             const incNFC = document.getElementById('addNFC').checked ? METRICAS_INTERNAS.costoNFC : 0;
