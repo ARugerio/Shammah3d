@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cotizador Instantáneo | SHAMMAH 3D</title>
-    <!-- Tailwind CSS para diseño responsivo y moderno -->
+    <!-- Tailwind CSS CDN para estilizado rápido y responsivo -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -15,48 +15,55 @@
 
     <main class="w-full max-w-md bg-white rounded-3xl shadow-xl border border-rose-100 overflow-hidden">
         
-        <!-- ENCABEZADO MARCA -->
-        <header class="bg-white pt-8 pb-4 text-center px-6">
-            <h1 class="text-3xl font-extrabold text-emerald-900 tracking-wider">SHAMMAH</h1>
+        <!-- ENCABEZADO DE MARCA ACTUALIZADO -->
+        <header class="bg-white pt-8 pb-3 text-center px-6">
+            <h1 class="text-3xl font-extrabold text-emerald-900 tracking-wider">SHAMMAH 3D</h1>
             <p class="text-xs font-medium text-rose-400 mt-1 uppercase tracking-widest">Diseña ♥ Crea ♥ Imprime</p>
         </header>
 
-        <!-- FORMULARIO DE COTIZACIÓN PÚBLICA -->
+        <!-- FORMULARIO DE COTIZACIÓN -->
         <form id="cotizadorForm" class="px-6 pb-8 space-y-5">
             
             <div class="border-t border-rose-100 pt-4">
                 <h2 class="text-sm font-semibold text-slate-700 flex items-center gap-2 mb-3">
-                    <span class="text-rose-500">⚙️</span> Configuración del Proyecto
+                    <span class="text-rose-500">⚙️</span> Parámetros de Cotización
                 </h2>
                 
-                <!-- Tipo de Aplicación -->
+                <!-- Línea de Negocio -->
                 <label class="block text-xs font-semibold text-slate-600 mb-1">Línea de Producto / Proyecto</label>
                 <select id="lineaNegocio" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 focus:ring-2 focus:ring-rose-400 focus:outline-none transition-all">
-                    <option value="2.8">Línea B2C (Llaveros, Minis, Shadowboxes)</option>
-                    <option value="3.2">Línea Utilitaria / Prototipos Mecánicos</option>
-                    <option value="2.5">Lotes de Mayoreo (> 20 pcs)</option>
+                    <option value="2.8">Línea B2C (Llaveros, Minis, Figures, Shadowboxes) — 2.8x</option>
+                    <option value="3.2">Línea Utilitaria / Prototipos Mecánicos — 3.2x</option>
+                    <option value="2.2">Lotes de Mayoreo (> 20 pcs) — 2.2x</option>
                 </select>
             </div>
 
-            <!-- Cantidad y Peso Global -->
-            <div class="grid grid-cols-2 gap-3">
+            <!-- Grilla de Entradas: Cantidad, Tiempo y Peso -->
+            <div class="space-y-3">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Cantidad (Piezas)</label>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Cantidad de Piezas (Q)</label>
                     <input type="number" id="cantidad" value="1" min="1" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:ring-2 focus:ring-rose-400 focus:outline-none">
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Peso Modelo (Gramos)</label>
-                    <input type="number" id="pesoTotal" value="55" min="1" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:ring-2 focus:ring-rose-400 focus:outline-none">
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Tiempo Impresión (Horas)</label>
+                        <input type="number" id="tiempoHoras" value="2.0" step="0.1" min="0.1" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:ring-2 focus:ring-rose-400 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Peso Total (Gramos)</label>
+                        <input type="number" id="pesoTotal" value="55" min="1" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:ring-2 focus:ring-rose-400 focus:outline-none">
+                    </div>
                 </div>
             </div>
 
-            <!-- Insumos / Acabados Adicionales (Checkboxes Limpios) -->
+            <!-- Insumos Adicionales (Checkboxes Limpios) -->
             <div class="bg-rose-50/50 p-3.5 rounded-2xl border border-rose-100 space-y-2.5">
-                <span class="block text-xs font-semibold text-slate-700">Opciones & Acabados Incluidos:</span>
+                <span class="block text-xs font-semibold text-slate-700">Insumos Adicionales (por unidad):</span>
                 
                 <label class="flex items-center gap-2.5 text-xs text-slate-600 cursor-pointer select-none">
                     <input type="checkbox" id="addNFC" class="w-4 h-4 rounded text-rose-500 focus:ring-rose-400 border-slate-300">
-                    <span>Chip NFC Inteligente Integrado</span>
+                    <span>Chip NFC NTAG215/216 Integrado</span>
                 </label>
                 
                 <label class="flex items-center gap-2.5 text-xs text-slate-600 cursor-pointer select-none">
@@ -66,15 +73,15 @@
 
                 <label class="flex items-center gap-2.5 text-xs text-slate-600 cursor-pointer select-none">
                     <input type="checkbox" id="addEmpaque" class="w-4 h-4 rounded text-rose-500 focus:ring-rose-400 border-slate-300">
-                    <span>Empaque Individual B2C (Listo para regalo)</span>
+                    <span>Empaque & Presentación B2C</span>
                 </label>
             </div>
 
-            <!-- RESUMEN DE COTIZACIÓN LIMPIO (SIN COSTO DIRECTO) -->
+            <!-- RESUMEN EJECUTIVO (PÚBLICO / LIMPIO) -->
             <div class="bg-gradient-to-br from-rose-50 to-white p-4 rounded-2xl border border-rose-200/80 text-center space-y-3">
                 <div class="flex justify-between text-xs text-slate-500 px-2 font-medium">
-                    <span>📦 Cantidad: <strong id="lblCantidad" class="text-slate-800">1 pc</strong></span>
-                    <span>⏱️ Estimado: <strong id="lblTiempo" class="text-slate-800">2 hrs</strong></span>
+                    <span>📦 Unidades: <strong id="lblCantidad" class="text-slate-800">1 pc</strong></span>
+                    <span>⏱️ Tiempo Total: <strong id="lblTiempo" class="text-slate-800">2.0 hrs</strong></span>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2 border-t border-rose-100 pt-3">
@@ -89,70 +96,68 @@
                 </div>
             </div>
 
-            <!-- LLAMADOS A LA ACCIÓN -->
+            <!-- BOTONES DE ACCIÓN -->
             <button type="button" id="btnWhatsapp" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-rose-200 transition-all flex items-center justify-center gap-2 text-sm">
                 <span>💬</span> Solicitar Pedido por WhatsApp
             </button>
             
             <div class="text-center">
                 <button type="button" id="btnPDF" class="text-xs text-slate-400 hover:text-slate-600 underline font-medium transition-all">
-                    📄 Descargar Cotización en PDF
+                    📄 Descargar Cotización PDF
                 </button>
             </div>
         </form>
     </main>
 
-    <!-- LÓGICA DE CÁLCULO PRIVADA -->
+    <!-- LÓGICA JAVASCRIP ES6+ -->
     <script>
-        // Parámetros Internos Privados (No expuestos visualmente)
-        const CONFIG_PRIVADA = {
-            costoGramoFilamento: 0.45,   // $450 MXN / kg
-            costoHoraImpresion: 8.50,    // Energía + Depreciación
+        // Parámetros de costos confidenciales (no visibles en la interfaz)
+        const METRICAS_INTERNAS = {
+            costoGramoFilamento: 0.45,   // Base: $450 MXN / kg
+            costoHoraImpresora: 8.50,    // Energía + desgaste
             costoNFC: 10.00,
             costoHerraje: 3.00,
-            costoEmpaque: 4.00,
-            factorMargenPorDefecto: 2.8
+            costoEmpaque: 4.00
         };
 
         const form = document.getElementById('cotizadorForm');
 
-        function calcularCotizacion() {
+        function recalcularCotizacion() {
+            // Lectura de variables directas del DOM
             const Q = parseInt(document.getElementById('cantidad').value) || 1;
-            const gramos = parseFloat(document.getElementById('pesoTotal').value) || 0;
+            const horasImpresion = parseFloat(document.getElementById('tiempoHoras').value) || 0;
+            const gramosTotales = parseFloat(document.getElementById('pesoTotal').value) || 0;
             const multiplicadorLinea = parseFloat(document.getElementById('lineaNegocio').value) || 2.8;
 
-            // Selección de Insumos
-            const incNFC = document.getElementById('addNFC').checked ? CONFIG_PRIVADA.costoNFC : 0;
-            const incHerraje = document.getElementById('addHerraje').checked ? CONFIG_PRIVADA.costoHerraje : 0;
-            const incEmpaque = document.getElementById('addEmpaque').checked ? CONFIG_PRIVADA.costoEmpaque : 0;
+            // Selección de adicionales
+            const incNFC = document.getElementById('addNFC').checked ? METRICAS_INTERNAS.costoNFC : 0;
+            const incHerraje = document.getElementById('addHerraje').checked ? METRICAS_INTERNAS.costoHerraje : 0;
+            const incEmpaque = document.getElementById('addEmpaque').checked ? METRICAS_INTERNAS.costoEmpaque : 0;
 
-            // Estimación de tiempo (Interna)
-            const horasEstimadas = Math.max(1, Math.round((gramos / 25) * 10) / 10);
+            // Cálculo del Costo Directo Interno (Permanece privado en JS)
+            const costoMaterial = gramosTotales * METRICAS_INTERNAS.costoGramoFilamento;
+            const costoTiempo = horasImpresion * METRICAS_INTERNAS.costoHoraImpresora;
+            const costoInsumos = incNFC + incHerraje + incEmpaque;
 
-            // Cálculo Interno de Costo Directo (SE MANTIENE EN JS, NUNCA SE MUESTRA)
-            const costoMaterial = gramos * CONFIG_PRIVADA.costoGramoFilamento;
-            const costoOperativo = horasEstimadas * CONFIG_PRIVADA.costoHoraImpresion;
-            const costoInsumosUnitario = incNFC + incHerraje + incEmpaque;
+            const costoDirectoUnitario = costoMaterial + costoTiempo + costoInsumos;
 
-            const costoDirectoUnitario = costoMaterial + costoOperativo + costoInsumosUnitario;
-
-            // Precio Venta Final al Cliente
+            // Precio de Venta Público
             const precioUnitario = Math.ceil(costoDirectoUnitario * multiplicadorLinea);
             const precioTotal = precioUnitario * Q;
 
-            // Renderizado exclusivo de datos aptos para el cliente
+            // Actualización de etiquetas visibles para el cliente
             document.getElementById('lblCantidad').innerText = `${Q} pc${Q > 1 ? 's' : ''}`;
-            document.getElementById('lblTiempo').innerText = `${horasEstimadas} hrs`;
+            document.getElementById('lblTiempo').innerText = `${horasImpresion.toFixed(1)} hrs`;
             document.getElementById('lblPrecioTotal').innerHTML = `$${precioTotal.toFixed(2)} <span class="text-xs font-normal">MXN</span>`;
             document.getElementById('lblPrecioUnitario').innerHTML = `$${precioUnitario.toFixed(2)} <span class="text-xs font-normal">MXN</span>`;
         }
 
-        // Escuchadores de eventos para recálculo dinámico
-        form.addEventListener('input', calcularCotizacion);
-        document.getElementById('lineaNegocio').addEventListener('change', calcularCotizacion);
+        // Listeners de eventos
+        form.addEventListener('input', recalcularCotizacion);
+        document.getElementById('lineaNegocio').addEventListener('change', recalcularCotizacion);
 
-        // Inicializar al cargar
-        calcularCotizacion();
+        // Render inicial
+        recalcularCotizacion();
     </script>
 </body>
 </html>
