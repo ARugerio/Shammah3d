@@ -3,878 +3,637 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shammah 3D - Cotizador Profesional</title>
-  <!-- Librería html2pdf.js para exportación directa a PDF -->
+  <title>Cotizador Bambu P2S - SHAMMAH 3D</title>
+  
+  <!-- Tipografías Oficiales: Lexend & Varela Round -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;700;800&family=Varela+Round&display=swap" rel="stylesheet">
+
+  <!-- Librería cliente para exportar a PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
     /* ==========================================================================
-       ISOLATION LAYER: SCOPED TO .cotizador-pro
+       SISTEMA DE DISEÑO OFICIAL SHAMMAH 3D (ISOLATED SCOPE)
        ========================================================================== */
-    .cotizador-pro {
-      --bg-main: #0f172a;
-      --bg-card: #1e293b;
-      --bg-input: #0f172a;
-      --border-color: #334155;
-      --accent: #f97316; /* Naranja Industrial Shammah 3D */
-      --accent-hover: #ea580c;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --success: #22c55e;
-      --danger: #ef4444;
-      
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-main);
-      color: var(--text-main);
+    body {
       margin: 0;
-      padding: 16px;
-      box-sizing: border-box;
-      border-radius: 12px;
-      line-height: 1.5;
+      padding: 0;
+      background-color: #FAF4F5;
+      font-family: 'Varela Round', sans-serif;
     }
 
-    .cotizador-pro * {
+    .shammah-app {
+      --shammah-pink: #E85B7B;
+      --shammah-pink-soft: #F8C8D0;
+      --shammah-pink-bg: #FAF4F5;
+      --shammah-pink-card: #FFF5F7;
+      --shammah-green: #4E6A64;
+      --shammah-text-muted: #738A85;
+      --shammah-white: #FFFFFF;
+      
+      background-color: var(--shammah-pink-bg);
+      color: var(--shammah-green);
+      min-height: 100vh;
+      padding: 30px 15px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .shammah-app * {
       box-sizing: border-box;
     }
 
-    /* Brand Header */
-    .cotizador-pro .brand-header {
+    /* Insignia Superior */
+    .shammah-app .top-badge {
+      background-color: #FCE8EC;
+      color: var(--shammah-pink);
+      font-family: 'Lexend', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      padding: 6px 20px;
+      border-radius: 50px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      border: 1px solid var(--shammah-pink-soft);
+      display: inline-block;
+    }
+
+    /* Encabezado */
+    .shammah-app .brand-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .shammah-app .brand-title {
+      font-family: 'Lexend', sans-serif;
+      font-size: 42px;
+      font-weight: 800;
+      color: var(--shammah-green);
+      margin: 0;
+      letter-spacing: 1.5px;
+      line-height: 1;
+    }
+
+    .shammah-app .brand-subtitle {
+      font-size: 15px;
+      color: var(--shammah-green);
+      font-weight: 600;
+      margin: 8px 0 0 0;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      border-bottom: 2px solid var(--accent);
-      padding-bottom: 12px;
-      margin-bottom: 20px;
+      justify-content: center;
+      gap: 6px;
     }
 
-    .cotizador-pro .brand-title {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--accent);
-      letter-spacing: 0.5px;
-      margin: 0;
+    .shammah-app .brand-subtitle .heart {
+      color: var(--shammah-pink);
+      font-size: 13px;
     }
 
-    .cotizador-pro .brand-subtitle {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin: 0;
+    /* Tarjeta Principal */
+    .shammah-app .card-container {
+      background-color: var(--shammah-white);
+      border: 2.5px solid var(--shammah-pink-soft);
+      border-radius: 28px;
+      padding: 32px 28px;
+      max-width: 620px;
+      width: 100%;
+      box-shadow: 0 12px 30px rgba(232, 91, 123, 0.06);
     }
 
-    /* Tabs Navigation */
-    .cotizador-pro .nav-tabs {
+    /* Título Sección */
+    .shammah-app .card-header {
       display: flex;
+      align-items: center;
       gap: 8px;
-      border-bottom: 2px solid var(--border-color);
+      font-family: 'Lexend', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--shammah-green);
       margin-bottom: 20px;
+      border-bottom: 1px solid #F5E3E7;
+      padding-bottom: 12px;
     }
 
-    .cotizador-pro .tab-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 10px 18px;
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: all 0.2s ease;
+    .shammah-app .card-header .icon {
+      color: #E2A03F;
     }
 
-    .cotizador-pro .tab-btn.active {
-      color: var(--accent);
-      border-bottom-color: var(--accent);
-    }
-
-    /* Layout Grid */
-    .cotizador-pro .app-grid {
+    /* Formulario */
+    .shammah-app .form-grid {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
     }
 
-    @media (min-width: 992px) {
-      .cotizador-pro .app-grid {
-        grid-template-columns: 1.8fr 1.2fr;
+    @media (max-width: 540px) {
+      .shammah-app .form-grid {
+        grid-template-columns: 1fr;
       }
     }
 
-    /* Cards */
-    .cotizador-pro .card {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 18px;
-      margin-bottom: 16px;
-    }
-
-    .cotizador-pro .card-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--accent);
-      margin-top: 0;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 8px;
-    }
-
-    /* Form Controls */
-    .cotizador-pro .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 12px;
-    }
-
-    .cotizador-pro .field-group {
+    .shammah-app .field-group {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
     }
 
-    .cotizador-pro label {
-      font-size: 11px;
+    .shammah-app .field-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .shammah-app label {
+      font-size: 13px;
       font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      color: var(--shammah-green);
     }
 
-    .cotizador-pro input, 
-    .cotizador-pro select {
-      background-color: var(--bg-input);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 8px 12px;
-      border-radius: 6px;
+    .shammah-app input[type="number"], 
+    .shammah-app select {
+      background-color: #FAF5F6;
+      border: 1.5px solid #F0DADC;
+      color: var(--shammah-green);
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-family: 'Varela Round', sans-serif;
       font-size: 14px;
+      font-weight: 600;
       outline: none;
-      transition: border-color 0.2s;
+      transition: all 0.2s ease;
+      width: 100%;
     }
 
-    .cotizador-pro input:focus, 
-    .cotizador-pro select:focus {
-      border-color: var(--accent);
+    .shammah-app input:focus, 
+    .shammah-app select:focus {
+      border-color: var(--shammah-pink);
+      background-color: var(--shammah-white);
+      box-shadow: 0 0 0 3px rgba(232, 91, 123, 0.15);
     }
 
-    /* Switch Component */
-    .cotizador-pro .switch-container {
+    /* Checkbox Group de Insumos */
+    .shammah-app .supplies-box {
+      background-color: #FAF5F6;
+      border: 1.5px solid #F0DADC;
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .shammah-app .checkbox-item {
       display: flex;
       align-items: center;
       gap: 10px;
+      font-size: 13px;
+      font-weight: 600;
       cursor: pointer;
     }
 
-    .cotizador-pro .switch-container input {
-      display: none;
+    .shammah-app .checkbox-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--shammah-pink);
+      cursor: pointer;
     }
 
-    .cotizador-pro .slider {
-      width: 38px;
-      height: 20px;
-      background-color: var(--border-color);
+    /* Caja de Resumen */
+    .shammah-app .summary-card {
+      background-color: var(--shammah-pink-card);
+      border: 1.5px solid var(--shammah-pink-soft);
       border-radius: 20px;
-      position: relative;
-      transition: 0.3s;
+      padding: 20px;
+      margin-top: 22px;
     }
 
-    .cotizador-pro .slider::before {
+    .shammah-app .summary-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--shammah-green);
+      border-bottom: 1px dashed var(--shammah-pink-soft);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .shammah-app .summary-prices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      text-align: center;
+      gap: 12px;
+      position: relative;
+    }
+
+    .shammah-app .summary-prices::after {
       content: "";
       position: absolute;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background-color: white;
-      top: 3px;
-      left: 3px;
-      transition: 0.3s;
+      top: 5%;
+      bottom: 5%;
+      left: 50%;
+      width: 1px;
+      background-color: var(--shammah-pink-soft);
     }
 
-    .cotizador-pro input:checked + .slider {
-      background-color: var(--accent);
-    }
-
-    .cotizador-pro input:checked + .slider::before {
-      transform: translateX(18px);
-    }
-
-    /* Panel Resumen Sticky */
-    .cotizador-pro .summary-panel {
-      position: sticky;
-      top: 16px;
-    }
-
-    .cotizador-pro .summary-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-      font-size: 14px;
-      border-bottom: 1px dashed var(--border-color);
-    }
-
-    .cotizador-pro .summary-row.total {
-      border-bottom: none;
-      border-top: 2px solid var(--accent);
-      margin-top: 10px;
-      padding-top: 12px;
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--accent);
-    }
-
-    .cotizador-pro .badge-fixed {
-      background-color: rgba(249, 115, 22, 0.15);
-      color: var(--accent);
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      border: 1px solid var(--accent);
-    }
-
-    /* Botones */
-    .cotizador-pro .btn-group {
+    .shammah-app .price-block {
       display: flex;
       flex-direction: column;
+      align-items: center;
+    }
+
+    .shammah-app .price-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--shammah-text-muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .shammah-app .price-val-total {
+      font-family: 'Lexend', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--shammah-pink);
+      line-height: 1;
+    }
+
+    .shammah-app .price-val-unit {
+      font-family: 'Lexend', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--shammah-green);
+      line-height: 1;
+    }
+
+    .shammah-app .currency-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--shammah-text-muted);
+      margin-left: 3px;
+    }
+
+    /* Botón WhatsApp */
+    .shammah-app .btn-whatsapp {
+      background-color: var(--shammah-pink);
+      color: var(--shammah-white);
+      border: none;
+      width: 100%;
+      padding: 16px;
+      border-radius: 16px;
+      font-family: 'Lexend', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 8px 18px rgba(232, 91, 123, 0.28);
+      transition: all 0.2s ease;
+    }
+
+    .shammah-app .btn-whatsapp:hover {
+      background-color: #d64a6a;
+      transform: translateY(-1px);
+    }
+
+    /* Acciones Secundarias */
+    .shammah-app .extra-actions {
+      display: flex;
+      justify-content: space-between;
       gap: 10px;
       margin-top: 16px;
     }
 
-    .cotizador-pro .btn {
-      padding: 10px 16px;
-      border-radius: 6px;
+    .shammah-app .btn-link {
+      background: none;
       border: none;
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: background-color 0.2s;
-    }
-
-    .cotizador-pro .btn-primary {
-      background-color: var(--accent);
-      color: #ffffff;
-    }
-
-    .cotizador-pro .btn-primary:hover {
-      background-color: var(--accent-hover);
-    }
-
-    .cotizador-pro .btn-secondary {
-      background-color: #334155;
-      color: var(--text-main);
-    }
-
-    .cotizador-pro .btn-secondary:hover {
-      background-color: #475569;
-    }
-
-    .cotizador-pro .tab-content {
-      display: none;
-    }
-
-    .cotizador-pro .tab-content.active {
-      display: block;
-    }
-
-    /* Tabla Historial */
-    .cotizador-pro table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 13px;
-    }
-
-    .cotizador-pro th, .cotizador-pro td {
-      padding: 10px;
-      text-align: left;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .cotizador-pro th {
-      color: var(--text-muted);
+      color: var(--shammah-text-muted);
+      font-size: 12px;
       font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 4px;
     }
 
-    /* ==========================================================================
-       PDF EXPORT RULE (MANDATORY HIGH CONTRAST)
-       ========================================================================== */
-    #pdf-export-template,
-    #pdf-export-template * {
-      background-color: #ffffff !important;
-      color: #000000 !important;
-      box-shadow: none !important;
-      border-color: #cccccc !important;
+    .shammah-app .btn-link:hover {
+      color: var(--shammah-pink);
     }
 
-    #pdf-export-template {
+    /* Plantilla Oculta para Imprimir PDF */
+    #pdf-template {
       display: none;
-      padding: 30px;
+      padding: 40px;
+      background-color: #ffffff;
+      color: #000000;
       font-family: Arial, sans-serif;
     }
   </style>
 </head>
 <body>
 
-<div class="cotizador-pro">
-  <!-- Brand Header -->
+<div class="shammah-app">
+
+  <!-- Insignia y Marca -->
+  <div class="top-badge">Cotizador FDM — Bambu Lab P2S</div>
   <div class="brand-header">
-    <div>
-      <h1 class="brand-title">SHAMMAH 3D</h1>
-      <p class="brand-subtitle">Servicios Especializados de Impresión 3D e Ingeniería Inversa</p>
+    <h1 class="brand-title">SHAMMAH</h1>
+    <p class="brand-subtitle">
+      Diseña <span class="heart">♥</span> Crea <span class="heart">♥</span> Imprime
+    </p>
+  </div>
+
+  <!-- Contenedor Interactivo -->
+  <div class="card-container">
+    <div class="card-header">
+      <span class="icon">⚙️</span> Configuración de Impresión
     </div>
-    <span class="badge-fixed">Versión 2026.1</span>
-  </div>
 
-  <!-- Navegación por Pestañas -->
-  <div class="nav-tabs">
-    <button class="tab-btn active" onclick="switchTab('cotizador')">⚡ Cotizador Pro</button>
-    <button class="tab-btn" onclick="switchTab('historial')">📋 Historial Local</button>
-    <button class="tab-btn" onclick="switchTab('config')">⚙️ Configuración M365 / GAS</button>
-  </div>
-
-  <!-- TAB 1: COTIZADOR PRINCIPAL -->
-  <div id="tab-cotizador" class="tab-content active">
-    <div class="app-grid">
-      
-      <!-- COLUMNA IZQUIERDA: PARAMÉTRICO -->
-      <div class="form-container">
-        
-        <!-- Bloque 01: Identificación -->
-        <div class="card">
-          <div class="card-title">01. Datos del Cliente y Proyecto</div>
-          <div class="form-grid">
-            <div class="field-group">
-              <label>Cliente / Empresa</label>
-              <input type="text" id="clientName" value="Cliente General" oninput="calculateQuote()">
-            </div>
-            <div class="field-group">
-              <label>Nombre del Proyecto / Pieza</label>
-              <input type="text" id="projectName" value="Soporte Mecánico Shammah" oninput="calculateQuote()">
-            </div>
-            <div class="field-group">
-              <label>Cantidad (Piezas)</label>
-              <input type="number" id="quantity" value="1" min="1" oninput="calculateQuote()">
-            </div>
-          </div>
-        </div>
-
-        <!-- Bloque 02: Impresión 3D -->
-        <div class="card">
-          <div class="card-title">
-            <span>02. Fabricación 3D</span>
-            <span class="badge-fixed">PLA/PETG Base: $500/kg</span>
-          </div>
-          <div class="form-grid">
-            <div class="field-group">
-              <label>Material</label>
-              <select id="materialType" onchange="calculateQuote()">
-                <option value="PLA">PLA (Fijado $500/kg)</option>
-                <option value="PETG">PETG (Fijado $500/kg)</option>
-                <option value="ABS_ASA">ABS / ASA ($600/kg)</option>
-                <option value="TPU">TPU Flexible ($750/kg)</option>
-              </select>
-            </div>
-            <div class="field-group">
-              <label>Peso Pieza (g)</label>
-              <input type="number" id="partWeightG" value="85" min="0" oninput="calculateQuote()">
-            </div>
-            <div class="field-group">
-              <label>Purga / Torre (g)</label>
-              <input type="number" id="purgeWeightG" value="10" min="0" oninput="calculateQuote()">
-            </div>
-            <div class="field-group">
-              <label>Merma Est. (%)</label>
-              <input type="number" id="wastePct" value="5" min="0" oninput="calculateQuote()">
-            </div>
-            <div class="field-group">
-              <label>Horas Impresión</label>
-              <input type="number" id="printHours" value="4" min="0" oninput="calculateQuote()">
-            </div>
-            <div class="field-group">
-              <label>Minutos Impresión</label>
-              <input type="number" id="printMinutes" value="30" min="0" max="59" oninput="calculateQuote()">
-            </div>
-            <div class="field-group">
-              <label>Consumo Impresora (W)</label>
-              <input type="number" id="powerW" value="150" min="0" oninput="calculateQuote()">
-            </div>
-            <div class="field-group">
-              <label>Costo Luz ($/kWh)</label>
-              <input type="number" id="kwhRate" value="3.5" step="0.1" oninput="calculateQuote()">
-            </div>
-          </div>
-        </div>
-
-        <!-- Bloque 03: Ingeniería Inversa -->
-        <div class="card">
-          <div class="card-title">
-            <span>03. Ingeniería Inversa (CAD)</span>
-            <label class="switch-container">
-              <input type="checkbox" id="enableReverseEng" onchange="toggleSection('sec-reverse-eng'); calculateQuote();">
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div id="sec-reverse-eng" style="display: none;">
-            <div class="form-grid">
-              <div class="field-group">
-                <label>Horas Metrología</label>
-                <input type="number" id="metrologyHours" value="1.0" step="0.5" min="0" oninput="calculateQuote()">
-              </div>
-              <div class="field-group">
-                <label>Horas Modelado CAD</label>
-                <input type="number" id="cadHours" value="2.5" step="0.5" min="0" oninput="calculateQuote()">
-              </div>
-              <div class="field-group">
-                <label>Tarifa Ing. ($/Hora)</label>
-                <input type="number" id="ingHourlyRate" value="450" min="0" oninput="calculateQuote()">
-              </div>
-              <div class="field-group">
-                <label>Costo Escaneo 3D ($)</label>
-                <input type="number" id="scanFee" value="0" min="0" oninput="calculateQuote()">
-              </div>
-              <div class="field-group" style="grid-column: span 2;">
-                <label>Entregables y Derechos (IP)</label>
-                <select id="deliverableType" onchange="calculateQuote()">
-                  <option value="PHYSICAL_ONLY">Solo Pieza Física (Factor 1.0x)</option>
-                  <option value="STL">Malla STL / 3MF (Factor 1.25x)</option>
-                  <option value="STEP">CAD Editable .STEP / .SLDPRT (Factor 1.75x)</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bloque 04: Postprocesado -->
-        <div class="card">
-          <div class="card-title">
-            <span>04. Postprocesado y Ensambles</span>
-            <label class="switch-container">
-              <input type="checkbox" id="enablePostProc" onchange="toggleSection('sec-post-proc'); calculateQuote();">
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div id="sec-post-proc" style="display: none;">
-            <div class="form-grid">
-              <div class="field-group">
-                <label>Minutos Taller</label>
-                <input type="number" id="postMinutes" value="45" min="0" oninput="calculateQuote()">
-              </div>
-              <div class="field-group">
-                <label>Tarifa Taller ($/Hora)</label>
-                <input type="number" id="workshopRate" value="200" min="0" oninput="calculateQuote()">
-              </div>
-              <div class="field-group">
-                <label>Lijado / Imprimante ($)</label>
-                <input type="number" id="sandingCost" value="80" min="0" oninput="calculateQuote()">
-              </div>
-              <div class="field-group">
-                <label>Insertos Roscados (Cant.)</label>
-                <input type="number" id="insertsQty" value="4" min="0" oninput="calculateQuote()">
-              </div>
-              <div class="field-group">
-                <label>Costo c/u Inserto ($)</label>
-                <input type="number" id="insertUnitCost" value="8" min="0" oninput="calculateQuote()">
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bloque 05: Margen e Impuestos -->
-        <div class="card">
-          <div class="card-title">05. Estrategia Comercial y Fiscal</div>
-          <div class="form-grid">
-            <div class="field-group">
-              <label>Modalidad Ganancia</label>
-              <select id="pricingMode" onchange="calculateQuote()">
-                <option value="margin">Margen sobre Venta (%)</option>
-                <option value="markup">Markup sobre Costo (%)</option>
-              </select>
-            </div>
-            <div class="field-group">
-              <label>Objetivo Ganancia (%)</label>
-              <input type="number" id="pricingTarget" value="45" min="1" max="99" oninput="calculateQuote()">
-            </div>
-            <div class="field-group">
-              <label>Comisión Canal (%)</label>
-              <input type="number" id="channelPct" value="0" min="0" oninput="calculateQuote()">
-            </div>
-            <div class="field-group">
-              <label>Tratamiento IVA</label>
-              <select id="taxMode" onchange="calculateQuote()">
-                <option value="disabled">Sin IVA</option>
-                <option value="added">Más IVA (+16%)</option>
-                <option value="included">IVA Incluido (16%)</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
+    <div class="form-grid">
+      <!-- Enfoque Comercial -->
+      <div class="field-group full-width">
+        <label for="lineType">Línea de Negocio / Aplicación</label>
+        <select id="lineType" onchange="calculate()">
+          <option value="B2C">Línea B2C (Llaveros, Minis, Figuras, Shadowboxes) — 2.8x</option>
+          <option value="B2B_UNIT">Micro-B2B Unitaria (Standees QR, Placas NFC) — $250-$350 MXN</option>
+          <option value="B2B_LOT">Micro-B2B Lote / Volumen (Lotes de Repuestos o Promocionales) — 3.5x</option>
+        </select>
       </div>
 
-      <!-- COLUMNA DERECHA: RESUMEN (STICKY) -->
-      <div class="summary-panel">
-        <div class="card">
-          <div class="card-title">Resumen Financiero</div>
-          
-          <div class="summary-row">
-            <span>Material Prima ($500/kg):</span>
-            <strong id="lblMaterialCost">$0.00</strong>
-          </div>
-          <div class="summary-row">
-            <span>Energía + Depreciación:</span>
-            <strong id="lblMachineCost">$0.00</strong>
-          </div>
-          <div class="summary-row">
-            <span>Ingeniería Inversa (CAD):</span>
-            <strong id="lblReverseEngCost">$0.00</strong>
-          </div>
-          <div class="summary-row">
-            <span>Postprocesado y Accesorios:</span>
-            <strong id="lblPostProcCost">$0.00</strong>
-          </div>
-          <div class="summary-row" style="background: rgba(255,255,255,0.03); padding: 6px;">
-            <span>Costo Directo Total:</span>
-            <strong id="lblDirectCostTotal" style="color: #60a5fa;">$0.00</strong>
-          </div>
-          <div class="summary-row">
-            <span>Comisiones de Canal:</span>
-            <strong id="lblChannelFee">$0.00</strong>
-          </div>
-          <div class="summary-row">
-            <span>IVA Calculado:</span>
-            <strong id="lblTaxAmount">$0.00</strong>
-          </div>
-          <div class="summary-row total">
-            <span>PRECIO FINAL CLIENTE:</span>
-            <strong id="lblTotalPrice">$0.00 MXN</strong>
-          </div>
-          <div class="summary-row" style="border: none; padding-top: 8px;">
-            <span style="color: var(--success);">Ganancia Neta Estimada:</span>
-            <strong id="lblNetProfit" style="color: var(--success);">$0.00</strong>
-          </div>
-
-          <div class="btn-group">
-            <button class="btn btn-primary" onclick="saveToHistory()">💾 Guardar en Historial</button>
-            <button class="btn btn-secondary" onclick="exportPDF()">📄 Exportar Cotización PDF</button>
-            <button class="btn btn-secondary" onclick="syncToCloud()">☁️ Sincronizar M365 / Sheets</button>
-          </div>
-        </div>
+      <!-- Cantidad de Piezas -->
+      <div class="field-group">
+        <label for="qty">Cantidad de Piezas (Q)</label>
+        <input type="number" id="qty" value="1" min="1" oninput="calculate()">
       </div>
 
-    </div>
-  </div>
+      <!-- Tiempo Total de Impresión -->
+      <div class="field-group">
+        <label for="timeHours">Tiempo Impresión (Horas)</label>
+        <input type="number" id="timeHours" value="2.0" step="0.1" min="0.1" oninput="calculate()">
+      </div>
 
-  <!-- TAB 2: HISTORIAL LOCAL -->
-  <div id="tab-historial" class="tab-content">
-    <div class="card">
-      <div class="card-title">Historial de Cotizaciones Guardadas</div>
-      <div style="overflow-x: auto;">
-        <table id="historyTable">
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Cliente</th>
-              <th>Proyecto</th>
-              <th>Piezas</th>
-              <th>Costo Dir.</th>
-              <th>Precio Final</th>
-              <th>Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Render JS -->
-          </tbody>
-        </table>
+      <!-- Peso Neto Pieza -->
+      <div class="field-group">
+        <label for="weightPiece">Peso Pieza(s) Neto (Gramos)</label>
+        <input type="number" id="weightPiece" value="45" min="0" oninput="calculate()">
+      </div>
+
+      <!-- Peso Purga/AMS -->
+      <div class="field-group">
+        <label for="weightPurge">Desperdicio / Purga AMS (Gramos)</label>
+        <input type="number" id="weightPurge" value="10" min="0" oninput="calculate()">
+      </div>
+
+      <!-- Insumos Adicionales -->
+      <div class="field-group full-width">
+        <label>Insumos Adicionales (por unidad)</label>
+        <div class="supplies-box">
+          <label class="checkbox-item">
+            <input type="checkbox" id="chkNFC" onchange="calculate()">
+            <span>Chip NFC NTAG215/216 (+$10.00 MXN / pc)</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" id="chkKeychain" onchange="calculate()">
+            <span>Argolla / Herraje Llavero (+$3.00 MXN / pc)</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" id="chkPackaging" onchange="calculate()">
+            <span>Empaque & Presentación B2C (+$4.00 MXN / pc)</span>
+          </label>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- TAB 3: CONFIGURACIÓN -->
-  <div id="tab-config" class="tab-content">
-    <div class="card">
-      <div class="card-title">Configuración de Integración Nube</div>
-      <div class="field-group" style="margin-bottom: 12px;">
-        <label>URL Webhook (Power Automate M365 / Google Apps Script)</label>
-        <input type="text" id="cloudWebhookUrl" placeholder="https://..." onchange="saveConfig()">
+    <!-- Caja de Resumen -->
+    <div class="summary-card">
+      <div class="summary-meta">
+        <span>⚖️ Material Total: <strong id="lblMetaWeight">55 g</strong></span>
+        <span>⏱️ Tiempo Total: <strong id="lblMetaTime">2.0 hrs</strong></span>
+        <span>💵 Costo Directo: <strong id="lblMetaCost">$45.50 MXN</strong></span>
+        <span>📦 Unidades: <strong id="lblMetaQty">1 pc</strong></span>
       </div>
-      <p style="font-size: 12px; color: var(--text-muted);">
-        * Pegue la URL del Webhook de Power Automate (para guardar en Excel Online M365) o del Webhook de Google Apps Script.
-      </p>
+
+      <div class="summary-prices">
+        <div class="price-block">
+          <span class="price-label">PRECIO TOTAL</span>
+          <div style="display: flex; align-items: baseline;">
+            <span class="price-val-total" id="lblPriceTotal">$127.40</span>
+            <span class="currency-tag">MXN</span>
+          </div>
+        </div>
+
+        <div class="price-block">
+          <span class="price-label">PRECIO UNITARIO</span>
+          <div style="display: flex; align-items: baseline;">
+            <span class="price-val-unit" id="lblPriceUnit">$127.40</span>
+            <span class="currency-tag">MXN</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón CTA WhatsApp -->
+    <button class="btn-whatsapp" onclick="sendWhatsApp()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+      </svg>
+      Solicitar Pedido por WhatsApp
+    </button>
+
+    <!-- Descarga PDF Directa -->
+    <div class="extra-actions">
+      <button class="btn-link" onclick="exportPDF()">📄 Descargar Cotización PDF</button>
+      <span style="font-size:11px; color:#a0b0ad;">Core P2S v2.0</span>
     </div>
   </div>
 
 </div>
 
-<!-- PLANTILLA OCULTA DE EXPORTACIÓN PDF (STRICT CONTRAST GUARDRALL) -->
-<div id="pdf-export-template">
-  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 20px;">
+<!-- PLANTILLA DE IMPRESIÓN PDF -->
+<div id="pdf-template">
+  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E85B7B; padding-bottom: 12px; margin-bottom: 20px;">
     <div>
-      <h1 style="margin: 0; font-size: 24px; color: #000;">SHAMMAH 3D</h1>
-      <p style="margin: 4px 0 0 0; font-size: 12px; color: #333;">Soluciones en Impresión 3D e Ingeniería Inversa</p>
+      <h1 style="margin: 0; font-size: 26px; color: #4E6A64;">SHAMMAH 3D</h1>
+      <p style="margin: 4px 0 0 0; font-size: 13px; color: #E85B7B; font-weight: bold;">Diseña ♥ Crea ♥ Imprime</p>
     </div>
-    <div style="text-align: right; font-size: 12px; color: #333;">
+    <div style="text-align: right; font-size: 12px; color: #444;">
       <p style="margin: 0;"><strong>Fecha:</strong> <span id="pdfDate"></span></p>
       <p style="margin: 0;"><strong>Folio:</strong> <span id="pdfFolio"></span></p>
     </div>
   </div>
 
-  <table style="width: 100%; margin-bottom: 20px; font-size: 13px;">
-    <tr>
-      <td><strong>Cliente:</strong> <span id="pdfClient"></span></td>
-      <td><strong>Proyecto:</strong> <span id="pdfProject"></span></td>
-      <td><strong>Piezas:</strong> <span id="pdfQty"></span></td>
-    </tr>
-  </table>
-
-  <h3 style="font-size: 14px; border-bottom: 1px solid #ccc; padding-bottom: 4px; color: #000;">Desglose de Servicios</h3>
-  <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px;">
+  <h3 style="font-size: 15px; border-bottom: 1px solid #ddd; padding-bottom: 6px; color: #4E6A64;">Especificaciones Técnicas FDM</h3>
+  <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 13px;">
     <thead>
-      <tr style="background-color: #f2f2f2;">
-        <th style="border: 1px solid #ccc; padding: 6px; text-align: left; color: #000;">Concepto / Módulo</th>
-        <th style="border: 1px solid #ccc; padding: 6px; text-align: right; color: #000;">Monto</th>
+      <tr style="background-color: #FAF4F5;">
+        <th style="border: 1px solid #E2D0D4; padding: 8px; text-align: left; color: #4E6A64;">Concepto</th>
+        <th style="border: 1px solid #E2D0D4; padding: 8px; text-align: right; color: #4E6A64;">Detalle</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td style="border: 1px solid #ccc; padding: 6px; color: #000;">Fabricación en Impresión 3D (Material Base + Energía)</td>
-        <td style="border: 1px solid #ccc; padding: 6px; text-align: right; color: #000;" id="pdfCost3D">$0.00</td>
+        <td style="border: 1px solid #eee; padding: 8px;">Línea / Aplicación</td>
+        <td style="border: 1px solid #eee; padding: 8px; text-align: right;" id="pdfLine">-</td>
       </tr>
       <tr>
-        <td style="border: 1px solid #ccc; padding: 6px; color: #000;">Servicios de Ingeniería Inversa y CAD</td>
-        <td style="border: 1px solid #ccc; padding: 6px; text-align: right; color: #000;" id="pdfCostIng">$0.00</td>
+        <td style="border: 1px solid #eee; padding: 8px;">Cantidad Solicitada</td>
+        <td style="border: 1px solid #eee; padding: 8px; text-align: right;" id="pdfQty">-</td>
       </tr>
       <tr>
-        <td style="border: 1px solid #ccc; padding: 6px; color: #000;">Postprocesado, Acabados y Accesorios</td>
-        <td style="border: 1px solid #ccc; padding: 6px; text-align: right; color: #000;" id="pdfCostPost">$0.00</td>
+        <td style="border: 1px solid #eee; padding: 8px;">Material Neto + Purga AMS</td>
+        <td style="border: 1px solid #eee; padding: 8px; text-align: right;" id="pdfWeight">-</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #eee; padding: 8px;">Tiempo de Impresión Estima</td>
+        <td style="border: 1px solid #eee; padding: 8px; text-align: right;" id="pdfTime">-</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #eee; padding: 8px;">Insumos Seleccionados</td>
+        <td style="border: 1px solid #eee; padding: 8px; text-align: right;" id="pdfSupplies">-</td>
       </tr>
     </tbody>
   </table>
 
-  <div style="float: right; width: 45%; font-size: 13px;">
-    <div style="display: flex; justify-content: space-between; padding: 4px 0;">
-      <span>Subtotal:</span>
-      <span id="pdfSubtotal">$0.00</span>
+  <div style="float: right; width: 50%; font-size: 14px;">
+    <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+      <span>Precio Unitario:</span>
+      <span id="pdfUnit" style="font-weight: bold;">$0.00</span>
     </div>
-    <div style="display: flex; justify-content: space-between; padding: 4px 0;">
-      <span>IVA / Impuestos:</span>
-      <span id="pdfTax">$0.00</span>
-    </div>
-    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-top: 2px solid #000; font-weight: bold; font-size: 16px; color: #000;">
-      <span>TOTAL:</span>
+    <div style="display: flex; justify-content: space-between; padding: 10px 0; border-top: 2px solid #E85B7B; font-weight: bold; font-size: 18px; color: #E85B7B;">
+      <span>TOTAL ESTIMADO:</span>
       <span id="pdfTotal">$0.00 MXN</span>
     </div>
   </div>
   <div style="clear: both;"></div>
 
-  <div style="margin-top: 40px; font-size: 10px; color: #555; border-top: 1px solid #ccc; padding-top: 10px;">
-    * Esta oferta tiene una vigencia de 15 días naturales. Los tiempos de entrega inician a partir del pago del anticipo correspondiente.
+  <div style="margin-top: 50px; font-size: 11px; color: #777; border-top: 1px solid #eee; padding-top: 12px; text-align: center;">
+    Cotización formal emitida para equipo Bambu Lab P2S • Validez de 15 días naturales.
   </div>
 </div>
 
 <script>
-  let currentQuote = {};
+  // Teléfono de Atención Oficial
+  const WHATSAPP_PHONE = "5215500000000"; 
+
+  let calcState = {};
 
   window.addEventListener('DOMContentLoaded', () => {
-    loadConfig();
-    calculateQuote();
-    renderHistory();
+    calculate();
   });
 
-  function switchTab(tabName) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    
-    event.target.classList.add('active');
-    document.getElementById(`tab-${tabName}`).classList.add('active');
-  }
+  function calculate() {
+    const lineType = document.getElementById('lineType').value;
+    const lineText = document.getElementById('lineType').options[document.getElementById('lineType').selectedIndex].text;
+    const qty = Math.max(1, parseInt(document.getElementById('qty').value) || 1);
+    const weightPiece = Math.max(0, parseFloat(document.getElementById('weightPiece').value) || 0);
+    const weightPurge = Math.max(0, parseFloat(document.getElementById('weightPurge').value) || 0);
+    const timeHours = Math.max(0, parseFloat(document.getElementById('timeHours').value) || 0);
 
-  function toggleSection(sectionId) {
-    const el = document.getElementById(sectionId);
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
-  }
+    const hasNFC = document.getElementById('chkNFC').checked;
+    const hasKeychain = document.getElementById('chkKeychain').checked;
+    const hasPackaging = document.getElementById('chkPackaging').checked;
 
-  function calculateQuote() {
-    const clientName = document.getElementById('clientName').value || 'Cliente General';
-    const projectName = document.getElementById('projectName').value || 'Pieza Shammah';
-    const quantity = parseInt(document.getElementById('quantity').value) || 1;
+    // 1. Costo de Material ($0.50 / gramo)
+    const totalGrams = weightPiece + weightPurge;
+    const costMaterial = totalGrams * 0.50;
 
-    // Material (Fijado $500/kg para PLA/PETG)
-    const matType = document.getElementById('materialType').value;
-    let pricePerKg = 500.00; 
-    if (matType === 'ABS_ASA') pricePerKg = 600.00;
-    if (matType === 'TPU') pricePerKg = 750.00;
+    // 2. Costo Operativo ($9.00 / hora)
+    const costOperative = timeHours * 9.00;
 
-    const partWeightG = parseFloat(document.getElementById('partWeightG').value) || 0;
-    const purgeWeightG = parseFloat(document.getElementById('purgeWeightG').value) || 0;
-    const wastePct = parseFloat(document.getElementById('wastePct').value) || 0;
+    // 3. Costo de Insumos Adicionales
+    let unitSuppliesCost = 0;
+    let suppliesList = [];
+    if (hasNFC) { unitSuppliesCost += 10.00; suppliesList.push("Chip NFC"); }
+    if (hasKeychain) { unitSuppliesCost += 3.00; suppliesList.push("Herraje Llavero"); }
+    if (hasPackaging) { unitSuppliesCost += 4.00; suppliesList.push("Empaque B2C"); }
+    if (suppliesList.length === 0) suppliesList.push("Sin insumos extra");
 
-    const printHours = parseFloat(document.getElementById('printHours').value) || 0;
-    const printMinutes = parseFloat(document.getElementById('printMinutes').value) || 0;
-    const powerW = parseFloat(document.getElementById('powerW').value) || 0;
-    const kwhRate = parseFloat(document.getElementById('kwhRate').value) || 0;
+    const totalSuppliesCost = unitSuppliesCost * qty;
 
-    // Cálculo Impresión 3D
-    const totalGramsPerPiece = (partWeightG + purgeWeightG) * (1 + (wastePct / 100));
-    const materialCostUnit = (totalGramsPerPiece / 1000) * pricePerKg;
+    // Costo Directo Total (C_total)
+    const C_total = costMaterial + costOperative + totalSuppliesCost;
 
-    const totalPrintHoursUnit = printHours + (printMinutes / 60);
-    const energyCostUnit = (totalPrintHoursUnit * (powerW / 1000)) * kwhRate;
-    const depreciationUnit = totalPrintHoursUnit * 2.5; 
-    const base3DCostUnit = materialCostUnit + energyCostUnit + depreciationUnit;
+    // 4. Algoritmo de Precio por Línea de Negocio
+    let totalPrice = 0;
 
-    // Cálculo Ingeniería Inversa
-    let reverseEngCostTotal = 0;
-    const enableReverse = document.getElementById('enableReverseEng').checked;
-    if (enableReverse) {
-      const metrologyHrs = parseFloat(document.getElementById('metrologyHours').value) || 0;
-      const cadHrs = parseFloat(document.getElementById('cadHours').value) || 0;
-      const ingRate = parseFloat(document.getElementById('ingHourlyRate').value) || 0;
-      const scanFee = parseFloat(document.getElementById('scanFee').value) || 0;
-      
-      const delivType = document.getElementById('deliverableType').value;
-      let mult = 1.0;
-      if (delivType === 'STL') mult = 1.25;
-      if (delivType === 'STEP') mult = 1.75;
-
-      reverseEngCostTotal = ((metrologyHrs + cadHrs) * ingRate + scanFee) * mult;
+    if (lineType === 'B2C') {
+      totalPrice = C_total * 2.80; // Margen 180%
+    } else if (lineType === 'B2B_UNIT') {
+      // Tabulador de solución comercial ($250 - $350) o multiplicador 3.5x si supera base
+      const baseSolucion = 280.00 * qty; 
+      totalPrice = Math.max(baseSolucion, C_total * 3.50);
+    } else if (lineType === 'B2B_LOT') {
+      totalPrice = C_total * 3.50; // Multiplicador Lote
     }
 
-    // Cálculo Postprocesado
-    let postProcCostUnit = 0;
-    const enablePost = document.getElementById('enablePostProc').checked;
-    if (enablePost) {
-      const postMin = parseFloat(document.getElementById('postMinutes').value) || 0;
-      const workshopRate = parseFloat(document.getElementById('workshopRate').value) || 0;
-      const sandingCost = parseFloat(document.getElementById('sandingCost').value) || 0;
-      const insertsQty = parseFloat(document.getElementById('insertsQty').value) || 0;
-      const insertUnitCost = parseFloat(document.getElementById('insertUnitCost').value) || 0;
+    const unitPrice = totalPrice / qty;
 
-      postProcCostUnit = ((postMin / 60) * workshopRate) + sandingCost + (insertsQty * insertUnitCost);
-    }
-
-    // Totales de Costo Directo
-    const directCostUnit = base3DCostUnit + (reverseEngCostTotal / quantity) + postProcCostUnit;
-    const directCostTotal = directCostUnit * quantity;
-
-    // Estrategia Comercial
-    const pricingMode = document.getElementById('pricingMode').value;
-    const targetPct = parseFloat(document.getElementById('pricingTarget').value) || 0;
-    
-    let basePriceTotal = 0;
-    if (pricingMode === 'margin') {
-      const safeMargin = Math.min(targetPct, 95);
-      basePriceTotal = directCostTotal / (1 - (safeMargin / 100));
-    } else {
-      basePriceTotal = directCostTotal * (1 + (targetPct / 100));
-    }
-
-    const channelPct = parseFloat(document.getElementById('channelPct').value) || 0;
-    const channelFeeTotal = basePriceTotal * (channelPct / 100);
-
-    const subtotalWithChannel = basePriceTotal + channelFeeTotal;
-    const taxMode = document.getElementById('taxMode').value;
-    let taxAmountTotal = 0;
-
-    if (taxMode === 'added') {
-      taxAmountTotal = subtotalWithChannel * 0.16;
-    } else if (taxMode === 'included') {
-      taxAmountTotal = subtotalWithChannel - (subtotalWithChannel / 1.16);
-    }
-
-    const totalPriceFinal = taxMode === 'added' ? subtotalWithChannel + taxAmountTotal : subtotalWithChannel;
-    const netProfitEstim = totalPriceFinal - taxAmountTotal - channelFeeTotal - directCostTotal;
-
-    // Guardado de Estado
-    currentQuote = {
-      date: new Date().toLocaleDateString('es-MX'),
-      clientName,
-      projectName,
-      quantity,
-      materialCostTotal: materialCostUnit * quantity,
-      machineCostTotal: (energyCostUnit + depreciationUnit) * quantity,
-      reverseEngCostTotal,
-      postProcCostTotal: postProcCostUnit * quantity,
-      directCostTotal,
-      channelFeeTotal,
-      taxAmountTotal,
-      totalPriceFinal,
-      netProfitEstim
+    // Preservar Estado Interno
+    calcState = {
+      lineType,
+      lineText,
+      qty,
+      weightPiece,
+      weightPurge,
+      totalGrams,
+      timeHours,
+      C_total,
+      totalPrice,
+      unitPrice,
+      suppliesListStr: suppliesList.join(", ")
     };
 
-    // Render en Pantalla
-    document.getElementById('lblMaterialCost').innerText = `$${currentQuote.materialCostTotal.toFixed(2)}`;
-    document.getElementById('lblMachineCost').innerText = `$${currentQuote.machineCostTotal.toFixed(2)}`;
-    document.getElementById('lblReverseEngCost').innerText = `$${currentQuote.reverseEngCostTotal.toFixed(2)}`;
-    document.getElementById('lblPostProcCost').innerText = `$${currentQuote.postProcCostTotal.toFixed(2)}`;
-    document.getElementById('lblDirectCostTotal').innerText = `$${currentQuote.directCostTotal.toFixed(2)}`;
-    document.getElementById('lblChannelFee').innerText = `$${currentQuote.channelFeeTotal.toFixed(2)}`;
-    document.getElementById('lblTaxAmount').innerText = `$${currentQuote.taxAmountTotal.toFixed(2)}`;
-    document.getElementById('lblTotalPrice').innerText = `$${currentQuote.totalPriceFinal.toFixed(2)} MXN`;
-    document.getElementById('lblNetProfit').innerText = `$${currentQuote.netProfitEstim.toFixed(2)}`;
+    // Actualizar UI
+    document.getElementById('lblMetaWeight').innerText = `${totalGrams} g (${weightPiece}g + ${weightPurge}g purga)`;
+    document.getElementById('lblMetaTime').innerText = `${timeHours} hrs`;
+    document.getElementById('lblMetaCost').innerText = `$${C_total.toFixed(2)} MXN`;
+    document.getElementById('lblMetaQty').innerText = `${qty} pc${qty > 1 ? 's' : ''}`;
+    document.getElementById('lblPriceTotal').innerText = `$${totalPrice.toFixed(2)}`;
+    document.getElementById('lblPriceUnit').innerText = `$${unitPrice.toFixed(2)}`;
   }
 
-  function saveToHistory() {
-    let history = JSON.parse(localStorage.getItem('shammah_history') || '[]');
-    history.unshift({...currentQuote, id: Date.now()});
-    localStorage.setItem('shammah_history', JSON.stringify(history));
-    renderHistory();
-    alert('Cotización guardada en el historial local.');
-  }
+  function sendWhatsApp() {
+    const text = `¡Hola Shammah 3D! 🎨✨ Solicito cotización con parámetros Bambu P2S:\n\n` +
+                 `📌 *Línea:* ${calcState.lineText}\n` +
+                 `📦 *Cantidad:* ${calcState.qty} pieza(s)\n` +
+                 `⚖️ *Material Total:* ${calcState.totalGrams}g (${calcState.weightPiece}g neto + ${calcState.weightPurge}g purga)\n` +
+                 `⏱️ *Tiempo Estimado:* ${calcState.timeHours} hrs\n` +
+                 `🛠️ *Insumos:* ${calcState.suppliesListStr}\n` +
+                 `💰 *Precio Total:* $${calcState.totalPrice.toFixed(2)} MXN\n` +
+                 `🏷️ *Precio Unitario:* $${calcState.unitPrice.toFixed(2)} MXN\n\n` +
+                 `¿Me podrían apoyar para coordinar detalles de producción?`;
 
-  function renderHistory() {
-    let history = JSON.parse(localStorage.getItem('shammah_history') || '[]');
-    const tbody = document.querySelector('#historyTable tbody');
-    tbody.innerHTML = '';
-
-    history.forEach(item => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${item.date}</td>
-        <td>${item.clientName}</td>
-        <td>${item.projectName}</td>
-        <td>${item.quantity}</td>
-        <td>$${item.directCostTotal.toFixed(2)}</td>
-        <td><strong>$${item.totalPriceFinal.toFixed(2)}</strong></td>
-        <td><button style="color:var(--danger); background:none; border:none; cursor:pointer;" onclick="deleteHistory(${item.id})">🗑️</button></td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  function deleteHistory(id) {
-    let history = JSON.parse(localStorage.getItem('shammah_history') || '[]');
-    history = history.filter(h => h.id !== id);
-    localStorage.setItem('shammah_history', JSON.stringify(history));
-    renderHistory();
+    const url = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
   }
 
   function exportPDF() {
-    document.getElementById('pdfDate').innerText = currentQuote.date;
+    document.getElementById('pdfDate').innerText = new Date().toLocaleDateString('es-MX');
     document.getElementById('pdfFolio').innerText = `SHM-${Math.floor(1000 + Math.random() * 9000)}`;
-    document.getElementById('pdfClient').innerText = currentQuote.clientName;
-    document.getElementById('pdfProject').innerText = currentQuote.projectName;
-    document.getElementById('pdfQty').innerText = currentQuote.quantity;
+    document.getElementById('pdfLine').innerText = calcState.lineText;
+    document.getElementById('pdfQty').innerText = calcState.qty;
+    document.getElementById('pdfWeight').innerText = `${calcState.totalGrams} g (${calcState.weightPiece}g pieza + ${calcState.weightPurge}g purga)`;
+    document.getElementById('pdfTime').innerText = `${calcState.timeHours} hrs`;
+    document.getElementById('pdfSupplies').innerText = calcState.suppliesListStr;
+    document.getElementById('pdfUnit').innerText = `$${calcState.unitPrice.toFixed(2)}`;
+    document.getElementById('pdfTotal').innerText = `$${calcState.totalPrice.toFixed(2)} MXN`;
 
-    const base3DTotal = currentQuote.materialCostTotal + currentQuote.machineCostTotal;
-    document.getElementById('pdfCost3D').innerText = `$${base3DTotal.toFixed(2)}`;
-    document.getElementById('pdfCostIng').innerText = `$${currentQuote.reverseEngCostTotal.toFixed(2)}`;
-    document.getElementById('pdfCostPost').innerText = `$${currentQuote.postProcCostTotal.toFixed(2)}`;
-    document.getElementById('pdfSubtotal').innerText = `$${(currentQuote.totalPriceFinal - currentQuote.taxAmountTotal).toFixed(2)}`;
-    document.getElementById('pdfTax').innerText = `$${currentQuote.taxAmountTotal.toFixed(2)}`;
-    document.getElementById('pdfTotal').innerText = `$${currentQuote.totalPriceFinal.toFixed(2)} MXN`;
-
-    const element = document.getElementById('pdf-export-template');
+    const element = document.getElementById('pdf-template');
     element.style.display = 'block';
 
     const opt = {
       margin:       10,
-      filename:     `Cotizacion_Shammah3D_${currentQuote.projectName.replace(/\s+/g, '_')}.pdf`,
+      filename:     `Cotizacion_BambuP2S_${calcState.qty}pcs.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
       html2canvas:  { scale: 2 },
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -882,34 +641,6 @@
 
     html2pdf().set(opt).from(element).save().then(() => {
       element.style.display = 'none';
-    });
-  }
-
-  function saveConfig() {
-    const url = document.getElementById('cloudWebhookUrl').value;
-    localStorage.setItem('shammah_webhook_url', url);
-  }
-
-  function loadConfig() {
-    const url = localStorage.getItem('shammah_webhook_url') || '';
-    document.getElementById('cloudWebhookUrl').value = url;
-  }
-
-  function syncToCloud() {
-    const url = localStorage.getItem('shammah_webhook_url');
-    if (!url) {
-      alert('Primero configure la URL del Webhook en la pestaña de Configuración.');
-      return;
-    }
-
-    fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(currentQuote)
-    }).then(() => {
-      alert('Petición enviada a la nube exitosamente.');
-    }).catch(err => {
-      alert('Error al conectar con el servidor: ' + err.message);
     });
   }
 </script>
