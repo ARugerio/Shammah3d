@@ -1,648 +1,158 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cotizador Bambu P2S - SHAMMAH 3D</title>
-  
-  <!-- Tipografías Oficiales: Lexend & Varela Round -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;700;800&family=Varela+Round&display=swap" rel="stylesheet">
-
-  <!-- Librería cliente para exportar a PDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-  <style>
-    /* ==========================================================================
-       SISTEMA DE DISEÑO OFICIAL SHAMMAH 3D (ISOLATED SCOPE)
-       ========================================================================== */
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #FAF4F5;
-      font-family: 'Varela Round', sans-serif;
-    }
-
-    .shammah-app {
-      --shammah-pink: #E85B7B;
-      --shammah-pink-soft: #F8C8D0;
-      --shammah-pink-bg: #FAF4F5;
-      --shammah-pink-card: #FFF5F7;
-      --shammah-green: #4E6A64;
-      --shammah-text-muted: #738A85;
-      --shammah-white: #FFFFFF;
-      
-      background-color: var(--shammah-pink-bg);
-      color: var(--shammah-green);
-      min-height: 100vh;
-      padding: 30px 15px;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-    }
-
-    .shammah-app * {
-      box-sizing: border-box;
-    }
-
-    /* Insignia Superior */
-    .shammah-app .top-badge {
-      background-color: #FCE8EC;
-      color: var(--shammah-pink);
-      font-family: 'Lexend', sans-serif;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-      padding: 6px 20px;
-      border-radius: 50px;
-      text-transform: uppercase;
-      margin-bottom: 14px;
-      border: 1px solid var(--shammah-pink-soft);
-      display: inline-block;
-    }
-
-    /* Encabezado */
-    .shammah-app .brand-header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    .shammah-app .brand-title {
-      font-family: 'Lexend', sans-serif;
-      font-size: 42px;
-      font-weight: 800;
-      color: var(--shammah-green);
-      margin: 0;
-      letter-spacing: 1.5px;
-      line-height: 1;
-    }
-
-    .shammah-app .brand-subtitle {
-      font-size: 15px;
-      color: var(--shammah-green);
-      font-weight: 600;
-      margin: 8px 0 0 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .shammah-app .brand-subtitle .heart {
-      color: var(--shammah-pink);
-      font-size: 13px;
-    }
-
-    /* Tarjeta Principal */
-    .shammah-app .card-container {
-      background-color: var(--shammah-white);
-      border: 2.5px solid var(--shammah-pink-soft);
-      border-radius: 28px;
-      padding: 32px 28px;
-      max-width: 620px;
-      width: 100%;
-      box-shadow: 0 12px 30px rgba(232, 91, 123, 0.06);
-    }
-
-    /* Título Sección */
-    .shammah-app .card-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: 'Lexend', sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--shammah-green);
-      margin-bottom: 20px;
-      border-bottom: 1px solid #F5E3E7;
-      padding-bottom: 12px;
-    }
-
-    .shammah-app .card-header .icon {
-      color: #E2A03F;
-    }
-
-    /* Formulario */
-    .shammah-app .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    @media (max-width: 540px) {
-      .shammah-app .form-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .shammah-app .field-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .shammah-app .field-group.full-width {
-      grid-column: 1 / -1;
-    }
-
-    .shammah-app label {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--shammah-green);
-    }
-
-    .shammah-app input[type="number"], 
-    .shammah-app select {
-      background-color: #FAF5F6;
-      border: 1.5px solid #F0DADC;
-      color: var(--shammah-green);
-      padding: 12px 14px;
-      border-radius: 12px;
-      font-family: 'Varela Round', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      outline: none;
-      transition: all 0.2s ease;
-      width: 100%;
-    }
-
-    .shammah-app input:focus, 
-    .shammah-app select:focus {
-      border-color: var(--shammah-pink);
-      background-color: var(--shammah-white);
-      box-shadow: 0 0 0 3px rgba(232, 91, 123, 0.15);
-    }
-
-    /* Checkbox Group de Insumos */
-    .shammah-app .supplies-box {
-      background-color: #FAF5F6;
-      border: 1.5px solid #F0DADC;
-      border-radius: 14px;
-      padding: 12px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .shammah-app .checkbox-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .shammah-app .checkbox-item input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--shammah-pink);
-      cursor: pointer;
-    }
-
-    /* Caja de Resumen */
-    .shammah-app .summary-card {
-      background-color: var(--shammah-pink-card);
-      border: 1.5px solid var(--shammah-pink-soft);
-      border-radius: 20px;
-      padding: 20px;
-      margin-top: 22px;
-    }
-
-    .shammah-app .summary-meta {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--shammah-green);
-      border-bottom: 1px dashed var(--shammah-pink-soft);
-      padding-bottom: 12px;
-      margin-bottom: 16px;
-    }
-
-    .shammah-app .summary-prices {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      text-align: center;
-      gap: 12px;
-      position: relative;
-    }
-
-    .shammah-app .summary-prices::after {
-      content: "";
-      position: absolute;
-      top: 5%;
-      bottom: 5%;
-      left: 50%;
-      width: 1px;
-      background-color: var(--shammah-pink-soft);
-    }
-
-    .shammah-app .price-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .shammah-app .price-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--shammah-text-muted);
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-
-    .shammah-app .price-val-total {
-      font-family: 'Lexend', sans-serif;
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--shammah-pink);
-      line-height: 1;
-    }
-
-    .shammah-app .price-val-unit {
-      font-family: 'Lexend', sans-serif;
-      font-size: 26px;
-      font-weight: 800;
-      color: var(--shammah-green);
-      line-height: 1;
-    }
-
-    .shammah-app .currency-tag {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--shammah-text-muted);
-      margin-left: 3px;
-    }
-
-    /* Botón WhatsApp */
-    .shammah-app .btn-whatsapp {
-      background-color: var(--shammah-pink);
-      color: var(--shammah-white);
-      border: none;
-      width: 100%;
-      padding: 16px;
-      border-radius: 16px;
-      font-family: 'Lexend', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      box-shadow: 0 8px 18px rgba(232, 91, 123, 0.28);
-      transition: all 0.2s ease;
-    }
-
-    .shammah-app .btn-whatsapp:hover {
-      background-color: #d64a6a;
-      transform: translateY(-1px);
-    }
-
-    /* Acciones Secundarias */
-    .shammah-app .extra-actions {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .shammah-app .btn-link {
-      background: none;
-      border: none;
-      color: var(--shammah-text-muted);
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: underline;
-      padding: 4px;
-    }
-
-    .shammah-app .btn-link:hover {
-      color: var(--shammah-pink);
-    }
-
-    /* Plantilla Oculta para Imprimir PDF */
-    #pdf-template {
-      display: none;
-      padding: 40px;
-      background-color: #ffffff;
-      color: #000000;
-      font-family: Arial, sans-serif;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotizador Instantáneo | SHAMMAH 3D</title>
+    <!-- Tailwind CSS para diseño responsivo y moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Lexend', sans-serif; }
+    </style>
 </head>
-<body>
+<body class="bg-rose-50/40 min-h-screen flex items-center justify-center p-4">
 
-<div class="shammah-app">
+    <main class="w-full max-w-md bg-white rounded-3xl shadow-xl border border-rose-100 overflow-hidden">
+        
+        <!-- ENCABEZADO MARCA -->
+        <header class="bg-white pt-8 pb-4 text-center px-6">
+            <h1 class="text-3xl font-extrabold text-emerald-900 tracking-wider">SHAMMAH</h1>
+            <p class="text-xs font-medium text-rose-400 mt-1 uppercase tracking-widest">Diseña ♥ Crea ♥ Imprime</p>
+        </header>
 
-  <!-- Insignia y Marca -->
-  <div class="top-badge">Cotizador FDM — Bambu Lab P2S</div>
-  <div class="brand-header">
-    <h1 class="brand-title">SHAMMAH</h1>
-    <p class="brand-subtitle">
-      Diseña <span class="heart">♥</span> Crea <span class="heart">♥</span> Imprime
-    </p>
-  </div>
+        <!-- FORMULARIO DE COTIZACIÓN PÚBLICA -->
+        <form id="cotizadorForm" class="px-6 pb-8 space-y-5">
+            
+            <div class="border-t border-rose-100 pt-4">
+                <h2 class="text-sm font-semibold text-slate-700 flex items-center gap-2 mb-3">
+                    <span class="text-rose-500">⚙️</span> Configuración del Proyecto
+                </h2>
+                
+                <!-- Tipo de Aplicación -->
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Línea de Producto / Proyecto</label>
+                <select id="lineaNegocio" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 focus:ring-2 focus:ring-rose-400 focus:outline-none transition-all">
+                    <option value="2.8">Línea B2C (Llaveros, Minis, Shadowboxes)</option>
+                    <option value="3.2">Línea Utilitaria / Prototipos Mecánicos</option>
+                    <option value="2.5">Lotes de Mayoreo (> 20 pcs)</option>
+                </select>
+            </div>
 
-  <!-- Contenedor Interactivo -->
-  <div class="card-container">
-    <div class="card-header">
-      <span class="icon">⚙️</span> Configuración de Impresión
-    </div>
+            <!-- Cantidad y Peso Global -->
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Cantidad (Piezas)</label>
+                    <input type="number" id="cantidad" value="1" min="1" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:ring-2 focus:ring-rose-400 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Peso Modelo (Gramos)</label>
+                    <input type="number" id="pesoTotal" value="55" min="1" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:ring-2 focus:ring-rose-400 focus:outline-none">
+                </div>
+            </div>
 
-    <div class="form-grid">
-      <!-- Enfoque Comercial -->
-      <div class="field-group full-width">
-        <label for="lineType">Línea de Negocio / Aplicación</label>
-        <select id="lineType" onchange="calculate()">
-          <option value="B2C">Línea B2C (Llaveros, Minis, Figuras, Shadowboxes) — 2.8x</option>
-          <option value="B2B_UNIT">Micro-B2B Unitaria (Standees QR, Placas NFC) — $250-$350 MXN</option>
-          <option value="B2B_LOT">Micro-B2B Lote / Volumen (Lotes de Repuestos o Promocionales) — 3.5x</option>
-        </select>
-      </div>
+            <!-- Insumos / Acabados Adicionales (Checkboxes Limpios) -->
+            <div class="bg-rose-50/50 p-3.5 rounded-2xl border border-rose-100 space-y-2.5">
+                <span class="block text-xs font-semibold text-slate-700">Opciones & Acabados Incluidos:</span>
+                
+                <label class="flex items-center gap-2.5 text-xs text-slate-600 cursor-pointer select-none">
+                    <input type="checkbox" id="addNFC" class="w-4 h-4 rounded text-rose-500 focus:ring-rose-400 border-slate-300">
+                    <span>Chip NFC Inteligente Integrado</span>
+                </label>
+                
+                <label class="flex items-center gap-2.5 text-xs text-slate-600 cursor-pointer select-none">
+                    <input type="checkbox" id="addHerraje" class="w-4 h-4 rounded text-rose-500 focus:ring-rose-400 border-slate-300">
+                    <span>Argolla / Herraje para Llavero</span>
+                </label>
 
-      <!-- Cantidad de Piezas -->
-      <div class="field-group">
-        <label for="qty">Cantidad de Piezas (Q)</label>
-        <input type="number" id="qty" value="1" min="1" oninput="calculate()">
-      </div>
+                <label class="flex items-center gap-2.5 text-xs text-slate-600 cursor-pointer select-none">
+                    <input type="checkbox" id="addEmpaque" class="w-4 h-4 rounded text-rose-500 focus:ring-rose-400 border-slate-300">
+                    <span>Empaque Individual B2C (Listo para regalo)</span>
+                </label>
+            </div>
 
-      <!-- Tiempo Total de Impresión -->
-      <div class="field-group">
-        <label for="timeHours">Tiempo Impresión (Horas)</label>
-        <input type="number" id="timeHours" value="2.0" step="0.1" min="0.1" oninput="calculate()">
-      </div>
+            <!-- RESUMEN DE COTIZACIÓN LIMPIO (SIN COSTO DIRECTO) -->
+            <div class="bg-gradient-to-br from-rose-50 to-white p-4 rounded-2xl border border-rose-200/80 text-center space-y-3">
+                <div class="flex justify-between text-xs text-slate-500 px-2 font-medium">
+                    <span>📦 Cantidad: <strong id="lblCantidad" class="text-slate-800">1 pc</strong></span>
+                    <span>⏱️ Estimado: <strong id="lblTiempo" class="text-slate-800">2 hrs</strong></span>
+                </div>
 
-      <!-- Peso Neto Pieza -->
-      <div class="field-group">
-        <label for="weightPiece">Peso Pieza(s) Neto (Gramos)</label>
-        <input type="number" id="weightPiece" value="45" min="0" oninput="calculate()">
-      </div>
+                <div class="grid grid-cols-2 gap-2 border-t border-rose-100 pt-3">
+                    <div>
+                        <span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Precio Total</span>
+                        <span class="text-xl font-extrabold text-rose-500" id="lblPrecioTotal">$127.40 <xs class="text-xs font-normal">MXN</xs></span>
+                    </div>
+                    <div class="border-l border-rose-100">
+                        <span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Precio Unitario</span>
+                        <span class="text-xl font-extrabold text-emerald-900" id="lblPrecioUnitario">$127.40 <xs class="text-xs font-normal">MXN</xs></span>
+                    </div>
+                </div>
+            </div>
 
-      <!-- Peso Purga/AMS -->
-      <div class="field-group">
-        <label for="weightPurge">Desperdicio / Purga AMS (Gramos)</label>
-        <input type="number" id="weightPurge" value="10" min="0" oninput="calculate()">
-      </div>
+            <!-- LLAMADOS A LA ACCIÓN -->
+            <button type="button" id="btnWhatsapp" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-rose-200 transition-all flex items-center justify-center gap-2 text-sm">
+                <span>💬</span> Solicitar Pedido por WhatsApp
+            </button>
+            
+            <div class="text-center">
+                <button type="button" id="btnPDF" class="text-xs text-slate-400 hover:text-slate-600 underline font-medium transition-all">
+                    📄 Descargar Cotización en PDF
+                </button>
+            </div>
+        </form>
+    </main>
 
-      <!-- Insumos Adicionales -->
-      <div class="field-group full-width">
-        <label>Insumos Adicionales (por unidad)</label>
-        <div class="supplies-box">
-          <label class="checkbox-item">
-            <input type="checkbox" id="chkNFC" onchange="calculate()">
-            <span>Chip NFC NTAG215/216 (+$10.00 MXN / pc)</span>
-          </label>
-          <label class="checkbox-item">
-            <input type="checkbox" id="chkKeychain" onchange="calculate()">
-            <span>Argolla / Herraje Llavero (+$3.00 MXN / pc)</span>
-          </label>
-          <label class="checkbox-item">
-            <input type="checkbox" id="chkPackaging" onchange="calculate()">
-            <span>Empaque & Presentación B2C (+$4.00 MXN / pc)</span>
-          </label>
-        </div>
-      </div>
-    </div>
+    <!-- LÓGICA DE CÁLCULO PRIVADA -->
+    <script>
+        // Parámetros Internos Privados (No expuestos visualmente)
+        const CONFIG_PRIVADA = {
+            costoGramoFilamento: 0.45,   // $450 MXN / kg
+            costoHoraImpresion: 8.50,    // Energía + Depreciación
+            costoNFC: 10.00,
+            costoHerraje: 3.00,
+            costoEmpaque: 4.00,
+            factorMargenPorDefecto: 2.8
+        };
 
-    <!-- Caja de Resumen -->
-    <div class="summary-card">
-      <div class="summary-meta">
-        <span>⚖️ Material Total: <strong id="lblMetaWeight">55 g</strong></span>
-        <span>⏱️ Tiempo Total: <strong id="lblMetaTime">2.0 hrs</strong></span>
-        <span>💵 Costo Directo: <strong id="lblMetaCost">$45.50 MXN</strong></span>
-        <span>📦 Unidades: <strong id="lblMetaQty">1 pc</strong></span>
-      </div>
+        const form = document.getElementById('cotizadorForm');
 
-      <div class="summary-prices">
-        <div class="price-block">
-          <span class="price-label">PRECIO TOTAL</span>
-          <div style="display: flex; align-items: baseline;">
-            <span class="price-val-total" id="lblPriceTotal">$127.40</span>
-            <span class="currency-tag">MXN</span>
-          </div>
-        </div>
+        function calcularCotizacion() {
+            const Q = parseInt(document.getElementById('cantidad').value) || 1;
+            const gramos = parseFloat(document.getElementById('pesoTotal').value) || 0;
+            const multiplicadorLinea = parseFloat(document.getElementById('lineaNegocio').value) || 2.8;
 
-        <div class="price-block">
-          <span class="price-label">PRECIO UNITARIO</span>
-          <div style="display: flex; align-items: baseline;">
-            <span class="price-val-unit" id="lblPriceUnit">$127.40</span>
-            <span class="currency-tag">MXN</span>
-          </div>
-        </div>
-      </div>
-    </div>
+            // Selección de Insumos
+            const incNFC = document.getElementById('addNFC').checked ? CONFIG_PRIVADA.costoNFC : 0;
+            const incHerraje = document.getElementById('addHerraje').checked ? CONFIG_PRIVADA.costoHerraje : 0;
+            const incEmpaque = document.getElementById('addEmpaque').checked ? CONFIG_PRIVADA.costoEmpaque : 0;
 
-    <!-- Botón CTA WhatsApp -->
-    <button class="btn-whatsapp" onclick="sendWhatsApp()">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-      </svg>
-      Solicitar Pedido por WhatsApp
-    </button>
+            // Estimación de tiempo (Interna)
+            const horasEstimadas = Math.max(1, Math.round((gramos / 25) * 10) / 10);
 
-    <!-- Descarga PDF Directa -->
-    <div class="extra-actions">
-      <button class="btn-link" onclick="exportPDF()">📄 Descargar Cotización PDF</button>
-      <span style="font-size:11px; color:#a0b0ad;">Core P2S v2.0</span>
-    </div>
-  </div>
+            // Cálculo Interno de Costo Directo (SE MANTIENE EN JS, NUNCA SE MUESTRA)
+            const costoMaterial = gramos * CONFIG_PRIVADA.costoGramoFilamento;
+            const costoOperativo = horasEstimadas * CONFIG_PRIVADA.costoHoraImpresion;
+            const costoInsumosUnitario = incNFC + incHerraje + incEmpaque;
 
-</div>
+            const costoDirectoUnitario = costoMaterial + costoOperativo + costoInsumosUnitario;
 
-<!-- PLANTILLA DE IMPRESIÓN PDF -->
-<div id="pdf-template">
-  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E85B7B; padding-bottom: 12px; margin-bottom: 20px;">
-    <div>
-      <h1 style="margin: 0; font-size: 26px; color: #4E6A64;">SHAMMAH 3D</h1>
-      <p style="margin: 4px 0 0 0; font-size: 13px; color: #E85B7B; font-weight: bold;">Diseña ♥ Crea ♥ Imprime</p>
-    </div>
-    <div style="text-align: right; font-size: 12px; color: #444;">
-      <p style="margin: 0;"><strong>Fecha:</strong> <span id="pdfDate"></span></p>
-      <p style="margin: 0;"><strong>Folio:</strong> <span id="pdfFolio"></span></p>
-    </div>
-  </div>
+            // Precio Venta Final al Cliente
+            const precioUnitario = Math.ceil(costoDirectoUnitario * multiplicadorLinea);
+            const precioTotal = precioUnitario * Q;
 
-  <h3 style="font-size: 15px; border-bottom: 1px solid #ddd; padding-bottom: 6px; color: #4E6A64;">Especificaciones Técnicas FDM</h3>
-  <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 13px;">
-    <thead>
-      <tr style="background-color: #FAF4F5;">
-        <th style="border: 1px solid #E2D0D4; padding: 8px; text-align: left; color: #4E6A64;">Concepto</th>
-        <th style="border: 1px solid #E2D0D4; padding: 8px; text-align: right; color: #4E6A64;">Detalle</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style="border: 1px solid #eee; padding: 8px;">Línea / Aplicación</td>
-        <td style="border: 1px solid #eee; padding: 8px; text-align: right;" id="pdfLine">-</td>
-      </tr>
-      <tr>
-        <td style="border: 1px solid #eee; padding: 8px;">Cantidad Solicitada</td>
-        <td style="border: 1px solid #eee; padding: 8px; text-align: right;" id="pdfQty">-</td>
-      </tr>
-      <tr>
-        <td style="border: 1px solid #eee; padding: 8px;">Material Neto + Purga AMS</td>
-        <td style="border: 1px solid #eee; padding: 8px; text-align: right;" id="pdfWeight">-</td>
-      </tr>
-      <tr>
-        <td style="border: 1px solid #eee; padding: 8px;">Tiempo de Impresión Estima</td>
-        <td style="border: 1px solid #eee; padding: 8px; text-align: right;" id="pdfTime">-</td>
-      </tr>
-      <tr>
-        <td style="border: 1px solid #eee; padding: 8px;">Insumos Seleccionados</td>
-        <td style="border: 1px solid #eee; padding: 8px; text-align: right;" id="pdfSupplies">-</td>
-      </tr>
-    </tbody>
-  </table>
+            // Renderizado exclusivo de datos aptos para el cliente
+            document.getElementById('lblCantidad').innerText = `${Q} pc${Q > 1 ? 's' : ''}`;
+            document.getElementById('lblTiempo').innerText = `${horasEstimadas} hrs`;
+            document.getElementById('lblPrecioTotal').innerHTML = `$${precioTotal.toFixed(2)} <span class="text-xs font-normal">MXN</span>`;
+            document.getElementById('lblPrecioUnitario').innerHTML = `$${precioUnitario.toFixed(2)} <span class="text-xs font-normal">MXN</span>`;
+        }
 
-  <div style="float: right; width: 50%; font-size: 14px;">
-    <div style="display: flex; justify-content: space-between; padding: 6px 0;">
-      <span>Precio Unitario:</span>
-      <span id="pdfUnit" style="font-weight: bold;">$0.00</span>
-    </div>
-    <div style="display: flex; justify-content: space-between; padding: 10px 0; border-top: 2px solid #E85B7B; font-weight: bold; font-size: 18px; color: #E85B7B;">
-      <span>TOTAL ESTIMADO:</span>
-      <span id="pdfTotal">$0.00 MXN</span>
-    </div>
-  </div>
-  <div style="clear: both;"></div>
+        // Escuchadores de eventos para recálculo dinámico
+        form.addEventListener('input', calcularCotizacion);
+        document.getElementById('lineaNegocio').addEventListener('change', calcularCotizacion);
 
-  <div style="margin-top: 50px; font-size: 11px; color: #777; border-top: 1px solid #eee; padding-top: 12px; text-align: center;">
-    Cotización formal emitida para equipo Bambu Lab P2S • Validez de 15 días naturales.
-  </div>
-</div>
-
-<script>
-  // Teléfono de Atención Oficial
-  const WHATSAPP_PHONE = "5215500000000"; 
-
-  let calcState = {};
-
-  window.addEventListener('DOMContentLoaded', () => {
-    calculate();
-  });
-
-  function calculate() {
-    const lineType = document.getElementById('lineType').value;
-    const lineText = document.getElementById('lineType').options[document.getElementById('lineType').selectedIndex].text;
-    const qty = Math.max(1, parseInt(document.getElementById('qty').value) || 1);
-    const weightPiece = Math.max(0, parseFloat(document.getElementById('weightPiece').value) || 0);
-    const weightPurge = Math.max(0, parseFloat(document.getElementById('weightPurge').value) || 0);
-    const timeHours = Math.max(0, parseFloat(document.getElementById('timeHours').value) || 0);
-
-    const hasNFC = document.getElementById('chkNFC').checked;
-    const hasKeychain = document.getElementById('chkKeychain').checked;
-    const hasPackaging = document.getElementById('chkPackaging').checked;
-
-    // 1. Costo de Material ($0.50 / gramo)
-    const totalGrams = weightPiece + weightPurge;
-    const costMaterial = totalGrams * 0.50;
-
-    // 2. Costo Operativo ($9.00 / hora)
-    const costOperative = timeHours * 9.00;
-
-    // 3. Costo de Insumos Adicionales
-    let unitSuppliesCost = 0;
-    let suppliesList = [];
-    if (hasNFC) { unitSuppliesCost += 10.00; suppliesList.push("Chip NFC"); }
-    if (hasKeychain) { unitSuppliesCost += 3.00; suppliesList.push("Herraje Llavero"); }
-    if (hasPackaging) { unitSuppliesCost += 4.00; suppliesList.push("Empaque B2C"); }
-    if (suppliesList.length === 0) suppliesList.push("Sin insumos extra");
-
-    const totalSuppliesCost = unitSuppliesCost * qty;
-
-    // Costo Directo Total (C_total)
-    const C_total = costMaterial + costOperative + totalSuppliesCost;
-
-    // 4. Algoritmo de Precio por Línea de Negocio
-    let totalPrice = 0;
-
-    if (lineType === 'B2C') {
-      totalPrice = C_total * 2.80; // Margen 180%
-    } else if (lineType === 'B2B_UNIT') {
-      // Tabulador de solución comercial ($250 - $350) o multiplicador 3.5x si supera base
-      const baseSolucion = 280.00 * qty; 
-      totalPrice = Math.max(baseSolucion, C_total * 3.50);
-    } else if (lineType === 'B2B_LOT') {
-      totalPrice = C_total * 3.50; // Multiplicador Lote
-    }
-
-    const unitPrice = totalPrice / qty;
-
-    // Preservar Estado Interno
-    calcState = {
-      lineType,
-      lineText,
-      qty,
-      weightPiece,
-      weightPurge,
-      totalGrams,
-      timeHours,
-      C_total,
-      totalPrice,
-      unitPrice,
-      suppliesListStr: suppliesList.join(", ")
-    };
-
-    // Actualizar UI
-    document.getElementById('lblMetaWeight').innerText = `${totalGrams} g (${weightPiece}g + ${weightPurge}g purga)`;
-    document.getElementById('lblMetaTime').innerText = `${timeHours} hrs`;
-    document.getElementById('lblMetaCost').innerText = `$${C_total.toFixed(2)} MXN`;
-    document.getElementById('lblMetaQty').innerText = `${qty} pc${qty > 1 ? 's' : ''}`;
-    document.getElementById('lblPriceTotal').innerText = `$${totalPrice.toFixed(2)}`;
-    document.getElementById('lblPriceUnit').innerText = `$${unitPrice.toFixed(2)}`;
-  }
-
-  function sendWhatsApp() {
-    const text = `¡Hola Shammah 3D! 🎨✨ Solicito cotización con parámetros Bambu P2S:\n\n` +
-                 `📌 *Línea:* ${calcState.lineText}\n` +
-                 `📦 *Cantidad:* ${calcState.qty} pieza(s)\n` +
-                 `⚖️ *Material Total:* ${calcState.totalGrams}g (${calcState.weightPiece}g neto + ${calcState.weightPurge}g purga)\n` +
-                 `⏱️ *Tiempo Estimado:* ${calcState.timeHours} hrs\n` +
-                 `🛠️ *Insumos:* ${calcState.suppliesListStr}\n` +
-                 `💰 *Precio Total:* $${calcState.totalPrice.toFixed(2)} MXN\n` +
-                 `🏷️ *Precio Unitario:* $${calcState.unitPrice.toFixed(2)} MXN\n\n` +
-                 `¿Me podrían apoyar para coordinar detalles de producción?`;
-
-    const url = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
-  }
-
-  function exportPDF() {
-    document.getElementById('pdfDate').innerText = new Date().toLocaleDateString('es-MX');
-    document.getElementById('pdfFolio').innerText = `SHM-${Math.floor(1000 + Math.random() * 9000)}`;
-    document.getElementById('pdfLine').innerText = calcState.lineText;
-    document.getElementById('pdfQty').innerText = calcState.qty;
-    document.getElementById('pdfWeight').innerText = `${calcState.totalGrams} g (${calcState.weightPiece}g pieza + ${calcState.weightPurge}g purga)`;
-    document.getElementById('pdfTime').innerText = `${calcState.timeHours} hrs`;
-    document.getElementById('pdfSupplies').innerText = calcState.suppliesListStr;
-    document.getElementById('pdfUnit').innerText = `$${calcState.unitPrice.toFixed(2)}`;
-    document.getElementById('pdfTotal').innerText = `$${calcState.totalPrice.toFixed(2)} MXN`;
-
-    const element = document.getElementById('pdf-template');
-    element.style.display = 'block';
-
-    const opt = {
-      margin:       10,
-      filename:     `Cotizacion_BambuP2S_${calcState.qty}pcs.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    html2pdf().set(opt).from(element).save().then(() => {
-      element.style.display = 'none';
-    });
-  }
-</script>
+        // Inicializar al cargar
+        calcularCotizacion();
+    </script>
 </body>
 </html>
