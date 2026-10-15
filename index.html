@@ -3,116 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cotizador Instantáneo | SHAMMAH 3D</title>
+    <title>Cotizador & Dashboard | SHAMMAH CREA 3D</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { 
-            font-family: 'Lexend', sans-serif; 
-            background-color: #FFF7F8;
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: radial-gradient(circle at top left, #1e293b, #0f172a, #020617);
+            color: #f8fafc;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-input {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #f8fafc;
+        }
+        .glass-input:focus {
+            border-color: #ec4899;
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.3);
+            outline: none;
         }
         @media print {
-            body { background: white; }
-            #btnWhatsapp, #btnPDF { display: none; }
+            body { background: white; color: black; }
+            .no-print { display: none !important; }
+            .glass-card { background: white; border: 1px solid #ccc; color: black; }
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6">
+<body class="min-h-screen flex flex-col items-center justify-center p-3 sm:p-6">
 
-    <!-- BADGE SUPERIOR DE MARCA -->
-    <div class="mb-3 px-5 py-1.5 bg-[#FDE2E7] border border-rose-200/80 rounded-full text-[11px] font-extrabold text-[#EC546D] tracking-wider uppercase shadow-sm text-center">
-        MOSTRADOR DIGITAL DE COTIZACIÓN 3D
+    <!-- BARRA EN VIVO DEL TALLER -->
+    <div class="w-full max-w-2xl mb-4 flex flex-wrap items-center justify-between gap-2 px-4 py-2 glass-card rounded-2xl text-xs font-semibold shadow-lg">
+        <div class="flex items-center gap-2">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <span class="text-slate-300">Taller Operativo: <strong class="text-white">Bambu Lab P2S + AMS 2 Pro</strong></span>
+        </div>
+        <div class="flex items-center gap-2 text-slate-400 text-[11px]">
+            <span>⚡ Impresión Multi-Color</span>
+            <span>•</span>
+            <span>✨ Placas PEO/PEY/PEI</span>
+        </div>
     </div>
 
-    <!-- ENCABEZADO PRINCIPAL DE LOGOTIPO -->
-    <header class="text-center mb-5">
-        <h1 class="text-4xl sm:text-5xl font-black text-[#355345] tracking-wide">SHAMMAH <span class="text-3xl sm:text-4xl">3D</span></h1>
-        <p class="text-xs font-bold text-[#EC546D] mt-1 uppercase tracking-widest">Diseña ♥ Crea ♥ Imprime</p>
-    </header>
-
-    <!-- TARJETA CONTENEDORA PRINCIPAL -->
-    <main class="w-full max-w-md bg-[#FDE8ED]/90 backdrop-blur-sm rounded-[2.5rem] shadow-xl shadow-rose-200/50 border border-rose-200/80 p-6 sm:p-8 space-y-5">
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="w-full max-w-2xl glass-card rounded-[2.5rem] p-6 sm:p-8 shadow-2xl space-y-6">
         
-        <!-- FORMULARIO DE COTIZACIÓN -->
+        <!-- ENCABEZADO DE MARCA -->
+        <header class="flex flex-col sm:flex-row items-center justify-between border-b border-slate-700/60 pb-5 gap-4">
+            <div class="text-center sm:text-left">
+                <div class="flex items-center justify-center sm:justify-start gap-2">
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">SHAMMAH <span class="text-pink-500">CREA</span></h1>
+                    <span class="bg-pink-500/10 border border-pink-500/30 text-pink-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">3D Studio</span>
+                </div>
+                <p class="text-xs font-medium text-slate-400 mt-1">Simulador & Mostrador Digital de Cotización</p>
+            </div>
+            <div class="text-center sm:text-right bg-slate-900/60 px-4 py-2 rounded-2xl border border-slate-800">
+                <span class="block text-[10px] uppercase tracking-wider font-bold text-slate-400">Régimen Fiscal</span>
+                <span class="text-xs font-extrabold text-emerald-400">RESICO MX • Factura Disponible</span>
+            </div>
+        </header>
+
+        <!-- SELECCIÓN RÁPIDA DE PRODUCTOS DESTACADOS -->
+        <section class="space-y-2">
+            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Acceso Rápido / Catálogo Taller</label>
+            <div class="grid grid-cols-3 gap-2.5">
+                <button type="button" onclick="seleccionarPresets('b2c', '1h 20m', 35)" class="p-3 glass-card rounded-2xl hover:border-pink-500/50 hover:bg-slate-800/80 transition-all text-left group">
+                    <div class="text-lg mb-1">🎨</div>
+                    <div class="text-xs font-bold text-white group-hover:text-pink-400 transition-colors">Línea B2C</div>
+                    <div class="text-[10px] text-slate-400 truncate">Aretes / Shadowbox</div>
+                </button>
+                <button type="button" onclick="seleccionarPresets('clicker_logo', '59m', 14)" class="p-3 glass-card rounded-2xl hover:border-pink-500/50 hover:bg-slate-800/80 transition-all text-left group">
+                    <div class="text-lg mb-1">🎛️</div>
+                    <div class="text-xs font-bold text-white group-hover:text-pink-400 transition-colors">Clicker Logo</div>
+                    <div class="text-[10px] text-slate-400 truncate">Bicolor Grande</div>
+                </button>
+                <button type="button" onclick="seleccionarPresets('clicker_letra', '25m', 8)" class="p-3 glass-card rounded-2xl hover:border-pink-500/50 hover:bg-slate-800/80 transition-all text-left group">
+                    <div class="text-lg mb-1">🏷️</div>
+                    <div class="text-xs font-bold text-white group-hover:text-pink-400 transition-colors">Mono-Letra</div>
+                    <div class="text-[10px] text-slate-400 truncate">Llavero / Inicial</div>
+                </button>
+            </div>
+        </section>
+
+        <!-- FORMULARIO INTERACTIVO -->
         <form id="cotizadorForm" class="space-y-4" onsubmit="return false;">
             
-            <!-- TÍTULO DE SECCIÓN -->
-            <div class="flex items-center gap-2 border-b border-rose-200/60 pb-2">
-                <span class="text-amber-400 text-lg">⚡</span>
-                <h2 class="text-base font-extrabold text-[#355345]">Cotizador Rápido de Productos</h2>
-            </div>
-            
-            <!-- Selector de Línea de Negocio / Categoría de Producto -->
+            <!-- Selector Principal -->
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1.5">Tipo de Producto / Proyecto</label>
-                <select id="lineaNegocio" class="w-full bg-white/90 border border-rose-200/80 rounded-2xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 focus:ring-2 focus:ring-[#EC546D] focus:outline-none transition-all shadow-sm">
-                    <option value="3.0" selected>Línea B2C (Aretes, Figuras, Shadowboxes, Decoración)</option>
+                <label class="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">Tipo de Proyecto / Insumo</label>
+                <select id="lineaNegocio" class="w-full glass-input rounded-2xl px-4 py-3 text-xs font-semibold focus:ring-2 focus:ring-pink-500 transition-all">
+                    <option value="3.0" selected>🎨 Línea B2C (Aretes, Figuras, Shadowboxes, Decoración)</option>
                     <option value="clicker_logo">🎛️ Clicker Fidget - Logo / Imagen Bicolor (Grande)</option>
                     <option value="clicker_letra">🏷️ Clicker / Llaverito Mono-Letra / Inicial</option>
                 </select>
             </div>
 
-            <!-- Grilla de Entradas: Cantidad, Tiempo y Peso -->
-            <div class="space-y-3">
+            <!-- Grilla de Entradas -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Cantidad de Piezas (Q)</label>
-                    <input type="number" id="cantidad" value="1" min="1" class="w-full bg-white/90 border border-rose-200/80 rounded-2xl px-3.5 py-2 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-[#EC546D] focus:outline-none shadow-sm">
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">Cantidad (Q)</label>
+                    <input type="number" id="cantidad" value="1" min="1" class="w-full glass-input rounded-2xl px-3.5 py-2.5 text-xs font-bold text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">Tiempo (Ej: 1:20 o 59m)</label>
+                    <input type="text" id="tiempoHoras" value="59m" class="w-full glass-input rounded-2xl px-3.5 py-2.5 text-xs font-bold text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">Peso Total (Gramos)</label>
+                    <input type="number" id="pesoTotal" value="14" min="1" class="w-full glass-input rounded-2xl px-3.5 py-2.5 text-xs font-bold text-white">
+                </div>
+            </div>
+
+            <!-- BANNER DINÁMICO DE MAYOREO -->
+            <div id="badgeMayoreo" class="hidden w-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold py-2.5 px-4 rounded-2xl text-center shadow-lg backdrop-blur-sm">
+                🎉 ¡Precio Promocional de Mayoreo Aplicado! (+12 piezas)
+            </div>
+
+            <!-- TARJETA DE RESULTADOS DIGITALES -->
+            <div class="bg-gradient-to-br from-slate-900/90 to-slate-800/90 rounded-3xl p-6 border border-slate-700/80 shadow-inner space-y-4">
+                
+                <!-- Métricas Secundarias -->
+                <div class="grid grid-cols-2 gap-4 border-b border-slate-700/60 pb-4 text-xs">
+                    <div class="flex items-center gap-2">
+                        <span class="p-2 bg-slate-800 rounded-xl">📦</span>
+                        <div>
+                            <span class="block text-[10px] text-slate-400 font-medium">Masa Total Material</span>
+                            <strong id="lblPesoTotal" class="text-white text-sm">14g</strong>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="p-2 bg-slate-800 rounded-xl">⏱️</span>
+                        <div>
+                            <span class="block text-[10px] text-slate-400 font-medium">Tiempo Máquina (P2S)</span>
+                            <strong id="lblTiempoTotal" class="text-white text-sm">59m</strong>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
+                <!-- Cifras Principales -->
+                <div class="grid grid-cols-2 gap-4 items-center">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Tiempo Impresión (Ej: 1.4, 1:20 o 59m)</label>
-                        <input type="text" id="tiempoHoras" value="59m" class="w-full bg-white/90 border border-rose-200/80 rounded-2xl px-3.5 py-2 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-[#EC546D] focus:outline-none shadow-sm">
+                        <span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Precio Unitario</span>
+                        <span class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight" id="lblPrecioUnitario">$99.00 <span class="text-xs font-bold text-slate-400">MXN</span></span>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Peso Total (Gramos)</label>
-                        <input type="number" id="pesoTotal" value="14" min="1" class="w-full bg-white/90 border border-rose-200/80 rounded-2xl px-3.5 py-2 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-[#EC546D] focus:outline-none shadow-sm">
+                    <div class="text-right border-l border-slate-700/60 pl-4">
+                        <span class="block text-[10px] uppercase font-bold text-pink-400 tracking-wider">Inversión Total</span>
+                        <span class="text-2xl sm:text-3xl font-black text-pink-500 tracking-tight" id="lblPrecioTotal">$99.00 <span class="text-xs font-bold text-slate-400">MXN</span></span>
                     </div>
                 </div>
             </div>
 
-            <!-- BADGE DINÁMICO DE MAYOREO -->
-            <div id="badgeMayoreo" class="hidden w-full bg-emerald-100 border border-emerald-300 text-emerald-800 text-[11px] font-extrabold py-2 px-3 rounded-xl text-center shadow-sm">
-                🎉 ¡Precio de Mayoreo Aplicado! (+12 piezas)
-            </div>
-
-            <!-- CAJA DE RESUMEN EJECUTIVO PARA MOSTRADOR -->
-            <div class="bg-white rounded-2xl p-4 border border-rose-200/80 shadow-sm text-center space-y-3 mt-4">
-                <div class="flex justify-between text-xs font-semibold text-slate-500 px-1">
-                    <span>📦 Peso Total: <strong id="lblPesoTotal" class="text-slate-800">14g</strong></span>
-                    <span>⏱️ Tiempo Estimado: <strong id="lblTiempoTotal" class="text-slate-800">59m</strong></span>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2 border-t border-rose-100 pt-3">
-                    <div>
-                        <span class="block text-[10px] uppercase font-extrabold text-slate-400 tracking-wider">Precio Total</span>
-                        <span class="text-2xl font-black text-[#EC546D]" id="lblPrecioTotal">$99.00 <span class="text-xs font-bold">MXN</span></span>
-                    </div>
-                    <div class="border-l border-rose-100">
-                        <span class="block text-[10px] uppercase font-extrabold text-slate-400 tracking-wider">Precio Unitario</span>
-                        <span class="text-2xl font-black text-[#355345]" id="lblPrecioUnitario">$99.00 <span class="text-xs font-bold">MXN</span></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- BOTONES DE ACCIÓN PARA MOSTRADOR Y CLIENTE -->
-            <button type="button" id="btnWhatsapp" class="w-full bg-[#EC546D] hover:bg-[#D9435B] text-white font-extrabold py-3.5 rounded-2xl shadow-lg shadow-rose-300/60 transition-all flex items-center justify-center gap-2 text-sm active:scale-95 mt-2">
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
-                </svg>
-                <span>Enviar Cotización a WhatsApp</span>
-            </button>
-            
-            <div class="text-center pt-1">
-                <button type="button" id="btnPDF" class="text-xs text-slate-400 hover:text-slate-600 underline font-semibold transition-all">
-                    📄 Imprimir / Guardar en PDF
+            <!-- BOTONES DE ACCIÓN -->
+            <div class="space-y-2 pt-2">
+                <button type="button" id="btnWhatsapp" class="w-full bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-extrabold py-4 rounded-2xl shadow-xl shadow-pink-500/25 transition-all flex items-center justify-center gap-2 text-sm active:scale-98 no-print">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
+                    </svg>
+                    <span>Enviar Cotización a WhatsApp</span>
                 </button>
+                
+                <div class="flex justify-between items-center text-xs text-slate-400 px-2 pt-1 no-print">
+                    <button type="button" id="btnPDF" class="hover:text-slate-200 underline transition-all">
+                        📄 Descargar PDF
+                    </button>
+                    <span>Taller SHAMMAH CREA © 2026</span>
+                </div>
             </div>
         </form>
-    </main>
+    </div>
 
-    <!-- SCRIPT DE COTIZACIÓN CON MAYOREO AUTOMÁTICO Y FORMATEO DE MONEDA -->
+    <!-- SCRIPT TÉCNICO Y CONTROL DE PRESETS -->
     <script>
         const CONFIG = {
             costoGramo: 0.50,
@@ -121,7 +189,6 @@
             numWhatsapp: "5215559650025"
         };
 
-        // Formateador oficial de moneda MXN con comas para millares
         const fmtMXN = new Intl.NumberFormat('es-MX', {
             style: 'currency',
             currency: 'MXN',
@@ -156,6 +223,19 @@
             return m > 0 ? `${h}h ${m}m` : `${h}h`;
         }
 
+        function seleccionarPresets(lineaVal, tiempoVal, pesoVal) {
+            const selectEl = document.getElementById('lineaNegocio');
+            for(let i = 0; i < selectEl.options.length; i++) {
+                if(selectEl.options[i].value === lineaVal || (lineaVal === 'b2c' && selectEl.options[i].value === '3.0')) {
+                    selectEl.selectedIndex = i;
+                    break;
+                }
+            }
+            document.getElementById('tiempoHoras').value = tiempoVal;
+            document.getElementById('pesoTotal').value = pesoVal;
+            calcular();
+        }
+
         function calcular() {
             const Q = Math.max(1, parseInt(document.getElementById('cantidad').value) || 1);
             const horasUnitarias = parseTiempo(document.getElementById('tiempoHoras').value);
@@ -165,7 +245,6 @@
 
             const esMayoreo = Q >= 12;
 
-            // Mostrar/ocultar aviso visual de mayoreo
             if(esMayoreo) {
                 badgeMayoreo.classList.remove('hidden');
             } else {
@@ -197,11 +276,10 @@
             const pesoAcumulado = gramosUnitarios * Q;
             const tiempoAcumuladoFormatted = formatTiempoVisual(horasUnitarias * Q);
 
-            // Actualización del DOM con separador de millares
             document.getElementById('lblPesoTotal').innerText = `${fmtInt.format(pesoAcumulado)}g`;
             document.getElementById('lblTiempoTotal').innerText = tiempoAcumuladoFormatted;
-            document.getElementById('lblPrecioUnitario').innerHTML = `${fmtMXN.format(pUnitario)} <span class="text-xs font-bold">MXN</span>`;
-            document.getElementById('lblPrecioTotal').innerHTML = `${fmtMXN.format(pTotal)} <span class="text-xs font-bold">MXN</span>`;
+            document.getElementById('lblPrecioUnitario').innerHTML = `${fmtMXN.format(pUnitario)} <span class="text-xs font-bold text-slate-400">MXN</span>`;
+            document.getElementById('lblPrecioTotal').innerHTML = `${fmtMXN.format(pTotal)} <span class="text-xs font-bold text-slate-400">MXN</span>`;
         }
 
         const formEl = document.getElementById('cotizadorForm');
@@ -218,12 +296,12 @@
             const esMayoreo = parseInt(Q) >= 12 ? "\n🎉 *Beneficio:* Precio de Mayoreo Aplicado (+12 pcs)" : "";
 
             const msg = encodeURIComponent(
-                `*COTIZACIÓN OFICIAL - SHAMMAH 3D*\n\n` +
+                `*COTIZACIÓN OFICIAL - SHAMMAH CREA*\n\n` +
                 `📌 *Producto:* ${nomProyecto}\n` +
                 `📦 *Cantidad:* ${fmtInt.format(Q)} pieza(s)\n` +
                 `💵 *Precio Unitario:* ${pUnit}\n` +
                 `💰 *TOTAL ESTIMADO:* ${pTotal}${esMayoreo}\n\n` +
-                `Hola, confirmo la cotización para proceder con la orden.`
+                `Hola, me interesa proceder con la orden.`
             );
             window.open(`https://wa.me/${CONFIG.numWhatsapp}?text=${msg}`, '_blank');
         });
