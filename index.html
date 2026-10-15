@@ -62,11 +62,13 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Tiempo Impresión (Horas)</label>
-                        <input type="number" id="tiempoHoras" value="2.0" step="0.1" min="0.1" class="w-full bg-white/90 border border-rose-200/80 rounded-2xl px-3.5 py-2 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-[#EC546D] focus:outline-none shadow-sm">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Tiempo Impresión</label>
+                        <span class="block text-[10px] text-slate-500 mb-1 font-medium">Ej: 1.4, 1:20 o 80m</span>
+                        <input type="text" id="tiempoHoras" value="2.0" placeholder="2.0 o 1:20" class="w-full bg-white/90 border border-rose-200/80 rounded-2xl px-3.5 py-2 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-[#EC546D] focus:outline-none shadow-sm">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Peso Total (Gramos)</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Peso Total (Gramos)</label>
+                        <span class="block text-[10px] text-slate-500 mb-1 font-medium">Peso total del lote</span>
                         <input type="number" id="pesoTotal" value="55" min="1" class="w-full bg-white/90 border border-rose-200/80 rounded-2xl px-3.5 py-2 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-[#EC546D] focus:outline-none shadow-sm">
                     </div>
                 </div>
@@ -131,10 +133,46 @@
 
         const form = document.getElementById('cotizadorForm');
 
+        /**
+         * Parsea inteligentemente la entrada de tiempo de impresión.
+         * Soporta:
+         * - Horas decimales: "1.4" -> 1.4 horas
+         * - Formato HH:MM: "1:20" -> 1 + (20/60) = 1.33 horas
+         * - Formato texto: "1h 20m" o "80m" -> 1.33 horas
+         */
+        function parsearTiempoImpresion(valorInput) {
+            if (!valorInput) return 0;
+            let valorStr = valorInput.toString().trim();
+
+            // Formato HH:MM (ej. 1:20 o 0:45)
+            if (valorStr.includes(':')) {
+                let partes = valorStr.split(':');
+                let horas = parseFloat(partes[0]) || 0;
+                let minutos = parseFloat(partes[1]) || 0;
+                return horas + (minutos / 60);
+            }
+
+            // Formato con letras (ej. "1h 20m" o "80m")
+            if (valorStr.toLowerCase().includes('m') || valorStr.toLowerCase().includes('h')) {
+                let horasMatch = valorStr.match(/(\d+)\s*h/i);
+                let minMatch = valorStr.match(/(\d+)\s*m/i);
+                let h = horasMatch ? parseFloat(horasMatch[1]) : 0;
+                let m = minMatch ? parseFloat(minMatch[1]) : 0;
+                return h + (m / 60);
+            }
+
+            // Formato decimal estándar (ej. "1.4" o "2.0")
+            return parseFloat(valorStr) || 0;
+        }
+
         function recalcularCotizacion() {
             // Lectura de entradas
             const Q = parseInt(document.getElementById('cantidad').value) || 1;
-            const horasImpresion = parseFloat(document.getElementById('tiempoHoras').value) || 0;
+            
+            // Lectura e interpretación inteligente del tiempo de impresión
+            const tiempoInputVal = document.getElementById('tiempoHoras').value;
+            const horasImpresion = parsearTiempoImpresion(tiempoInputVal);
+
             const gramosTotales = parseFloat(document.getElementById('pesoTotal').value) || 0;
             const multiplicadorLinea = parseFloat(document.getElementById('lineaNegocio').value) || 3.0;
 
@@ -154,11 +192,23 @@
 
             // Muestra acumulada de peso y tiempo del proyecto
             const pesoLote = gramosTotales * Q;
-            const tiempoLote = (horasImpresion * Q).toFixed(1);
+            const tiempoLoteTotalHoras = horasImpresion * Q;
+            
+            // Formatear el tiempo acumulado para mostrarlo claro al usuario
+            const hrsEnteras = Math.floor(tiempoLoteTotalHoras);
+            const minsRestantes = Math.round((tiempoLoteTotalHoras - hrsEnteras) * 60);
+            let textoTiempoEtiqueta = "";
+            if (hrsEnteras > 0 && minsRestantes > 0) {
+                textoTiempoEtiqueta = `${hrsEnteras}h ${minsRestantes}m`;
+            } else if (hrsEnteras > 0) {
+                textoTiempoEtiqueta = `${hrsEnteras}.0 hrs`;
+            } else {
+                textoTiempoEtiqueta = `${minsRestantes} mins`;
+            }
 
             // Actualización de la interfaz
             document.getElementById('lblPesoTotal').innerText = `${pesoLote}g`;
-            document.getElementById('lblTiempoTotal').innerText = `${tiempoLote} hrs`;
+            document.getElementById('lblTiempoTotal').innerText = textoTiempoEtiqueta;
             document.getElementById('lblPrecioTotal').innerHTML = `$${precioTotal.toFixed(2)} <span class="text-xs font-bold">MXN</span>`;
             document.getElementById('lblPrecioUnitario').innerHTML = `$${precioUnitario.toFixed(2)} <span class="text-xs font-bold">MXN</span>`;
         }
