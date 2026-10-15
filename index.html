@@ -51,9 +51,6 @@
                     <option value="clicker_logo">🎛️ Clicker Fidget - Logo / Imagen Bicolor (Grande)</option>
                     <option value="clicker_letra">🏷️ Clicker / Llaverito Mono-Letra / Inicial</option>
                     <option value="2.5">📦 Lotes de Mayoreo (> 20 pcs)</option>
-                    <!-- RESERVADO PARA DESARROLLO FUTURO:
-                    <option value="3.5">⚙️ Línea Utilitaria / Prototipos Mecánicos</option>
-                    -->
                 </select>
             </div>
 
@@ -75,18 +72,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- ADICIONALES (EN RESERVA HASTA REALIZAR PRUEBAS FÍSICAS):
-            <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1.5">Insumo Extra / Ensamble</label>
-                <div class="bg-white/90 p-3 rounded-2xl border border-rose-200/80 shadow-sm">
-                    <label class="flex items-center gap-2.5 text-xs font-semibold text-slate-700 cursor-pointer select-none">
-                        <input type="checkbox" id="addNFC" class="w-4 h-4 rounded text-[#EC546D] focus:ring-[#EC546D] border-slate-300">
-                        <span>Chip NFC NTAG215/216 Integrado (Configuración y programación)</span>
-                    </label>
-                </div>
-            </div>
-            -->
 
             <!-- CAJA DE RESUMEN EJECUTIVO PARA MOSTRADOR -->
             <div class="bg-white rounded-2xl p-4 border border-rose-200/80 shadow-sm text-center space-y-3 mt-4">
@@ -123,101 +108,109 @@
         </form>
     </main>
 
-    <!-- LÓGICA OFUSCADA Y PROTEGIDA PARA ATENCIÓN A CLIENTES EN VIVO -->
+    <!-- SCRIPT DE COTIZACIÓN REACTIVO EN TIEMPO REAL -->
     <script>
-        (function(_0x5b321c,_0x2f9411){const _0x3b827e=function(_0x1a8f3b){while(--_0x1a8f3b){_0x5b321c['push'](_0x5b321c['shift']());}};_0x3b827e(++_0x2f9411);}(_0x3309,0x17c));const _0x3309=['getElementById','value','checked','options','selectedIndex','text','trim','includes','split','match','toLowerCase','toFixed','innerHTML','open','addEventListener','recalcularCotizacion','5215559650025'];(function(_0x4e6b52,_0x3ad2c9){const _0x13c2ef=function(_0x2287da){while(--_0x2287da){_0x4e6b52['push'](_0x4e6b52['shift']());}};_0x13c2ef(++_0x3ad2c9);}(_0x3309,0x8b));
-        
-        const K_SECURE={_m:0.50,_h:9.00,_clickerHard:2.63};
-        const WHATSAPP_NUM="5215559650025";
-        const form=document.getElementById('cotizadorForm');
+        // Parámetros internos protegidos
+        const CONFIG = {
+            costoGramo: 0.50,
+            costoHora: 9.00,
+            herrajeClicker: 2.63,
+            numWhatsapp: "5215559650025"
+        };
 
-        function parsearTiempoImpresion(_0x48942b){
-            let _0x22a611=_0x48942b.toString()['trim']();
-            if(_0x22a611['includes'](':')){
-                let _0x53e412=_0x22a611['split'](':');
-                return(parseFloat(_0x53e412[0])||0)+((parseFloat(_0x53e412[1])||0)/60);
+        // Parser universal de tiempo de impresión
+        function parseTiempo(val) {
+            let str = (val || '').toString().trim().toLowerCase();
+            if(!str) return 0;
+            if(str.includes(':')) {
+                let p = str.split(':');
+                return (parseFloat(p[0]) || 0) + ((parseFloat(p[1]) || 0) / 60);
             }
-            if(_0x22a611['toLowerCase']()['includes']('m')||_0x22a611['toLowerCase']()['includes']('h')){
-                let _0x1c8b32=_0x22a611['match'](/(\d+)\s*h/i);
-                let _0x3e1291=_0x22a611['match'](/(\d+)\s*m/i);
-                let _0x4312ea=_0x1c8b32?parseFloat(_0x1c8b32[1]):0;
-                let _0x2e19bb=_0x3e1291?parseFloat(_0x3e1291[1]):0;
-                return _0x4312ea+(_0x2e19bb/60);
+            if(str.includes('h') || str.includes('m')) {
+                let hMatch = str.match(/(\d+)\s*h/);
+                let mMatch = str.match(/(\d+)\s*m/);
+                let h = hMatch ? parseFloat(hMatch[1]) : 0;
+                let m = mMatch ? parseFloat(mMatch[1]) : 0;
+                return h + (m / 60);
             }
-            return parseFloat(_0x22a611)||0;
+            return parseFloat(str) || 0;
         }
 
-        function formatearTiempoLectura(horasDecimales){
-            let minTotales = Math.round(horasDecimales * 60);
-            if(minTotales < 60) return `${minTotales}m`;
-            let h = Math.floor(minTotales / 60);
-            let m = minTotales % 60;
+        // Formateador visual para el tiempo total
+        function formatTiempoVisual(horasDec) {
+            let totalMin = Math.round(horasDec * 60);
+            if(totalMin < 60) return `${totalMin}m`;
+            let h = Math.floor(totalMin / 60);
+            let m = totalMin % 60;
             return m > 0 ? `${h}h ${m}m` : `${h}h`;
         }
 
-        function recalcularCotizacion(){
-            const Q = parseInt(document.getElementById('cantidad')['value'])||1;
-            const horasImpresion = parsearTiempoImpresion(document.getElementById('tiempoHoras')['value']);
-            const gramosTotales = parseFloat(document.getElementById('pesoTotal')['value'])||0;
-            const tipoSelect = document.getElementById('lineaNegocio')['value'];
+        // Función principal de cálculo
+        function calcular() {
+            const Q = Math.max(1, parseInt(document.getElementById('cantidad').value) || 1);
+            const horasUnitarias = parseTiempo(document.getElementById('tiempoHoras').value);
+            const gramosUnitarios = Math.max(0, parseFloat(document.getElementById('pesoTotal').value) || 0);
+            const tipo = document.getElementById('lineaNegocio').value;
 
-            let precioUnitario = 0;
-            let costoMaterial = gramosTotales * K_SECURE._m;
-            let costoTiempo = horasImpresion * K_SECURE._h;
+            let costoMat = gramosUnitarios * CONFIG.costoGramo;
+            let costoEne = horasUnitarias * CONFIG.costoHora;
+            let pUnitario = 0;
 
-            if(tipoSelect === 'clicker_logo'){
-                // Lógica de Clicker de Marca/Logo Bicolor (Insumo Herraje + Base)
-                let costoDirecto = costoMaterial + costoTiempo + K_SECURE._clickerHard;
-                precioUnitario = Math.max(99, Math.ceil(costoDirecto * 3.2));
-            } else if(tipoSelect === 'clicker_letra'){
-                // Lógica de Clicker/Llaverito Mono-Letra o Inicial
-                let costoDirecto = costoMaterial + costoTiempo + K_SECURE._clickerHard;
-                precioUnitario = Math.max(45, Math.ceil(costoDirecto * 3.0));
+            if(tipo === 'clicker_logo') {
+                let cDirecto = costoMat + costoEne + CONFIG.herrajeClicker;
+                pUnitario = Math.max(99, Math.ceil(cDirecto * 3.2));
+            } else if(tipo === 'clicker_letra') {
+                let cDirecto = costoMat + costoEne + CONFIG.herrajeClicker;
+                pUnitario = Math.max(45, Math.ceil(cDirecto * 3.0));
             } else {
-                // Multiplicador Estándar B2C o Mayoreo
-                let mult = parseFloat(tipoSelect) || 3.0;
-                let costoDirecto = costoMaterial + costoTiempo;
-                precioUnitario = Math.ceil(costoDirecto * mult);
+                let mult = parseFloat(tipo) || 3.0;
+                let cDirecto = costoMat + costoEne;
+                pUnitario = Math.ceil(cDirecto * mult);
             }
 
-            const precioTotal = precioUnitario * Q;
-            const pesoLote = gramosTotales * Q;
-            const tiempoLoteFormatted = formatearTiempoLectura(horasImpresion * Q);
+            const pTotal = pUnitario * Q;
+            const pesoAcumulado = gramosUnitarios * Q;
+            const tiempoAcumuladoFormatted = formatTiempoVisual(horasUnitarias * Q);
 
-            document.getElementById('lblPesoTotal')['innerText'] = `${pesoLote}g`;
-            document.getElementById('lblTiempoTotal')['innerText'] = tiempoLoteFormatted;
-            document.getElementById('lblPrecioTotal')['innerHTML'] = `$${precioTotal.toFixed(2)} <span class="text-xs font-bold">MXN</span>`;
-            document.getElementById('lblPrecioUnitario')['innerHTML'] = `$${precioUnitario.toFixed(2)} <span class="text-xs font-bold">MXN</span>`;
+            // Actualización directa del DOM
+            document.getElementById('lblPesoTotal').innerText = `${pesoAcumulado}g`;
+            document.getElementById('lblTiempoTotal').innerText = tiempoAcumuladoFormatted;
+            document.getElementById('lblPrecioUnitario').innerHTML = `$${pUnitario.toFixed(2)} <span class="text-xs font-bold">MXN</span>`;
+            document.getElementById('lblPrecioTotal').innerHTML = `$${pTotal.toFixed(2)} <span class="text-xs font-bold">MXN</span>`;
         }
 
-        document.getElementById('btnWhatsapp')['addEventListener']('click',()=>{
-            const Q = document.getElementById('cantidad')['value'];
-            const lineaSelect = document.getElementById('lineaNegocio');
-            const nombreLinea = lineaSelect['options'][lineaSelect['selectedIndex']]['text']['trim']();
-            const precioTotal = document.getElementById('lblPrecioTotal')['innerText'];
-            const precioUnitario = document.getElementById('lblPrecioUnitario')['innerText'];
+        // Escuchadores de eventos en tiempo real
+        const formEl = document.getElementById('cotizadorForm');
+        ['input', 'change', 'keyup'].forEach(evt => {
+            formEl.addEventListener(evt, calcular);
+        });
 
-            const mensaje = encodeURIComponent(
+        // Enviar a WhatsApp
+        document.getElementById('btnWhatsapp').addEventListener('click', () => {
+            const Q = document.getElementById('cantidad').value;
+            const sel = document.getElementById('lineaNegocio');
+            const nomProyecto = sel.options[sel.selectedIndex].text.trim();
+            const pTotal = document.getElementById('lblPrecioTotal').innerText;
+            const pUnit = document.getElementById('lblPrecioUnitario').innerText;
+
+            const msg = encodeURIComponent(
                 `*COTIZACIÓN OFICIAL - SHAMMAH 3D*\n\n` +
-                `📌 *Producto:* ${nombreLinea}\n` +
+                `📌 *Producto:* ${nomProyecto}\n` +
                 `📦 *Cantidad:* ${Q} pieza(s)\n` +
-                `💵 *Precio Unitario:* ${precioUnitario}\n` +
-                `💰 *TOTAL ESTIMADO:* ${precioTotal}\n\n` +
+                `💵 *Precio Unitario:* ${pUnit}\n` +
+                `💰 *TOTAL ESTIMADO:* ${pTotal}\n\n` +
                 `Hola, confirmo la cotización para proceder con la orden.`
             );
-
-            window['open'](`https://wa.me/${WHATSAPP_NUM}?text=${mensaje}`,'_blank');
+            window.open(`https://wa.me/${CONFIG.numWhatsapp}?text=${msg}`, '_blank');
         });
 
-        document.getElementById('btnPDF')['addEventListener']('click',()=>{
-            window['print']();
+        // Imprimir / PDF
+        document.getElementById('btnPDF').addEventListener('click', () => {
+            window.print();
         });
 
-        form['addEventListener']('input',recalcularCotizacion);
-        document.getElementById('lineaNegocio')['addEventListener']('change',recalcularCotizacion);
-
-        // Ejecución inicial
-        recalcularCotizacion();
+        // Ejecutar primer cálculo al cargar
+        calcular();
     </script>
 </body>
 </html>
