@@ -28,6 +28,10 @@
             box-shadow: 0 0 15px rgba(236, 72, 153, 0.3);
             outline: none;
         }
+        .plate-btn.active {
+            border-color: #ec4899;
+            background: rgba(236, 72, 153, 0.15);
+        }
         @media print {
             body { background: white; color: black; }
             .no-print { display: none !important; }
@@ -38,7 +42,7 @@
 <body class="min-h-screen flex flex-col items-center justify-center p-3 sm:p-6">
 
     <!-- BARRA EN VIVO DEL TALLER -->
-    <div class="w-full max-w-2xl mb-4 flex flex-wrap items-center justify-between gap-2 px-4 py-2 glass-card rounded-2xl text-xs font-semibold shadow-lg">
+    <div class="w-full max-w-2xl mb-4 flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 glass-card rounded-2xl text-xs font-semibold shadow-lg">
         <div class="flex items-center gap-2">
             <span class="relative flex h-2.5 w-2.5">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -49,7 +53,7 @@
         <div class="flex items-center gap-2 text-slate-400 text-[11px]">
             <span>⚡ Impresión Multi-Color</span>
             <span>•</span>
-            <span>✨ Placas PEO/PEY/PEI</span>
+            <span>✨ Placas Especiales Bambu</span>
         </div>
     </div>
 
@@ -71,24 +75,39 @@
             </div>
         </header>
 
-        <!-- SELECCIÓN RÁPIDA DE PRODUCTOS DESTACADOS -->
+        <!-- SELECCIÓN RÁPIDA DE PRODUCTOS (PUNTO 2) -->
         <section class="space-y-2">
             <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Acceso Rápido / Catálogo Taller</label>
             <div class="grid grid-cols-3 gap-2.5">
-                <button type="button" onclick="seleccionarPresets('b2c', '1h 20m', 35)" class="p-3 glass-card rounded-2xl hover:border-pink-500/50 hover:bg-slate-800/80 transition-all text-left group">
-                    <div class="text-lg mb-1">🎨</div>
-                    <div class="text-xs font-bold text-white group-hover:text-pink-400 transition-colors">Línea B2C</div>
-                    <div class="text-[10px] text-slate-400 truncate">Aretes / Shadowbox</div>
+                <button type="button" onclick="seleccionarPresets('b2c', '1h 20m', 35)" class="p-3 glass-card rounded-2xl hover:border-pink-500/50 hover:bg-slate-800/80 transition-all text-left group flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xl">🎨</span>
+                        <span class="text-[9px] font-extrabold bg-pink-500/20 text-pink-300 px-1.5 py-0.5 rounded-md">B2C</span>
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-white group-hover:text-pink-400 transition-colors">Línea Decorativa</div>
+                        <div class="text-[10px] text-slate-400 truncate">Aretes / Shadowbox</div>
+                    </div>
                 </button>
-                <button type="button" onclick="seleccionarPresets('clicker_logo', '59m', 14)" class="p-3 glass-card rounded-2xl hover:border-pink-500/50 hover:bg-slate-800/80 transition-all text-left group">
-                    <div class="text-lg mb-1">🎛️</div>
-                    <div class="text-xs font-bold text-white group-hover:text-pink-400 transition-colors">Clicker Logo</div>
-                    <div class="text-[10px] text-slate-400 truncate">Bicolor Grande</div>
+                <button type="button" onclick="seleccionarPresets('clicker_logo', '59m', 14)" class="p-3 glass-card rounded-2xl hover:border-pink-500/50 hover:bg-slate-800/80 transition-all text-left group flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xl">🎛️</span>
+                        <span class="text-[9px] font-extrabold bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded-md">PROTO</span>
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-white group-hover:text-pink-400 transition-colors">Clicker Logo</div>
+                        <div class="text-[10px] text-slate-400 truncate">Bicolor Grande</div>
+                    </div>
                 </button>
-                <button type="button" onclick="seleccionarPresets('clicker_letra', '25m', 8)" class="p-3 glass-card rounded-2xl hover:border-pink-500/50 hover:bg-slate-800/80 transition-all text-left group">
-                    <div class="text-lg mb-1">🏷️</div>
-                    <div class="text-xs font-bold text-white group-hover:text-pink-400 transition-colors">Mono-Letra</div>
-                    <div class="text-[10px] text-slate-400 truncate">Llavero / Inicial</div>
+                <button type="button" onclick="seleccionarPresets('clicker_letra', '25m', 8)" class="p-3 glass-card rounded-2xl hover:border-pink-500/50 hover:bg-slate-800/80 transition-all text-left group flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xl">🏷️</span>
+                        <span class="text-[9px] font-extrabold bg-sky-500/20 text-sky-300 px-1.5 py-0.5 rounded-md">EXPRESS</span>
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-white group-hover:text-pink-400 transition-colors">Mono-Letra</div>
+                        <div class="text-[10px] text-slate-400 truncate">Llavero / Inicial</div>
+                    </div>
                 </button>
             </div>
         </section>
@@ -104,6 +123,28 @@
                     <option value="clicker_logo">🎛️ Clicker Fidget - Logo / Imagen Bicolor (Grande)</option>
                     <option value="clicker_letra">🏷️ Clicker / Llaverito Mono-Letra / Inicial</option>
                 </select>
+            </div>
+
+            <!-- GALERÍA DE ACABADOS DE PLACA (PUNTO 1) -->
+            <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Acabado de Base (Placa P2S)</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button type="button" onclick="seleccionarPlaca('PEI Texturizado Mate', this)" class="plate-btn active p-2.5 glass-card rounded-xl border border-slate-700 text-center transition-all">
+                        <span class="block text-base">🪨</span>
+                        <span class="block text-[11px] font-bold text-white mt-1">PEI Texturizado</span>
+                        <span class="block text-[9px] text-slate-400">Mate Rugoso</span>
+                    </button>
+                    <button type="button" onclick="seleccionarPlaca('PEO Diamante', this)" class="plate-btn p-2.5 glass-card rounded-xl border border-slate-700 text-center transition-all">
+                        <span class="block text-base">💎</span>
+                        <span class="block text-[11px] font-bold text-white mt-1">PEO Diamante</span>
+                        <span class="block text-[9px] text-slate-400">Patrón Brillante</span>
+                    </button>
+                    <button type="button" onclick="seleccionarPlaca('PEY Holo-Efecto', this)" class="plate-btn p-2.5 glass-card rounded-xl border border-slate-700 text-center transition-all">
+                        <span class="block text-base">🌈</span>
+                        <span class="block text-[11px] font-bold text-white mt-1">PEY Holo</span>
+                        <span class="block text-[9px] text-slate-400">Reflejo Arcoíris</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Grilla de Entradas -->
@@ -148,8 +189,8 @@
                     </div>
                 </div>
 
-                <!-- Cifras Principales -->
-                <div class="grid grid-cols-2 gap-4 items-center">
+                <!-- Cifras Principales con Conteo Progresivo (Punto 4) -->
+                <div class="grid grid-cols-2 gap-4 items-center pt-1">
                     <div>
                         <span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Precio Unitario</span>
                         <span class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight" id="lblPrecioUnitario">$99.00 <span class="text-xs font-bold text-slate-400">MXN</span></span>
@@ -161,13 +202,18 @@
                 </div>
             </div>
 
-            <!-- BOTONES DE ACCIÓN -->
-            <div class="space-y-2 pt-2">
+            <!-- BOTONES DE ACCIÓN PRINCIPALES -->
+            <div class="space-y-2.5 pt-2">
                 <button type="button" id="btnWhatsapp" class="w-full bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-extrabold py-4 rounded-2xl shadow-xl shadow-pink-500/25 transition-all flex items-center justify-center gap-2 text-sm active:scale-98 no-print">
                     <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
                         <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
                     </svg>
                     <span>Enviar Cotización a WhatsApp</span>
+                </button>
+
+                <!-- BOTÓN DE COPIADO AL PORTAPAPELES (PUNTO 5) -->
+                <button type="button" id="btnCopiar" class="w-full bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-200 font-extrabold py-3 rounded-2xl transition-all flex items-center justify-center gap-2 text-xs active:scale-98 no-print">
+                    <span>📋 Copiar Resumen de Cotización</span>
                 </button>
                 
                 <div class="flex justify-between items-center text-xs text-slate-400 px-2 pt-1 no-print">
@@ -180,7 +226,12 @@
         </form>
     </div>
 
-    <!-- SCRIPT TÉCNICO Y CONTROL DE PRESETS -->
+    <!-- NOTIFICACIÓN TOAST REUTILIZABLE -->
+    <div id="toast" class="fixed bottom-5 bg-emerald-500 text-slate-950 font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none z-50">
+        ¡Cotización copiada al portapapeles! 📋
+    </div>
+
+    <!-- SCRIPT TÉCNICO Y ANIMACIONES -->
     <script>
         const CONFIG = {
             costoGramo: 0.50,
@@ -197,6 +248,10 @@
         });
 
         const fmtInt = new Intl.NumberFormat('es-MX');
+
+        let currentPriceUnit = 0;
+        let currentPriceTotal = 0;
+        let placaSeleccionada = 'PEI Texturizado Mate';
 
         function parseTiempo(val) {
             let str = (val || '').toString().trim().toLowerCase();
@@ -221,6 +276,31 @@
             let h = Math.floor(totalMin / 60);
             let m = totalMin % 60;
             return m > 0 ? `${h}h ${m}m` : `${h}h`;
+        }
+
+        // CONTROL DE SELECCIÓN DE PLACA (PUNTO 1)
+        function seleccionarPlaca(nombrePlaca, btnEl) {
+            placaSeleccionada = nombrePlaca;
+            document.querySelectorAll('.plate-btn').forEach(btn => btn.classList.remove('active'));
+            btnEl.classList.add('active');
+        }
+
+        // ANIMACIÓN DE CONTEO PROGRESIVO (PUNTO 4)
+        function animarNumero(idElemento, valorInicial, valorFinal) {
+            const el = document.getElementById(idElemento);
+            const duration = 250;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const currentVal = valorInicial + (valorFinal - valorInicial) * progress;
+                el.innerHTML = `${fmtMXN.format(currentVal)} <span class="text-xs font-bold text-slate-400">MXN</span>`;
+                if(progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            requestAnimationFrame(update);
         }
 
         function seleccionarPresets(lineaVal, tiempoVal, pesoVal) {
@@ -274,12 +354,44 @@
 
             const pTotal = pUnitario * Q;
             const pesoAcumulado = gramosUnitarios * Q;
-            const tiempoAcumuladoFormatted = formatTiempoVisual(horasUnitarias * Q);
+            const horasAcumuladas = horasUnitarias * Q;
 
             document.getElementById('lblPesoTotal').innerText = `${fmtInt.format(pesoAcumulado)}g`;
-            document.getElementById('lblTiempoTotal').innerText = tiempoAcumuladoFormatted;
-            document.getElementById('lblPrecioUnitario').innerHTML = `${fmtMXN.format(pUnitario)} <span class="text-xs font-bold text-slate-400">MXN</span>`;
-            document.getElementById('lblPrecioTotal').innerHTML = `${fmtMXN.format(pTotal)} <span class="text-xs font-bold text-slate-400">MXN</span>`;
+            document.getElementById('lblTiempoTotal').innerText = formatTiempoVisual(horasAcumuladas);
+
+            // Disparar animación en números
+            animarNumero('lblPrecioUnitario', currentPriceUnit, pUnitario);
+            animarNumero('lblPrecioTotal', currentPriceTotal, pTotal);
+
+            currentPriceUnit = pUnitario;
+            currentPriceTotal = pTotal;
+        }
+
+        function generarTextoCotizacion() {
+            const Q = document.getElementById('cantidad').value;
+            const sel = document.getElementById('lineaNegocio');
+            const nomProyecto = sel.options[sel.selectedIndex].text.trim();
+            const pTotal = fmtMXN.format(currentPriceTotal);
+            const pUnit = fmtMXN.format(currentPriceUnit);
+            const esMayoreo = parseInt(Q) >= 12 ? "\n🎉 *Beneficio:* Precio de Mayoreo Aplicado (+12 pcs)" : "";
+
+            return `*COTIZACIÓN OFICIAL - SHAMMAH CREA*\n\n` +
+                   `📌 *Producto:* ${nomProyecto}\n` +
+                   `✨ *Acabado Base:* ${placaSeleccionada}\n` +
+                   `📦 *Cantidad:* ${fmtInt.format(Q)} pieza(s)\n` +
+                   `💵 *Precio Unitario:* ${pUnit} MXN\n` +
+                   `💰 *TOTAL ESTIMADO:* ${pTotal} MXN${esMayoreo}\n\n` +
+                   `Hola, me interesa proceder con la orden.`;
+        }
+
+        function mostrarToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
         }
 
         const formEl = document.getElementById('cotizadorForm');
@@ -288,22 +400,15 @@
         });
 
         document.getElementById('btnWhatsapp').addEventListener('click', () => {
-            const Q = document.getElementById('cantidad').value;
-            const sel = document.getElementById('lineaNegocio');
-            const nomProyecto = sel.options[sel.selectedIndex].text.trim();
-            const pTotal = document.getElementById('lblPrecioTotal').innerText;
-            const pUnit = document.getElementById('lblPrecioUnitario').innerText;
-            const esMayoreo = parseInt(Q) >= 12 ? "\n🎉 *Beneficio:* Precio de Mayoreo Aplicado (+12 pcs)" : "";
-
-            const msg = encodeURIComponent(
-                `*COTIZACIÓN OFICIAL - SHAMMAH CREA*\n\n` +
-                `📌 *Producto:* ${nomProyecto}\n` +
-                `📦 *Cantidad:* ${fmtInt.format(Q)} pieza(s)\n` +
-                `💵 *Precio Unitario:* ${pUnit}\n` +
-                `💰 *TOTAL ESTIMADO:* ${pTotal}${esMayoreo}\n\n` +
-                `Hola, me interesa proceder con la orden.`
-            );
+            const msg = encodeURIComponent(generarTextoCotizacion());
             window.open(`https://wa.me/${CONFIG.numWhatsapp}?text=${msg}`, '_blank');
+        });
+
+        // FUNCIONALIDAD DE COPIADO AL PORTAPAPELES (PUNTO 5)
+        document.getElementById('btnCopiar').addEventListener('click', () => {
+            navigator.clipboard.writeText(generarTextoCotizacion()).then(() => {
+                mostrarToast();
+            });
         });
 
         document.getElementById('btnPDF').addEventListener('click', () => {
