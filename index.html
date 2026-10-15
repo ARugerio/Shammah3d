@@ -50,7 +50,6 @@
                     <option value="3.0" selected>Línea B2C (Aretes, Figuras, Shadowboxes, Decoración)</option>
                     <option value="clicker_logo">🎛️ Clicker Fidget - Logo / Imagen Bicolor (Grande)</option>
                     <option value="clicker_letra">🏷️ Clicker / Llaverito Mono-Letra / Inicial</option>
-                    <option value="2.5">📦 Lotes de Mayoreo (> 20 pcs)</option>
                 </select>
             </div>
 
@@ -71,6 +70,11 @@
                         <input type="number" id="pesoTotal" value="14" min="1" class="w-full bg-white/90 border border-rose-200/80 rounded-2xl px-3.5 py-2 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-[#EC546D] focus:outline-none shadow-sm">
                     </div>
                 </div>
+            </div>
+
+            <!-- BADGE DINÁMICO DE MAYOREO -->
+            <div id="badgeMayoreo" class="hidden w-full bg-emerald-100 border border-emerald-300 text-emerald-800 text-[11px] font-extrabold py-2 px-3 rounded-xl text-center shadow-sm">
+                🎉 ¡Precio de Mayoreo Aplicado! (+12 piezas)
             </div>
 
             <!-- CAJA DE RESUMEN EJECUTIVO PARA MOSTRADOR -->
@@ -108,9 +112,8 @@
         </form>
     </main>
 
-    <!-- SCRIPT DE COTIZACIÓN REACTIVO EN TIEMPO REAL -->
+    <!-- SCRIPT DE COTIZACIÓN CON MAYOREO AUTOMÁTICO Y FORMATEO DE MONEDA -->
     <script>
-        // Parámetros internos protegidos
         const CONFIG = {
             costoGramo: 0.50,
             costoHora: 9.00,
@@ -118,7 +121,16 @@
             numWhatsapp: "5215559650025"
         };
 
-        // Parser universal de tiempo de impresión
+        // Formateador oficial de moneda MXN con comas para millares
+        const fmtMXN = new Intl.NumberFormat('es-MX', {
+            style: 'currency',
+            currency: 'MXN',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        const fmtInt = new Intl.NumberFormat('es-MX');
+
         function parseTiempo(val) {
             let str = (val || '').toString().trim().toLowerCase();
             if(!str) return 0;
@@ -136,7 +148,6 @@
             return parseFloat(str) || 0;
         }
 
-        // Formateador visual para el tiempo total
         function formatTiempoVisual(horasDec) {
             let totalMin = Math.round(horasDec * 60);
             if(totalMin < 60) return `${totalMin}m`;
@@ -145,12 +156,21 @@
             return m > 0 ? `${h}h ${m}m` : `${h}h`;
         }
 
-        // Función principal de cálculo
         function calcular() {
             const Q = Math.max(1, parseInt(document.getElementById('cantidad').value) || 1);
             const horasUnitarias = parseTiempo(document.getElementById('tiempoHoras').value);
             const gramosUnitarios = Math.max(0, parseFloat(document.getElementById('pesoTotal').value) || 0);
             const tipo = document.getElementById('lineaNegocio').value;
+            const badgeMayoreo = document.getElementById('badgeMayoreo');
+
+            const esMayoreo = Q >= 12;
+
+            // Mostrar/ocultar aviso visual de mayoreo
+            if(esMayoreo) {
+                badgeMayoreo.classList.remove('hidden');
+            } else {
+                badgeMayoreo.classList.add('hidden');
+            }
 
             let costoMat = gramosUnitarios * CONFIG.costoGramo;
             let costoEne = horasUnitarias * CONFIG.costoHora;
@@ -158,12 +178,17 @@
 
             if(tipo === 'clicker_logo') {
                 let cDirecto = costoMat + costoEne + CONFIG.herrajeClicker;
-                pUnitario = Math.max(99, Math.ceil(cDirecto * 3.2));
+                let mult = esMayoreo ? 2.6 : 3.2;
+                let piso = esMayoreo ? 75 : 99;
+                pUnitario = Math.max(piso, Math.ceil(cDirecto * mult));
             } else if(tipo === 'clicker_letra') {
                 let cDirecto = costoMat + costoEne + CONFIG.herrajeClicker;
-                pUnitario = Math.max(45, Math.ceil(cDirecto * 3.0));
+                let mult = esMayoreo ? 2.4 : 3.0;
+                let piso = esMayoreo ? 35 : 45;
+                pUnitario = Math.max(piso, Math.ceil(cDirecto * mult));
             } else {
-                let mult = parseFloat(tipo) || 3.0;
+                let multBase = parseFloat(tipo) || 3.0;
+                let mult = esMayoreo ? 2.5 : multBase;
                 let cDirecto = costoMat + costoEne;
                 pUnitario = Math.ceil(cDirecto * mult);
             }
@@ -172,44 +197,41 @@
             const pesoAcumulado = gramosUnitarios * Q;
             const tiempoAcumuladoFormatted = formatTiempoVisual(horasUnitarias * Q);
 
-            // Actualización directa del DOM
-            document.getElementById('lblPesoTotal').innerText = `${pesoAcumulado}g`;
+            // Actualización del DOM con separador de millares
+            document.getElementById('lblPesoTotal').innerText = `${fmtInt.format(pesoAcumulado)}g`;
             document.getElementById('lblTiempoTotal').innerText = tiempoAcumuladoFormatted;
-            document.getElementById('lblPrecioUnitario').innerHTML = `$${pUnitario.toFixed(2)} <span class="text-xs font-bold">MXN</span>`;
-            document.getElementById('lblPrecioTotal').innerHTML = `$${pTotal.toFixed(2)} <span class="text-xs font-bold">MXN</span>`;
+            document.getElementById('lblPrecioUnitario').innerHTML = `${fmtMXN.format(pUnitario)} <span class="text-xs font-bold">MXN</span>`;
+            document.getElementById('lblPrecioTotal').innerHTML = `${fmtMXN.format(pTotal)} <span class="text-xs font-bold">MXN</span>`;
         }
 
-        // Escuchadores de eventos en tiempo real
         const formEl = document.getElementById('cotizadorForm');
         ['input', 'change', 'keyup'].forEach(evt => {
             formEl.addEventListener(evt, calcular);
         });
 
-        // Enviar a WhatsApp
         document.getElementById('btnWhatsapp').addEventListener('click', () => {
             const Q = document.getElementById('cantidad').value;
             const sel = document.getElementById('lineaNegocio');
             const nomProyecto = sel.options[sel.selectedIndex].text.trim();
             const pTotal = document.getElementById('lblPrecioTotal').innerText;
             const pUnit = document.getElementById('lblPrecioUnitario').innerText;
+            const esMayoreo = parseInt(Q) >= 12 ? "\n🎉 *Beneficio:* Precio de Mayoreo Aplicado (+12 pcs)" : "";
 
             const msg = encodeURIComponent(
                 `*COTIZACIÓN OFICIAL - SHAMMAH 3D*\n\n` +
                 `📌 *Producto:* ${nomProyecto}\n` +
-                `📦 *Cantidad:* ${Q} pieza(s)\n` +
+                `📦 *Cantidad:* ${fmtInt.format(Q)} pieza(s)\n` +
                 `💵 *Precio Unitario:* ${pUnit}\n` +
-                `💰 *TOTAL ESTIMADO:* ${pTotal}\n\n` +
+                `💰 *TOTAL ESTIMADO:* ${pTotal}${esMayoreo}\n\n` +
                 `Hola, confirmo la cotización para proceder con la orden.`
             );
             window.open(`https://wa.me/${CONFIG.numWhatsapp}?text=${msg}`, '_blank');
         });
 
-        // Imprimir / PDF
         document.getElementById('btnPDF').addEventListener('click', () => {
             window.print();
         });
 
-        // Ejecutar primer cálculo al cargar
         calcular();
     </script>
 </body>
