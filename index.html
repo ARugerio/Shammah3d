@@ -32,6 +32,18 @@
             border-color: #ec4899;
             background: rgba(236, 72, 153, 0.15);
         }
+        /* Estilos de Tooltip Informativo */
+        .tooltip-box {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            transform: translateY(4px);
+        }
+        .has-tooltip:hover .tooltip-box, .has-tooltip:focus .tooltip-box {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
         @media print {
             body { background: white; color: black; }
             .no-print { display: none !important; }
@@ -75,38 +87,23 @@
             </div>
         </header>
 
-        <!-- SELECCIÓN RÁPIDA DE PRODUCTOS (PUNTO 2) -->
+        <!-- ACCESO RÁPIDO SIMPLIFICADO -->
         <section class="space-y-2">
             <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Acceso Rápido / Catálogo Taller</label>
-            <div class="grid grid-cols-3 gap-2.5">
-                <button type="button" onclick="seleccionarPresets('b2c', '1h 20m', 35)" class="p-3 glass-card rounded-2xl hover:border-pink-500/50 hover:bg-slate-800/80 transition-all text-left group flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xl">🎨</span>
-                        <span class="text-[9px] font-extrabold bg-pink-500/20 text-pink-300 px-1.5 py-0.5 rounded-md">B2C</span>
-                    </div>
+            <div class="grid grid-cols-2 gap-3">
+                <button type="button" onclick="seleccionarPresets('b2c', '1h 20m', 35)" class="p-3.5 glass-card rounded-2xl hover:border-pink-500/50 hover:bg-slate-800/80 transition-all text-left group flex items-center gap-3">
+                    <span class="text-2xl p-2 bg-pink-500/10 rounded-xl">🎨</span>
                     <div>
-                        <div class="text-xs font-bold text-white group-hover:text-pink-400 transition-colors">Línea Decorativa</div>
-                        <div class="text-[10px] text-slate-400 truncate">Aretes / Shadowbox</div>
+                        <div class="text-xs font-bold text-white group-hover:text-pink-400 transition-colors">Línea Decorativa / B2C</div>
+                        <div class="text-[10px] text-slate-400">Aretes, Figures, Shadowboxes</div>
                     </div>
                 </button>
-                <button type="button" onclick="seleccionarPresets('clicker_logo', '59m', 14)" class="p-3 glass-card rounded-2xl hover:border-pink-500/50 hover:bg-slate-800/80 transition-all text-left group flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xl">🎛️</span>
-                        <span class="text-[9px] font-extrabold bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded-md">PROTO</span>
-                    </div>
+
+                <button type="button" onclick="seleccionarPresets('clicker', '59m', 14)" class="p-3.5 glass-card rounded-2xl hover:border-pink-500/50 hover:bg-slate-800/80 transition-all text-left group flex items-center gap-3">
+                    <span class="text-2xl p-2 bg-emerald-500/10 rounded-xl">🎛️</span>
                     <div>
-                        <div class="text-xs font-bold text-white group-hover:text-pink-400 transition-colors">Clicker Logo</div>
-                        <div class="text-[10px] text-slate-400 truncate">Bicolor Grande</div>
-                    </div>
-                </button>
-                <button type="button" onclick="seleccionarPresets('clicker_letra', '25m', 8)" class="p-3 glass-card rounded-2xl hover:border-pink-500/50 hover:bg-slate-800/80 transition-all text-left group flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xl">🏷️</span>
-                        <span class="text-[9px] font-extrabold bg-sky-500/20 text-sky-300 px-1.5 py-0.5 rounded-md">EXPRESS</span>
-                    </div>
-                    <div>
-                        <div class="text-xs font-bold text-white group-hover:text-pink-400 transition-colors">Mono-Letra</div>
-                        <div class="text-[10px] text-slate-400 truncate">Llavero / Inicial</div>
+                        <div class="text-xs font-bold text-white group-hover:text-pink-400 transition-colors">Clickers / Fidgets</div>
+                        <div class="text-[10px] text-slate-400">Logos, Iniciales, Pulsadores</div>
                     </div>
                 </button>
             </div>
@@ -120,30 +117,56 @@
                 <label class="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">Tipo de Proyecto / Insumo</label>
                 <select id="lineaNegocio" class="w-full glass-input rounded-2xl px-4 py-3 text-xs font-semibold focus:ring-2 focus:ring-pink-500 transition-all">
                     <option value="3.0" selected>🎨 Línea B2C (Aretes, Figuras, Shadowboxes, Decoración)</option>
-                    <option value="clicker_logo">🎛️ Clicker Fidget - Logo / Imagen Bicolor (Grande)</option>
-                    <option value="clicker_letra">🏷️ Clicker / Llaverito Mono-Letra / Inicial</option>
+                    <option value="clicker">🎛️ Clicker / Fidget Mecánico (Switch Integrado + Tapa Personalizada)</option>
                 </select>
             </div>
 
-            <!-- GALERÍA DE ACABADOS DE PLACA (PUNTO 1) -->
+            <!-- GALERÍA DE ACABADOS DE PLACA CON TOOLTIPS INFORMATIVOS -->
             <div class="space-y-1.5">
-                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Acabado de Base (Placa P2S)</label>
+                <div class="flex justify-between items-center">
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Acabado de Base (Placa Bambu Lab)</label>
+                    <span class="text-[10px] text-slate-400">💡 Pasa el mouse para ver detalles</span>
+                </div>
+                
                 <div class="grid grid-cols-3 gap-2">
-                    <button type="button" onclick="seleccionarPlaca('PEI Texturizado Mate', this)" class="plate-btn active p-2.5 glass-card rounded-xl border border-slate-700 text-center transition-all">
-                        <span class="block text-base">🪨</span>
-                        <span class="block text-[11px] font-bold text-white mt-1">PEI Texturizado</span>
-                        <span class="block text-[9px] text-slate-400">Mate Rugoso</span>
-                    </button>
-                    <button type="button" onclick="seleccionarPlaca('PEO Diamante', this)" class="plate-btn p-2.5 glass-card rounded-xl border border-slate-700 text-center transition-all">
-                        <span class="block text-base">💎</span>
-                        <span class="block text-[11px] font-bold text-white mt-1">PEO Diamante</span>
-                        <span class="block text-[9px] text-slate-400">Patrón Brillante</span>
-                    </button>
-                    <button type="button" onclick="seleccionarPlaca('PEY Holo-Efecto', this)" class="plate-btn p-2.5 glass-card rounded-xl border border-slate-700 text-center transition-all">
-                        <span class="block text-base">🌈</span>
-                        <span class="block text-[11px] font-bold text-white mt-1">PEY Holo</span>
-                        <span class="block text-[9px] text-slate-400">Reflejo Arcoíris</span>
-                    </button>
+                    <!-- PEI Texturizado Bambu Lab -->
+                    <div class="relative has-tooltip">
+                        <button type="button" onclick="seleccionarPlaca('PEI Texturizado Oficial Bambu Lab', this)" class="plate-btn active w-full p-2.5 glass-card rounded-xl border border-slate-700 text-center transition-all">
+                            <span class="block text-base">🪨</span>
+                            <span class="block text-[11px] font-bold text-white mt-1">PEI Bambu Lab</span>
+                            <span class="block text-[9px] text-slate-400">Textura Mate Rugosa</span>
+                        </button>
+                        <div class="tooltip-box absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-[10px] text-slate-300 text-center shadow-xl z-20 pointer-events-none">
+                            <strong class="text-white block mb-0.5">Placa PEI Oficial Bambu:</strong>
+                            Acabado profesional mate de grano fino. Disimula las líneas de capa y da máxima adherencia.
+                        </div>
+                    </div>
+
+                    <!-- PEO Diamante -->
+                    <div class="relative has-tooltip">
+                        <button type="button" onclick="seleccionarPlaca('PEO Diamante', this)" class="plate-btn w-full p-2.5 glass-card rounded-xl border border-slate-700 text-center transition-all">
+                            <span class="block text-base">💎</span>
+                            <span class="block text-[11px] font-bold text-white mt-1">PEO Diamante</span>
+                            <span class="block text-[9px] text-slate-400">Patrón Prismático</span>
+                        </button>
+                        <div class="tooltip-box absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-[10px] text-slate-300 text-center shadow-xl z-20 pointer-events-none">
+                            <strong class="text-white block mb-0.5">Efecto PEO Diamante:</strong>
+                            Transfiere un patrón geométrico brillante a la base que destella con la luz.
+                        </div>
+                    </div>
+
+                    <!-- PEY Holo -->
+                    <div class="relative has-tooltip">
+                        <button type="button" onclick="seleccionarPlaca('PEY Holo-Efecto', this)" class="plate-btn w-full p-2.5 glass-card rounded-xl border border-slate-700 text-center transition-all">
+                            <span class="block text-base">🌈</span>
+                            <span class="block text-[11px] font-bold text-white mt-1">PEY Holo</span>
+                            <span class="block text-[9px] text-slate-400">Reflejo Arcoíris</span>
+                        </button>
+                        <div class="tooltip-box absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-[10px] text-slate-300 text-center shadow-xl z-20 pointer-events-none">
+                            <strong class="text-white block mb-0.5">Efecto Holográfico PEY:</strong>
+                            Refleja colores arcoíris dinámicos al girar la pieza bajo luz directa.
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -189,7 +212,7 @@
                     </div>
                 </div>
 
-                <!-- Cifras Principales con Conteo Progresivo (Punto 4) -->
+                <!-- Cifras Principales con Conteo Progresivo -->
                 <div class="grid grid-cols-2 gap-4 items-center pt-1">
                     <div>
                         <span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Precio Unitario</span>
@@ -211,7 +234,6 @@
                     <span>Enviar Cotización a WhatsApp</span>
                 </button>
 
-                <!-- BOTÓN DE COPIADO AL PORTAPAPELES (PUNTO 5) -->
                 <button type="button" id="btnCopiar" class="w-full bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-200 font-extrabold py-3 rounded-2xl transition-all flex items-center justify-center gap-2 text-xs active:scale-98 no-print">
                     <span>📋 Copiar Resumen de Cotización</span>
                 </button>
@@ -231,7 +253,7 @@
         ¡Cotización copiada al portapapeles! 📋
     </div>
 
-    <!-- SCRIPT TÉCNICO Y ANIMACIONES -->
+    <!-- SCRIPT TÉCNICO Y CONTROL DE SELECCIONES -->
     <script>
         const CONFIG = {
             costoGramo: 0.50,
@@ -251,7 +273,7 @@
 
         let currentPriceUnit = 0;
         let currentPriceTotal = 0;
-        let placaSeleccionada = 'PEI Texturizado Mate';
+        let placaSeleccionada = 'PEI Texturizado Oficial Bambu Lab';
 
         function parseTiempo(val) {
             let str = (val || '').toString().trim().toLowerCase();
@@ -278,14 +300,12 @@
             return m > 0 ? `${h}h ${m}m` : `${h}h`;
         }
 
-        // CONTROL DE SELECCIÓN DE PLACA (PUNTO 1)
         function seleccionarPlaca(nombrePlaca, btnEl) {
             placaSeleccionada = nombrePlaca;
             document.querySelectorAll('.plate-btn').forEach(btn => btn.classList.remove('active'));
             btnEl.classList.add('active');
         }
 
-        // ANIMACIÓN DE CONTEO PROGRESIVO (PUNTO 4)
         function animarNumero(idElemento, valorInicial, valorFinal) {
             const el = document.getElementById(idElemento);
             const duration = 250;
@@ -335,15 +355,11 @@
             let costoEne = horasUnitarias * CONFIG.costoHora;
             let pUnitario = 0;
 
-            if(tipo === 'clicker_logo') {
+            if(tipo === 'clicker') {
                 let cDirecto = costoMat + costoEne + CONFIG.herrajeClicker;
                 let mult = esMayoreo ? 2.6 : 3.2;
-                let piso = esMayoreo ? 75 : 99;
-                pUnitario = Math.max(piso, Math.ceil(cDirecto * mult));
-            } else if(tipo === 'clicker_letra') {
-                let cDirecto = costoMat + costoEne + CONFIG.herrajeClicker;
-                let mult = esMayoreo ? 2.4 : 3.0;
-                let piso = esMayoreo ? 35 : 45;
+                // Si la pieza lleva más de 45 min o más de 12g de filamento, se considera de marca/logo amplio
+                let piso = (horasUnitarias > 0.75 || gramosUnitarios > 12) ? (esMayoreo ? 75 : 99) : (esMayoreo ? 35 : 45);
                 pUnitario = Math.max(piso, Math.ceil(cDirecto * mult));
             } else {
                 let multBase = parseFloat(tipo) || 3.0;
@@ -359,7 +375,6 @@
             document.getElementById('lblPesoTotal').innerText = `${fmtInt.format(pesoAcumulado)}g`;
             document.getElementById('lblTiempoTotal').innerText = formatTiempoVisual(horasAcumuladas);
 
-            // Disparar animación en números
             animarNumero('lblPrecioUnitario', currentPriceUnit, pUnitario);
             animarNumero('lblPrecioTotal', currentPriceTotal, pTotal);
 
@@ -404,7 +419,6 @@
             window.open(`https://wa.me/${CONFIG.numWhatsapp}?text=${msg}`, '_blank');
         });
 
-        // FUNCIONALIDAD DE COPIADO AL PORTAPAPELES (PUNTO 5)
         document.getElementById('btnCopiar').addEventListener('click', () => {
             navigator.clipboard.writeText(generarTextoCotizacion()).then(() => {
                 mostrarToast();
