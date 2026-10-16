@@ -14,23 +14,23 @@
             color: #f8fafc;
         }
         .glass-card {
-            background: rgba(30, 41, 59, 0.7);
+            background: rgba(30, 41, 59, 0.75);
             backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.12);
         }
         .glass-input {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: #f8fafc;
         }
         .glass-input:focus {
             border-color: #ec4899;
-            box-shadow: 0 0 15px rgba(236, 72, 153, 0.3);
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.35);
             outline: none;
         }
         .plate-btn.active {
             border-color: #ec4899;
-            background: rgba(236, 72, 153, 0.15);
+            background: rgba(236, 72, 153, 0.18);
         }
         .tooltip-box {
             visibility: hidden;
@@ -50,21 +50,21 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-3 sm:p-6 lg:p-8">
+<body class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
 
     <!-- BARRA SUPERIOR EN VIVO DEL TALLER -->
-    <div class="w-full max-w-6xl mb-4 flex flex-wrap items-center justify-between gap-2 px-5 py-3 glass-card rounded-2xl text-xs font-semibold shadow-lg">
-        <div class="flex items-center gap-2">
-            <span class="relative flex h-2.5 w-2.5">
+    <div class="w-full max-w-6xl mb-5 flex flex-wrap items-center justify-between gap-3 px-6 py-3.5 glass-card rounded-2xl text-sm font-semibold shadow-lg">
+        <div class="flex items-center gap-2.5">
+            <span class="relative flex h-3 w-3">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
             </span>
-            <span class="text-slate-300">Taller Operativo: <strong class="text-white">Bambu Lab P2S + AMS 2 Pro</strong></span>
+            <span class="text-slate-200">Taller Operativo: <strong class="text-white">Bambu Lab P2S + AMS 2 Pro</strong></span>
         </div>
-        <div class="flex items-center gap-3 text-slate-400 text-[11px]">
+        <div class="flex items-center gap-3 text-slate-300 text-xs sm:text-sm">
             <span>⚡ Impresión Multi-Color</span>
             <span>•</span>
-            <span>✨ Placas Especiales Bambu (PEI/PEO/PEY)</span>
+            <span>✨ Placas Especiales (PEI/PEO/PEY)</span>
             <span>•</span>
             <span class="text-emerald-400 font-bold">RESICO MX • Factura Disponible</span>
         </div>
@@ -74,14 +74,14 @@
     <main class="w-full max-w-6xl glass-card rounded-[2.5rem] p-6 sm:p-8 lg:p-10 shadow-2xl">
         
         <!-- ENCABEZADO DE MARCA -->
-        <header class="border-b border-slate-700/60 pb-6 mb-6">
+        <header class="border-b border-slate-700/70 pb-6 mb-6">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="text-center sm:text-left">
                     <div class="flex items-center justify-center sm:justify-start gap-3">
                         <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">SHAMMAH <span class="text-pink-500">CREA</span></h1>
-                        <span class="bg-pink-500/10 border border-pink-500/30 text-pink-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">3D Studio</span>
+                        <span class="bg-pink-500/15 border border-pink-500/30 text-pink-400 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">3D Studio</span>
                     </div>
-                    <p class="text-xs sm:text-sm font-medium text-slate-400 mt-1">Simulador & Mostrador Digital de Cotización de Manufactura Aditiva</p>
+                    <p class="text-sm sm:text-base font-medium text-slate-300 mt-1.5">Simulador & Mostrador Digital de Cotización de Manufactura Aditiva</p>
                 </div>
             </div>
         </header>
@@ -93,22 +93,22 @@
             <div class="lg:col-span-7 space-y-6">
                 
                 <!-- ACCESO RÁPIDO / CATÁLOGO -->
-                <section class="space-y-2">
-                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Acceso Rápido / Catálogo Taller</label>
-                    <div class="grid grid-cols-2 gap-3">
-                        <button type="button" onclick="seleccionarPresets('b2c', '1h 20m', 35)" class="p-4 glass-card rounded-2xl hover:border-pink-500/50 hover:bg-slate-800/80 transition-all text-left group flex items-center gap-3">
-                            <span class="text-2xl p-2 bg-pink-500/10 rounded-xl">🎨</span>
+                <section class="space-y-2.5">
+                    <label class="block text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider">Acceso Rápido / Catálogo Taller</label>
+                    <div class="grid grid-cols-2 gap-3.5">
+                        <button type="button" onclick="seleccionarPresets('b2c', '1h 20m', 35)" class="p-4 glass-card rounded-2xl hover:border-pink-500/60 hover:bg-slate-800 transition-all text-left group flex items-center gap-3.5">
+                            <span class="text-3xl p-2.5 bg-pink-500/15 rounded-2xl">🎨</span>
                             <div>
-                                <div class="text-xs font-bold text-white group-hover:text-pink-400 transition-colors">Línea Decorativa / B2C</div>
-                                <div class="text-[10px] text-slate-400">Aretes, Figuras, Shadowboxes</div>
+                                <div class="text-sm font-extrabold text-white group-hover:text-pink-400 transition-colors">Línea Decorativa / B2C</div>
+                                <div class="text-xs text-slate-300 mt-0.5">Aretes, Figuras, Shadowboxes</div>
                             </div>
                         </button>
 
-                        <button type="button" onclick="seleccionarPresets('clicker', '59m', 14)" class="p-4 glass-card rounded-2xl hover:border-pink-500/50 hover:bg-slate-800/80 transition-all text-left group flex items-center gap-3">
-                            <span class="text-2xl p-2 bg-emerald-500/10 rounded-xl">🎛️</span>
+                        <button type="button" onclick="seleccionarPresets('clicker', '59m', 14)" class="p-4 glass-card rounded-2xl hover:border-pink-500/60 hover:bg-slate-800 transition-all text-left group flex items-center gap-3.5">
+                            <span class="text-3xl p-2.5 bg-emerald-500/15 rounded-2xl">🎛️</span>
                             <div>
-                                <div class="text-xs font-bold text-white group-hover:text-pink-400 transition-colors">Clickers / Fidgets</div>
-                                <div class="text-[10px] text-slate-400">Logos, Iniciales, Pulsadores</div>
+                                <div class="text-sm font-extrabold text-white group-hover:text-pink-400 transition-colors">Clickers / Fidgets</div>
+                                <div class="text-xs text-slate-300 mt-0.5">Logos, Iniciales, Pulsadores</div>
                             </div>
                         </button>
                     </div>
@@ -116,56 +116,56 @@
 
                 <!-- Selector Principal de Categoría -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">Tipo de Proyecto / Insumo</label>
-                    <select id="lineaNegocio" class="w-full glass-input rounded-2xl px-4 py-3 text-xs font-semibold focus:ring-2 focus:ring-pink-500 transition-all">
+                    <label class="block text-xs sm:text-sm font-bold text-slate-200 mb-2 uppercase tracking-wider">Tipo de Proyecto / Insumo</label>
+                    <select id="lineaNegocio" class="w-full glass-input rounded-2xl px-4.5 py-3.5 text-sm sm:text-base font-bold text-slate-100 focus:ring-2 focus:ring-pink-500 transition-all">
                         <option value="3.0" selected>🎨 Línea B2C (Aretes, Figuras, Shadowboxes, Decoración)</option>
                         <option value="clicker">🎛️ Clicker / Fidget Mecánico (Switch Integrado + Tapa Personalizada)</option>
                     </select>
                 </div>
 
                 <!-- GALERÍA DE ACABADOS DE PLACA CON TOOLTIPS INFORMATIVOS -->
-                <div class="space-y-2">
+                <div class="space-y-2.5">
                     <div class="flex justify-between items-center">
-                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Acabado de Base (Placa Bambu Lab)</label>
-                        <span class="text-[10px] text-slate-400">💡 Pasa el mouse para ver detalles</span>
+                        <label class="block text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider">Acabado de Base (Placa Bambu Lab)</label>
+                        <span class="text-xs text-slate-300 font-medium">💡 Pasa el cursor para ver detalles</span>
                     </div>
                     
                     <div class="grid grid-cols-3 gap-3">
                         <!-- PEI Texturizado Bambu Lab -->
                         <div class="relative has-tooltip">
-                            <button type="button" onclick="seleccionarPlaca('PEI Texturizado Oficial Bambu Lab', this)" class="plate-btn active w-full p-3 glass-card rounded-2xl border border-slate-700 text-center transition-all">
-                                <span class="block text-lg">🪨</span>
-                                <span class="block text-xs font-bold text-white mt-1">PEI Bambu Lab</span>
-                                <span class="block text-[10px] text-slate-400">Textura Mate Rugosa</span>
+                            <button type="button" onclick="seleccionarPlaca('PEI Texturizado Oficial Bambu Lab', this)" class="plate-btn active w-full p-3.5 glass-card rounded-2xl border border-slate-700 text-center transition-all">
+                                <span class="block text-xl">🪨</span>
+                                <span class="block text-xs sm:text-sm font-extrabold text-white mt-1.5">PEI Bambu Lab</span>
+                                <span class="block text-xs text-slate-300 mt-0.5">Mate Rugoso</span>
                             </button>
-                            <div class="tooltip-box absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-52 p-3 bg-slate-900 border border-slate-700 rounded-xl text-[10px] text-slate-300 text-center shadow-xl z-20 pointer-events-none">
-                                <strong class="text-white block mb-0.5">Placa PEI Oficial Bambu:</strong>
-                                Acabado profesional mate de grano fino. Disimula las líneas de capa y da máxima adherencia.
+                            <div class="tooltip-box absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-56 p-3 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 text-center shadow-2xl z-20 pointer-events-none">
+                                <strong class="text-white block mb-1">Placa PEI Oficial Bambu:</strong>
+                                Acabado profesional mate de grano fino. Disimula líneas de capa y da máxima adherencia.
                             </div>
                         </div>
 
                         <!-- PEO Diamante -->
                         <div class="relative has-tooltip">
-                            <button type="button" onclick="seleccionarPlaca('PEO Diamante', this)" class="plate-btn w-full p-3 glass-card rounded-2xl border border-slate-700 text-center transition-all">
-                                <span class="block text-lg">💎</span>
-                                <span class="block text-xs font-bold text-white mt-1">PEO Diamante</span>
-                                <span class="block text-[10px] text-slate-400">Patrón Prismático</span>
+                            <button type="button" onclick="seleccionarPlaca('PEO Diamante', this)" class="plate-btn w-full p-3.5 glass-card rounded-2xl border border-slate-700 text-center transition-all">
+                                <span class="block text-xl">💎</span>
+                                <span class="block text-xs sm:text-sm font-extrabold text-white mt-1.5">PEO Diamante</span>
+                                <span class="block text-xs text-slate-300 mt-0.5">Patrón Prismático</span>
                             </button>
-                            <div class="tooltip-box absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-52 p-3 bg-slate-900 border border-slate-700 rounded-xl text-[10px] text-slate-300 text-center shadow-xl z-20 pointer-events-none">
-                                <strong class="text-white block mb-0.5">Efecto PEO Diamante:</strong>
+                            <div class="tooltip-box absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-56 p-3 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 text-center shadow-2xl z-20 pointer-events-none">
+                                <strong class="text-white block mb-1">Efecto PEO Diamante:</strong>
                                 Transfiere un patrón geométrico brillante a la base que destella con la luz.
                             </div>
                         </div>
 
                         <!-- PEY Holo -->
                         <div class="relative has-tooltip">
-                            <button type="button" onclick="seleccionarPlaca('PEY Holo-Efecto', this)" class="plate-btn w-full p-3 glass-card rounded-2xl border border-slate-700 text-center transition-all">
-                                <span class="block text-lg">🌈</span>
-                                <span class="block text-xs font-bold text-white mt-1">PEY Holo</span>
-                                <span class="block text-[10px] text-slate-400">Reflejo Arcoíris</span>
+                            <button type="button" onclick="seleccionarPlaca('PEY Holo-Efecto', this)" class="plate-btn w-full p-3.5 glass-card rounded-2xl border border-slate-700 text-center transition-all">
+                                <span class="block text-xl">🌈</span>
+                                <span class="block text-xs sm:text-sm font-extrabold text-white mt-1.5">PEY Holo</span>
+                                <span class="block text-xs text-slate-300 mt-0.5">Reflejo Arcoíris</span>
                             </button>
-                            <div class="tooltip-box absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-52 p-3 bg-slate-900 border border-slate-700 rounded-xl text-[10px] text-slate-300 text-center shadow-xl z-20 pointer-events-none">
-                                <strong class="text-white block mb-0.5">Efecto Holográfico PEY:</strong>
+                            <div class="tooltip-box absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-56 p-3 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 text-center shadow-2xl z-20 pointer-events-none">
+                                <strong class="text-white block mb-1">Efecto Holográfico PEY:</strong>
                                 Refleja colores arcoíris dinámicos al girar la pieza bajo luz directa.
                             </div>
                         </div>
@@ -173,77 +173,77 @@
                 </div>
 
                 <!-- Grilla de Entradas de Parámetros -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-2">
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Cantidad (Q)</label>
-                        <input type="number" id="cantidad" value="1" min="1" class="w-full glass-input rounded-2xl px-4 py-3 text-xs font-bold text-white">
+                        <label class="block text-xs sm:text-sm font-bold text-slate-200 mb-2">Cantidad (Q)</label>
+                        <input type="number" id="cantidad" value="1" min="1" class="w-full glass-input rounded-2xl px-4 py-3.5 text-sm sm:text-base font-bold text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Tiempo (Ej: 1:20 o 59m)</label>
-                        <input type="text" id="tiempoHoras" value="59m" class="w-full glass-input rounded-2xl px-4 py-3 text-xs font-bold text-white">
+                        <label class="block text-xs sm:text-sm font-bold text-slate-200 mb-2">Tiempo (Ej: 1:20 o 59m)</label>
+                        <input type="text" id="tiempoHoras" value="59m" class="w-full glass-input rounded-2xl px-4 py-3.5 text-sm sm:text-base font-bold text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Peso Total (Gramos)</label>
-                        <input type="number" id="pesoTotal" value="14" min="1" class="w-full glass-input rounded-2xl px-4 py-3 text-xs font-bold text-white">
+                        <label class="block text-xs sm:text-sm font-bold text-slate-200 mb-2">Peso Total (Gramos)</label>
+                        <input type="number" id="pesoTotal" value="14" min="1" class="w-full glass-input rounded-2xl px-4 py-3.5 text-sm sm:text-base font-bold text-white">
                     </div>
                 </div>
             </div>
 
             <!-- COLUMNA DERECHA: PANEL EJECUTIVO DE MÉTRICAS Y ACCIONES (5 COLS) -->
-            <div class="lg:col-span-5 flex flex-col justify-between space-y-6 bg-slate-900/60 p-6 sm:p-8 rounded-3xl border border-slate-800">
+            <div class="lg:col-span-5 flex flex-col justify-between space-y-6 bg-slate-900/70 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-xl">
                 
-                <div class="space-y-4">
+                <div class="space-y-5">
                     <!-- BANNER DINÁMICO DE MAYOREO -->
-                    <div id="badgeMayoreo" class="hidden w-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold py-3 px-4 rounded-2xl text-center shadow-lg backdrop-blur-sm">
+                    <div id="badgeMayoreo" class="hidden w-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-sm font-bold py-3.5 px-4 rounded-2xl text-center shadow-lg backdrop-blur-sm">
                         🎉 ¡Precio Promocional de Mayoreo Aplicado! (+12 piezas)
                     </div>
 
                     <!-- Métricas Secundarias -->
-                    <div class="grid grid-cols-2 gap-4 border-b border-slate-700/60 pb-4 text-xs">
+                    <div class="grid grid-cols-2 gap-4 border-b border-slate-700/70 pb-5 text-sm">
                         <div class="flex items-center gap-3">
-                            <span class="p-2.5 bg-slate-800 rounded-2xl">📦</span>
+                            <span class="p-3 bg-slate-800 rounded-2xl text-lg">📦</span>
                             <div>
-                                <span class="block text-[10px] text-slate-400 font-medium uppercase tracking-wider">Masa Material</span>
-                                <strong id="lblPesoTotal" class="text-white text-base font-extrabold">14g</strong>
+                                <span class="block text-xs text-slate-300 font-semibold uppercase tracking-wider">Masa Material</span>
+                                <strong id="lblPesoTotal" class="text-white text-lg font-extrabold">14g</strong>
                             </div>
                         </div>
                         <div class="flex items-center gap-3 border-l border-slate-800 pl-4">
-                            <span class="p-2.5 bg-slate-800 rounded-2xl">⏱️</span>
+                            <span class="p-3 bg-slate-800 rounded-2xl text-lg">⏱️</span>
                             <div>
-                                <span class="block text-[10px] text-slate-400 font-medium uppercase tracking-wider">Tiempo P2S</span>
-                                <strong id="lblTiempoTotal" class="text-white text-base font-extrabold">59m</strong>
+                                <span class="block text-xs text-slate-300 font-semibold uppercase tracking-wider">Tiempo P2S</span>
+                                <strong id="lblTiempoTotal" class="text-white text-lg font-extrabold">59m</strong>
                             </div>
                         </div>
                     </div>
 
                     <!-- Cifras Principales con Conteo Progresivo -->
-                    <div class="space-y-3 pt-2">
-                        <div class="flex justify-between items-baseline border-b border-slate-800 pb-3">
-                            <span class="text-xs uppercase font-bold text-slate-400 tracking-wider">Precio Unitario</span>
-                            <span class="text-xl font-extrabold text-white" id="lblPrecioUnitario">$99.00 <span class="text-xs font-bold text-slate-400">MXN</span></span>
+                    <div class="space-y-4 pt-2">
+                        <div class="flex justify-between items-baseline border-b border-slate-800 pb-4">
+                            <span class="text-xs sm:text-sm uppercase font-bold text-slate-300 tracking-wider">Precio Unitario</span>
+                            <span class="text-2xl font-extrabold text-white" id="lblPrecioUnitario">$99.00 <span class="text-xs font-bold text-slate-400">MXN</span></span>
                         </div>
                         <div class="flex justify-between items-baseline pt-1">
-                            <span class="text-xs uppercase font-bold text-pink-400 tracking-wider">Inversión Total</span>
+                            <span class="text-xs sm:text-sm uppercase font-bold text-pink-400 tracking-wider">Inversión Total</span>
                             <span class="text-3xl sm:text-4xl font-black text-pink-500 tracking-tight" id="lblPrecioTotal">$99.00 <span class="text-xs font-bold text-slate-400">MXN</span></span>
                         </div>
                     </div>
                 </div>
 
                 <!-- BOTONES DE ACCIÓN PRINCIPALES -->
-                <div class="space-y-3 pt-4">
-                    <button type="button" id="btnWhatsapp" class="w-full bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-extrabold py-4 rounded-2xl shadow-xl shadow-pink-500/25 transition-all flex items-center justify-center gap-2 text-sm active:scale-98 no-print">
-                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <div class="space-y-3.5 pt-4">
+                    <button type="button" id="btnWhatsapp" class="w-full bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-extrabold py-4.5 rounded-2xl shadow-xl shadow-pink-500/30 transition-all flex items-center justify-center gap-2.5 text-sm sm:text-base active:scale-98 no-print">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
                             <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
                         </svg>
                         <span>Enviar Cotización a WhatsApp</span>
                     </button>
 
-                    <button type="button" id="btnCopiar" class="w-full bg-slate-800 hover:bg-slate-700/80 border border-slate-700 text-slate-200 font-extrabold py-3.5 rounded-2xl transition-all flex items-center justify-center gap-2 text-xs active:scale-98 no-print">
+                    <button type="button" id="btnCopiar" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-extrabold py-3.5 rounded-2xl transition-all flex items-center justify-center gap-2 text-xs sm:text-sm active:scale-98 no-print">
                         <span>📋 Copiar Resumen de Cotización</span>
                     </button>
                     
-                    <div class="flex justify-between items-center text-xs text-slate-400 px-1 pt-2 no-print">
-                        <button type="button" id="btnPDF" class="hover:text-slate-200 underline transition-all">
+                    <div class="flex justify-between items-center text-xs sm:text-sm text-slate-300 px-1 pt-2 no-print">
+                        <button type="button" id="btnPDF" class="hover:text-white underline transition-all font-semibold">
                             📄 Descargar PDF
                         </button>
                         <span>Taller SHAMMAH CREA © 2026</span>
@@ -254,7 +254,7 @@
     </main>
 
     <!-- NOTIFICACIÓN TOAST REUTILIZABLE -->
-    <div id="toast" class="fixed bottom-5 bg-emerald-500 text-slate-950 font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none z-50">
+    <div id="toast" class="fixed bottom-5 bg-emerald-500 text-slate-950 font-extrabold text-sm px-5 py-3 rounded-xl shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none z-50">
         ¡Cotización copiada al portapapeles! 📋
     </div>
 
