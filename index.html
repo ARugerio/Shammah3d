@@ -114,6 +114,18 @@
                     </div>
                 </section>
 
+                <!-- DATOS DEL PEDIDO (PRODUCTO Y CLIENTE) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                        <label class="block text-xs sm:text-sm font-bold text-slate-200 mb-2 uppercase tracking-wider">Nombre del Producto / Pieza</label>
+                        <input type="text" id="nombreProducto" placeholder="Ej. Llavero Batman, Figura 3D..." value="Pieza Personalizada 3D" class="w-full glass-input rounded-2xl px-4 py-3.5 text-sm sm:text-base font-bold text-white placeholder-slate-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-bold text-slate-200 mb-2 uppercase tracking-wider">Nombre del Cliente</label>
+                        <input type="text" id="nombreCliente" placeholder="Ej. Cliente Mostrador, Juan..." value="Cliente Mostrador" class="w-full glass-input rounded-2xl px-4 py-3.5 text-sm sm:text-base font-bold text-white placeholder-slate-500">
+                    </div>
+                </div>
+
                 <!-- Selector Principal de Categoría -->
                 <div>
                     <label class="block text-xs sm:text-sm font-bold text-slate-200 mb-2 uppercase tracking-wider">Tipo de Proyecto / Insumo</label>
@@ -133,7 +145,7 @@
                     <div class="grid grid-cols-3 gap-3">
                         <!-- PEI Texturizado Bambu Lab -->
                         <div class="relative has-tooltip">
-                            <button type="button" onclick="seleccionarPlaca('PEI Texturizado Oficial Bambu Lab', this)" class="plate-btn active w-full p-3.5 glass-card rounded-2xl border border-slate-700 text-center transition-all">
+                            <button type="button" onclick="seleccionarPlaca('PEI Bambu Lab', this)" class="plate-btn active w-full p-3.5 glass-card rounded-2xl border border-slate-700 text-center transition-all">
                                 <span class="block text-xl">🪨</span>
                                 <span class="block text-xs sm:text-sm font-extrabold text-white mt-1.5">PEI Bambu Lab</span>
                                 <span class="block text-xs text-slate-300 mt-0.5">Mate Rugoso</span>
@@ -267,173 +279,4 @@
             numWhatsapp: "5215559650025"
         };
 
-        const fmtMXN = new Intl.NumberFormat('es-MX', {
-            style: 'currency',
-            currency: 'MXN',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-
-        const fmtInt = new Intl.NumberFormat('es-MX');
-
-        let currentPriceUnit = 0;
-        let currentPriceTotal = 0;
-        let placaSeleccionada = 'PEI Texturizado Oficial Bambu Lab';
-
-        function parseTiempo(val) {
-            let str = (val || '').toString().trim().toLowerCase();
-            if(!str) return 0;
-            if(str.includes(':')) {
-                let p = str.split(':');
-                return (parseFloat(p[0]) || 0) + ((parseFloat(p[1]) || 0) / 60);
-            }
-            if(str.includes('h') || str.includes('m')) {
-                let hMatch = str.match(/(\d+)\s*h/);
-                let mMatch = str.match(/(\d+)\s*m/);
-                let h = hMatch ? parseFloat(hMatch[1]) : 0;
-                let m = mMatch ? parseFloat(mMatch[1]) : 0;
-                return h + (m / 60);
-            }
-            return parseFloat(str) || 0;
-        }
-
-        function formatTiempoVisual(horasDec) {
-            let totalMin = Math.round(horasDec * 60);
-            if(totalMin < 60) return `${totalMin}m`;
-            let h = Math.floor(totalMin / 60);
-            let m = totalMin % 60;
-            return m > 0 ? `${h}h ${m}m` : `${h}h`;
-        }
-
-        function seleccionarPlaca(nombrePlaca, btnEl) {
-            placaSeleccionada = nombrePlaca;
-            document.querySelectorAll('.plate-btn').forEach(btn => btn.classList.remove('active'));
-            btnEl.classList.add('active');
-        }
-
-        function animarNumero(idElemento, valorInicial, valorFinal) {
-            const el = document.getElementById(idElemento);
-            const duration = 250;
-            const startTime = performance.now();
-
-            function update(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                const currentVal = valorInicial + (valorFinal - valorInicial) * progress;
-                el.innerHTML = `${fmtMXN.format(currentVal)} <span class="text-xs font-bold text-slate-400">MXN</span>`;
-                if(progress < 1) {
-                    requestAnimationFrame(update);
-                }
-            }
-            requestAnimationFrame(update);
-        }
-
-        function seleccionarPresets(lineaVal, tiempoVal, pesoVal) {
-            const selectEl = document.getElementById('lineaNegocio');
-            for(let i = 0; i < selectEl.options.length; i++) {
-                if(selectEl.options[i].value === lineaVal || (lineaVal === 'b2c' && selectEl.options[i].value === '3.0')) {
-                    selectEl.selectedIndex = i;
-                    break;
-                }
-            }
-            document.getElementById('tiempoHoras').value = tiempoVal;
-            document.getElementById('pesoTotal').value = pesoVal;
-            calcular();
-        }
-
-        function calcular() {
-            const Q = Math.max(1, parseInt(document.getElementById('cantidad').value) || 1);
-            const horasUnitarias = parseTiempo(document.getElementById('tiempoHoras').value);
-            const gramosUnitarios = Math.max(0, parseFloat(document.getElementById('pesoTotal').value) || 0);
-            const tipo = document.getElementById('lineaNegocio').value;
-            const badgeMayoreo = document.getElementById('badgeMayoreo');
-
-            const esMayoreo = Q >= 12;
-
-            if(esMayoreo) {
-                badgeMayoreo.classList.remove('hidden');
-            } else {
-                badgeMayoreo.classList.add('hidden');
-            }
-
-            let costoMat = gramosUnitarios * CONFIG.costoGramo;
-            let costoEne = horasUnitarias * CONFIG.costoHora;
-            let pUnitario = 0;
-
-            if(tipo === 'clicker') {
-                let cDirecto = costoMat + costoEne + CONFIG.herrajeClicker;
-                let mult = esMayoreo ? 2.6 : 3.2;
-                let piso = (horasUnitarias > 0.75 || gramosUnitarios > 12) ? (esMayoreo ? 75 : 99) : (esMayoreo ? 35 : 45);
-                pUnitario = Math.max(piso, Math.ceil(cDirecto * mult));
-            } else {
-                let multBase = parseFloat(tipo) || 3.0;
-                let mult = esMayoreo ? 2.5 : multBase;
-                let cDirecto = costoMat + costoEne;
-                pUnitario = Math.ceil(cDirecto * mult);
-            }
-
-            const pTotal = pUnitario * Q;
-            const pesoAcumulado = gramosUnitarios * Q;
-            const horasAcumuladas = horasUnitarias * Q;
-
-            document.getElementById('lblPesoTotal').innerText = `${fmtInt.format(pesoAcumulado)}g`;
-            document.getElementById('lblTiempoTotal').innerText = formatTiempoVisual(horasAcumuladas);
-
-            animarNumero('lblPrecioUnitario', currentPriceUnit, pUnitario);
-            animarNumero('lblPrecioTotal', currentPriceTotal, pTotal);
-
-            currentPriceUnit = pUnitario;
-            currentPriceTotal = pTotal;
-        }
-
-        function generarTextoCotizacion() {
-            const Q = document.getElementById('cantidad').value;
-            const sel = document.getElementById('lineaNegocio');
-            const nomProyecto = sel.options[sel.selectedIndex].text.trim();
-            const pTotal = fmtMXN.format(currentPriceTotal);
-            const pUnit = fmtMXN.format(currentPriceUnit);
-            const esMayoreo = parseInt(Q) >= 12 ? "\n🎉 *Beneficio:* Precio de Mayoreo Aplicado (+12 pcs)" : "";
-
-            return `*COTIZACIÓN OFICIAL - SHAMMAH CREA*\n\n` +
-                   `📌 *Producto:* ${nomProyecto}\n` +
-                   `✨ *Acabado Base:* ${placaSeleccionada}\n` +
-                   `📦 *Cantidad:* ${fmtInt.format(Q)} pieza(s)\n` +
-                   `💵 *Precio Unitario:* ${pUnit} MXN\n` +
-                   `💰 *TOTAL ESTIMADO:* ${pTotal} MXN${esMayoreo}\n\n` +
-                   `Hola, me interesa proceder con la orden.`;
-        }
-
-        function mostrarToast() {
-            const toast = document.getElementById('toast');
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-            setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 2500);
-        }
-
-        const formEl = document.getElementById('cotizadorForm');
-        ['input', 'change', 'keyup'].forEach(evt => {
-            formEl.addEventListener(evt, calcular);
-        });
-
-        document.getElementById('btnWhatsapp').addEventListener('click', () => {
-            const msg = encodeURIComponent(generarTextoCotizacion());
-            window.open(`https://wa.me/${CONFIG.numWhatsapp}?text=${msg}`, '_blank');
-        });
-
-        document.getElementById('btnCopiar').addEventListener('click', () => {
-            navigator.clipboard.writeText(generarTextoCotizacion()).then(() => {
-                mostrarToast();
-            });
-        });
-
-        document.getElementById('btnPDF').addEventListener('click', () => {
-            window.print();
-        });
-
-        calcular();
-    </script>
-</body>
-</html>
+        const fmtMXN
