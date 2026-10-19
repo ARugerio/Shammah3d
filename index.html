@@ -454,48 +454,69 @@
             }, 3000);
         }
 
-        // EVENT LISTENERS
-        document.getElementById('cotizadorForm').addEventListener('input', calcular);
+        // EVENT LISTENERS CON BLOQUEO ANTI-DUPLICADOS Y COPIADO INSTANTÁNEO
 
-        document.getElementById('btnCopiar').addEventListener('click', async () => {
-            calcular();
-            const payload = generarPayloadDatos();
-            await registrarEnGoogleSheets(payload);
+document.getElementById('btnCopiar').addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    if (btn.disabled) return; // Evita clics múltiples
 
-            const textoResumen = `*SHAMMAH CREA - COTIZACIÓN 3D* 🖨️✨\n` +
-                `• Folio: ${payload.id}\n` +
-                `• Cliente: ${payload.cliente}\n` +
-                `• Producto: ${payload.producto}\n` +
-                `• Cantidad: ${payload.Q} pz\n` +
-                `• Total: $${payload.total.toFixed(2)} MXN\n` +
-                `*¡Gracias por tu preferencia!*`;
+    // 1. Bloqueo visual inmediato
+    btn.disabled = true;
+    const textoOriginal = btn.innerHTML;
+    btn.innerHTML = `<span>⏳ Copiando y Registrando...</span>`;
 
-            navigator.clipboard.writeText(textoResumen).then(() => {
-                mostrarToast();
-            });
-        });
+    calcular();
+    const payload = generarPayloadDatos();
 
-        document.getElementById('btnWhatsapp').addEventListener('click', async () => {
-            calcular();
-            const payload = generarPayloadDatos();
-            await registrarEnGoogleSheets(payload);
+    // 2. Copiado al portapapeles INSTANTÁNEO (sin esperar a Google)
+    const textoResumen = `*SHAMMAH CREA - COTIZACIÓN 3D* 🖨️✨\n` +
+        `• Folio: ${payload.id}\n` +
+        `• Cliente: ${payload.cliente}\n` +
+        `• Producto: ${payload.producto}\n` +
+        `• Cantidad: ${payload.Q} pz\n` +
+        `• Total: $${payload.total.toFixed(2)} MXN\n` +
+        `*¡Gracias por tu preferencia!*`;
 
-            const textoWp = `Hola! Me interesa cotizar en SHAMMAH CREA:\n` +
-                `*${payload.producto}* (Cant: ${payload.Q} pz)\n` +
-                `Total estimado: *$${payload.total.toFixed(2)} MXN*\n` +
-                `Folio: ${payload.id}`;
+    try {
+        await navigator.clipboard.writeText(textoResumen);
+        mostrarToast();
+    } catch(err) {
+        console.error("Error al copiar:", err);
+    }
 
-            const urlWp = `https://api.whatsapp.com/send?phone=${CONFIG.numWhatsapp}&text=${encodeURIComponent(textoWp)}`;
-            window.open(urlWp, '_blank');
-            mostrarToast();
-        });
+    // 3. Envío en segundo plano a Google Sheets
+    await registrarEnGoogleSheets(payload);
 
-        document.getElementById('btnPDF').addEventListener('click', () => {
-            window.print();
-        });
+    // 4. Restaurar botón
+    btn.disabled = false;
+    btn.innerHTML = textoOriginal;
+});
 
-        // Cálculo inicial al cargar
-        calcular();
-    </script>
-</body>
-</html>
+document.getElementById('btnWhatsapp').addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    if (btn.disabled) return;
+
+    btn.disabled = true;
+    const textoOriginal = btn.innerHTML;
+    btn.innerHTML = `<span>⏳ Abriendo WhatsApp...</span>`;
+
+    calcular();
+    const payload = generarPayloadDatos();
+
+    const textoWp = `Hola! Me interesa cotizar en SHAMMAH CREA:\n` +
+        `*${payload.producto}* (Cant: ${payload.Q} pz)\n` +
+        `Total estimado: *$${payload.total.toFixed(2)} MXN*\n` +
+        `Folio: ${payload.id}`;
+
+    const urlWp = `https://api.whatsapp.com/send?phone=${CONFIG.numWhatsapp}&text=${encodeURIComponent(textoWp)}`;
+    
+    // Abrir WhatsApp de inmediato
+    window.open(urlWp, '_blank');
+    mostrarToast();
+
+    // Guardar en Sheets en segundo plano
+    await registrarEnGoogleSheets(payload);
+
+    btn.disabled = false;
+    btn.innerHTML = textoOriginal;
+});
