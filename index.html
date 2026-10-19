@@ -275,7 +275,7 @@
         ¡Cotización registrada y copiada con éxito! 📋⚡
     </div>
 
-    <!-- SCRIPT TÉCNICO, CÁLCULOS Y SINCRONIZACIÓN AUTOMÁTICA A SHEETS -->
+    <!-- SCRIPT TÉCNICO COMPLETO Y SINCRONIZACIÓN AUTOMÁTICA A SHEETS -->
     <script>
         const CONFIG = {
             costoGramo: 0.50,
@@ -285,15 +285,6 @@
         };
 
         const URL_API_GOOGLE = "https://script.google.com/macros/s/AKfycbzDXRDZUXn4mYl1pSTOdW05sT50foV94CrK9L1U026nDzbAxHIR3n0o9FOr2ayU-de8/exec";
-
-        const fmtMXN = new Intl.NumberFormat('es-MX', {
-            style: 'currency',
-            currency: 'MXN',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-
-        const fmtInt = new Intl.NumberFormat('es-MX');
 
         let currentPriceUnit = 0;
         let currentPriceTotal = 0;
@@ -331,12 +322,180 @@
             calcular();
         }
 
-        function animarNumero(idElemento, valorInicial, valorFinal) {
-            const el = document.getElementById(idElemento);
-            const duration = 250;
-            const startTime = performance.now();
+        function seleccionarPresets(tipo, tiempoDef, pesoDef) {
+            if(tipo === 'b2c') {
+                document.getElementById('lineaNegocio').value = "3.0";
+                document.getElementById('nombreProducto').value = "Línea Decorativa / B2C";
+            } else if(tipo === 'clicker') {
+                document.getElementById('lineaNegocio').value = "clicker";
+                document.getElementById('nombreProducto').value = "Clicker Mecánico Fidget";
+            }
+            document.getElementById('tiempoHoras').value = tiempoDef;
+            document.getElementById('pesoTotal').value = pesoDef;
+            calcular();
+        }
 
-            function update(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                const currentVal = valorInicial
+        function calcular() {
+            const cantidad = parseInt(document.getElementById('cantidad').value) || 1;
+            const gramosU = parseFloat(document.getElementById('pesoTotal').value) || 0;
+            const tiempoDecU = parseTiempo(document.getElementById('tiempoHoras').value);
+            const tipoNegocio = document.getElementById('lineaNegocio').value;
+
+            let costoInternoUnitario = 0;
+            if(tipoNegocio === 'clicker') {
+                costoInternoUnitario = (gramosU * CONFIG.costoGramo) + (tiempoDecU * CONFIG.costoHora) + CONFIG.herrajeClicker;
+            } else {
+                costoInternoUnitario = (gramosU * CONFIG.costoGramo) + (tiempoDecU * CONFIG.costoHora);
+            }
+
+            let multiplicador = 3.0;
+            if(cantidad >= 12) multiplicador = 2.2;
+            else if(cantidad >= 6) multiplicador = 2.5;
+
+            let precioU = costoInternoUnitario * multiplicador;
+            if(precioU < 35 && cantidad === 1) precioU = 35; // Precio mínimo de arranque
+
+            currentPriceUnit = precioU;
+            currentPriceTotal = precioU * cantidad;
+
+            // Actualizar UI
+            document.getElementById('lblPesoTotal').innerText = `${gramosU * cantidad}g`;
+            document.getElementById('lblTiempoTotal').innerText = formatTiempoVisual(tiempoDecU * cantidad);
+            document.getElementById('lblPrecioUnitario').innerHTML = `$${currentPriceUnit.toFixed(2)} <span class="text-xs font-bold text-slate-400">MXN</span>`;
+            document.getElementById('lblPrecioTotal').innerHTML = `$${currentPriceTotal.toFixed(2)} <span class="text-xs font-bold text-slate-400">MXN</span>`;
+
+            const badge = document.getElementById('badgeMayoreo');
+            if(cantidad >= 6) {
+                badge.classList.remove('hidden');
+                badge.innerText = cantidad >= 12 ? "🎉 ¡Descuento de Mayoreo Mayor (12+ pz) Aplicado!" : "🔥 ¡Descuento de Mayoreo (6+ pz) Aplicado!";
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // FUNCIÓN DE SINCRONIZACIÓN AUTOMÁTICA CON GOOGLE SHEETS
+        async function registrarEnGoogleSheets(datosCotizacion) {
+            try {
+                let historialActual = [];
+                try {
+                    let resGet = await fetch(URL_API_GOOGLE);
+                    historialActual = await resGet.json();
+                    if (!Array.isArray(historialActual)) historialActual = [];
+                } catch(e) {
+                    console.warn("Iniciando nuevo arreglo para Sheets", e);
+                }
+
+                historialActual.unshift(datosCotizacion);
+
+                await fetch(URL_API_GOOGLE, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(historialActual)
+                });
+                console.log("✅ Cotización sincronizada con Google Sheets con éxito.");
+            } catch (err) {
+                console.error("❌ Error al sincronizar con Google Sheets:", err);
+            }
+        }
+
+        function generarPayloadDatos() {
+            const ahora = new Date();
+            const anio = ahora.getFullYear();
+            const mesNum = String(ahora.getMonth() + 1).padStart(2, '0');
+            const mesStr = `${anio}-${mesNum}`;
+            const timestamp = `${anio}-${mesNum}-${String(ahora.getDate()).padStart(2, '0')} ${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}`;
+            const folioId = `SHM-${anio.toString().slice(-2)}${mesNum}-${Math.floor(100 + Math.random() * 900)}`;
+
+            const cliente = document.getElementById('nombreCliente').value.trim() || "Cliente Mostrador";
+            const productoBase = document.getElementById('nombreProducto').value.trim() || "Pieza 3D";
+            const producto = `${productoBase} [Placa: ${placaSeleccionada}]`;
+            const Q = parseInt(document.getElementById('cantidad').value) || 1;
+            const gramos = (parseFloat(document.getElementById('pesoTotal').value) || 0) * Q;
+            const minutos = parseTiempo(document.getElementById('tiempoHoras').value) * 60 * Q;
+            const total = currentPriceTotal;
+
+            const f_redes = total * 0.05;
+            const f_resico = total * 0.01;
+            const tipoNegocio = document.getElementById('lineaNegocio').value;
+            const gramosUnit = parseFloat(document.getElementById('pesoTotal').value) || 0;
+            const tiempoUnit = parseTiempo(document.getElementById('tiempoHoras').value);
+            let costoDir = tipoNegocio === 'clicker' ? 
+                ((gramosUnit * CONFIG.costoGramo) + (tiempoUnit * CONFIG.costoHora) + CONFIG.herrajeClicker) * Q :
+                ((gramosUnit * CONFIG.costoGramo) + (tiempoUnit * CONFIG.costoHora)) * Q;
+
+            const utilidad = total - (f_redes + f_resico + costoDir);
+
+            return {
+                id: folioId,
+                mes: mesStr,
+                fecha: timestamp,
+                cliente: cliente,
+                contacto: "Cotizador Web",
+                producto: producto,
+                Q: Q,
+                gramos: gramos,
+                minutos: Math.round(minutos),
+                total: total,
+                f_redes: f_redes,
+                f_resico: f_resico,
+                costo_dir: costoDir,
+                utilidad: utilidad,
+                estatus_pago: "🔴 Pendiente",
+                metodo_pago: "Pendiente"
+            };
+        }
+
+        function mostrarToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // EVENT LISTENERS
+        document.getElementById('cotizadorForm').addEventListener('input', calcular);
+
+        document.getElementById('btnCopiar').addEventListener('click', async () => {
+            calcular();
+            const payload = generarPayloadDatos();
+            await registrarEnGoogleSheets(payload);
+
+            const textoResumen = `*SHAMMAH CREA - COTIZACIÓN 3D* 🖨️✨\n` +
+                `• Folio: ${payload.id}\n` +
+                `• Cliente: ${payload.cliente}\n` +
+                `• Producto: ${payload.producto}\n` +
+                `• Cantidad: ${payload.Q} pz\n` +
+                `• Total: $${payload.total.toFixed(2)} MXN\n` +
+                `*¡Gracias por tu preferencia!*`;
+
+            navigator.clipboard.writeText(textoResumen).then(() => {
+                mostrarToast();
+            });
+        });
+
+        document.getElementById('btnWhatsapp').addEventListener('click', async () => {
+            calcular();
+            const payload = generarPayloadDatos();
+            await registrarEnGoogleSheets(payload);
+
+            const textoWp = `Hola! Me interesa cotizar en SHAMMAH CREA:\n` +
+                `*${payload.producto}* (Cant: ${payload.Q} pz)\n` +
+                `Total estimado: *$${payload.total.toFixed(2)} MXN*\n` +
+                `Folio: ${payload.id}`;
+
+            const urlWp = `https://api.whatsapp.com/send?phone=${CONFIG.numWhatsapp}&text=${encodeURIComponent(textoWp)}`;
+            window.open(urlWp, '_blank');
+            mostrarToast();
+        });
+
+        document.getElementById('btnPDF').addEventListener('click', () => {
+            window.print();
+        });
+
+        // Cálculo inicial al cargar
+        calcular();
+    </script>
+</body>
+</html>
