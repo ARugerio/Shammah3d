@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin & CRM | SHAMMAH CREA 3D</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: radial-gradient(circle at top left, #1e293b, #0f172a, #020617);
+            color: #f8fafc;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .glass-input {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f8fafc;
+        }
+        .glass-input:focus {
+            border-color: #ec4899;
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.35);
+            outline: none;
+        }
+        .tab-btn.active {
+            border-bottom: 3px solid #ec4899;
+            color: #f472b6;
+            font-weight: 800;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8">
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="w-full max-w-6xl glass-card rounded-[2.5rem] p-6 sm:p-8 lg:p-10 shadow-2xl my-auto">
+        
+        <!-- ENCABEZADO Y NAVEGACIÓN DE PESTAÑAS -->
+        <header class="border-b border-slate-700/70 pb-6 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+                <div class="flex items-center gap-3 justify-center sm:justify-start">
+                    <h1 class="text-3xl font-black text-white">SHAMMAH <span class="text-pink-500">CREA</span></h1>
+                    <span class="bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold px-3 py-1 rounded-full uppercase">Panel Control</span>
+                </div>
+                <p class="text-sm text-slate-400 mt-1">Gestión de Cobros, CRM de Clientes y Parámetros del Taller</p>
+            </div>
+
+            <!-- BOTONES DE PESTAÑAS -->
+            <div class="flex gap-6 border-b border-slate-700 w-full sm:w-auto justify-center">
+                <button onclick="cambiarPestana('crm')" id="tab-crm" class="tab-btn active pb-3 text-sm font-semibold transition-all">
+                    📋 Pedidos, CRM & Cobros
+                </button>
+                <button onclick="cambiarPestana('config')" id="tab-config" class="tab-btn pb-3 text-sm font-semibold text-slate-400 hover:text-slate-200 transition-all">
+                    ⚙️ Tarifas & Parámetros
+                </button>
+            </div>
+        </header>
+
+        <!-- SECCIÓN 1: CRM, PEDIDOS Y GESTIÓN DE COBROS -->
+        <section id="sec-crm" class="space-y-6">
+            
+            <!-- TARJETAS DE RESUMEN RÁPIDO DE COBROS -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-emerald-500">
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block mb-1">Cobrado Quincena</span>
+                    <strong id="montoCobrado" class="text-2xl font-black text-emerald-400">$0.00 MXN</strong>
+                </div>
+                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-rose-500">
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block mb-1">Por Cobrar (Pendiente)</span>
+                    <strong id="montoPendiente" class="text-2xl font-black text-rose-400">$0.00 MXN</strong>
+                </div>
+                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-pink-500">
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block mb-1">Total Pedidos</span>
+                    <strong id="numPedidos" class="text-2xl font-black text-white">0 registrados</strong>
+                </div>
+            </div>
+
+            <!-- TABLA DE CONTROL DE PEDIDOS -->
+            <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+                <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/60">
+                    <h2 class="text-sm font-bold text-slate-200 uppercase tracking-wider">Histórico de Pedidos & Cobros</h2>
+                    <button onclick="exportarCSV()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3 py-2 rounded-xl transition-all">
+                        📥 Exportar a Excel (CSV)
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-slate-950 text-slate-400 text-xs uppercase font-extrabold border-b border-slate-800">
+                            <tr>
+                                <th class="p-4">Cliente / Producto</th>
+                                <th class="p-4">Cantidad</th>
+                                <th class="p-4">Total MXN</th>
+                                <th class="p-4">Estatus Pago</th>
+                                <th class="p-4">Método Pago</th>
+                                <th class="p-4">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaPedidos" class="divide-y divide-slate-800/80">
+                            <!-- Filas dinámicas generadas por JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: AJUSTE DE TARIFAS Y PARÁMETROS -->
+        <section id="sec-config" class="hidden space-y-6">
+            <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-5">
+                <h2 class="text-base font-bold text-white uppercase tracking-wider border-b border-slate-800 pb-3">Configurador Local de Tarifas (Afecta al Mostrador)</h2>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Costo por Gramo de Filamento ($ MXN)</label>
+                        <input type="number" step="0.01" id="cfgCostoGramo" value="0.50" class="w-full glass-input rounded-xl p-3 font-bold text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Tarifa Hora Máquina ($ MXN/h)</label>
+                        <input type="number" step="0.50" id="cfgCostoHora" value="9.00" class="w-full glass-input rounded-xl p-3 font-bold text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Herraje Clicker / Switch ($ MXN/unidad)</label>
+                        <input type="number" step="0.10" id="cfgHerrajeClicker" value="2.63" class="w-full glass-input rounded-xl p-3 font-bold text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">WhatsApp de Atención Taller</label>
+                        <input type="text" id="cfgNumWhatsapp" value="5215559650025" class="w-full glass-input rounded-xl p-3 font-bold text-white">
+                    </div>
+                </div>
+
+                <div class="pt-3">
+                    <button onclick="guardarConfiguracion()" class="bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-extrabold px-6 py-3.5 rounded-xl shadow-lg transition-all text-sm">
+                        💾 Guardar Parámetros en Taller
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Cambiar entre pestañas
+        function cambiarPestana(p) {
+            document.getElementById('sec-crm').classList.toggle('hidden', p !== 'crm');
+            document.getElementById('sec-config').classList.toggle('hidden', p !== 'config');
+            document.getElementById('tab-crm').classList.toggle('active', p === 'crm');
+            document.getElementById('tab-config').classList.toggle('active', p === 'config');
+        }
+
+        // Datos en LocalStorage de pruebas/demostración
+        let pedidos = JSON.parse(localStorage.getItem('shammah_pedidos')) || [
+            { id: 1, cliente: "Juan Pérez", producto: "Llavero Batman", Q: 2, total: 198, pagado: false, metodo: "Pendiente" },
+            { id: 2, cliente: "María Gómez", producto: "Clicker Logo Custom", Q: 12, total: 420, pagado: true, metodo: "Transferencia" }
+        ];
+
+        function renderTabla() {
+            const tbody = document.getElementById('tablaPedidos');
+            tbody.innerHTML = '';
+            let cobrado = 0;
+            let pendiente = 0;
+
+            pedidos.forEach((p, index) => {
+                if(p.pagado) cobrado += p.total;
+                else pendiente += p.total;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-800/40 transition-colors">
+                        <td class="p-4">
+                            <strong class="text-white block">${p.cliente}</strong>
+                            <span class="text-xs text-slate-400">${p.producto}</span>
+                        </td>
+                        <td class="p-4 font-bold text-white">${p.Q} pz</td>
+                        <td class="p-4 font-black text-pink-400">$${p.total.toFixed(2)} MXN</td>
+                        <td class="p-4">
+                            <button onclick="togglePago(${index})" class="px-3 py-1 rounded-full text-xs font-extrabold ${p.pagado ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-400 border border-rose-500/40'}">
+                                ${p.pagado ? '🟢 Pagado' : '🔴 Pendiente'}
+                            </button>
+                        </td>
+                        <td class="p-4">
+                            <select onchange="cambiarMetodo(${index}, this.value)" class="bg-slate-900 border border-slate-700 text-xs rounded-lg p-1.5 font-bold text-slate-200">
+                                <option value="Efectivo" ${p.metodo === 'Efectivo' ? 'selected' : ''}>💸 Efectivo</option>
+                                <option value="Transferencia" ${p.metodo === 'Transferencia' ? 'selected' : ''}>💳 Transferencia</option>
+                                <option value="Pendiente" ${p.metodo === 'Pendiente' ? 'selected' : ''}>⏳ Pendiente</option>
+                            </select>
+                        </td>
+                        <td class="p-4">
+                            <button onclick="eliminarPedido(${index})" class="text-xs text-slate-500 hover:text-rose-400 transition-colors">🗑️ Borrar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('montoCobrado').innerText = `$${cobrado.toFixed(2)} MXN`;
+            document.getElementById('montoPendiente').innerText = `$${pendiente.toFixed(2)} MXN`;
+            document.getElementById('numPedidos').innerText = `${pedidos.length} registrados`;
+        }
+
+        function togglePago(index) {
+            pedidos[index].pagado = !pedidos[index].pagado;
+            if(pedidos[index].pagado && pedidos[index].metodo === 'Pendiente') {
+                pedidos[index].metodo = 'Transferencia';
+            }
+            guardarPedidos();
+        }
+
+        function cambiarMetodo(index, val) {
+            pedidos[index].metodo = val;
+            guardarPedidos();
+        }
+
+        function eliminarPedido(index) {
+            pedidos.splice(index, 1);
+            guardarPedidos();
+        }
+
+        function guardarPedidos() {
+            localStorage.setItem('shammah_pedidos', JSON.stringify(pedidos));
+            renderTabla();
+        }
+
+        function exportarCSV() {
+            let csv = "Cliente,Producto,Cantidad,Total_MXN,Estatus_Pago,Metodo_Pago\n";
+            pedidos.forEach(p => {
+                csv += `"${p.cliente}","${p.producto}",${p.Q},${p.total},"${p.pagado ? 'Pagado' : 'Pendiente'}","${p.metodo}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `Reporte_Ventas_SHAMMAH_${new Date().toISOString().slice(0,10)}.csv`);
+            a.click();
+        }
+
+        renderTabla();
+    </script>
+</body>
+</html>
