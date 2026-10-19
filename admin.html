@@ -64,13 +64,16 @@
                         </select>
                     </div>
 
-                    <!-- TOGGLE VER SOLO VENTAS CONCRETADAS VS TODO -->
+                    <!-- TOGGLE DE VISTAS (VENTAS CONCRETADAS VS COTIZACIONES) -->
                     <div class="flex items-center gap-2 bg-slate-950 border border-slate-700 p-1.5 rounded-xl">
                         <button id="btnVerVentas" onclick="filtrarModoVistas('ventas')" class="px-3.5 py-1.5 rounded-lg text-xs font-black transition-all bg-emerald-500 text-slate-950">
-                            🟢 Solo Ventas Concretadas
+                            🟢 Ventas Concretadas
+                        </button>
+                        <button id="btnVerCotizaciones" onclick="filtrarModoVistas('cotizaciones')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">
+                            📋 Cotizaciones Pendientes
                         </button>
                         <button id="btnVerTodo" onclick="filtrarModoVistas('todo')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">
-                            📥 Incluir Cotizaciones Pendientes
+                            📥 Ver Todo
                         </button>
                     </div>
                 </div>
@@ -186,7 +189,7 @@
                                 <th class="p-4">Utilidad Neta</th>
                                 <th class="p-4">Estatus Pago</th>
                                 <th class="p-4">Método</th>
-                                <th class="p-4">Acción / Venta</th>
+                                <th class="p-4">Acción / Embudo</th>
                             </tr>
                         </thead>
                         <tbody id="tablaPedidos" class="divide-y divide-slate-800">
@@ -203,7 +206,7 @@
         const URL_API_GOOGLE = "https://script.google.com/macros/s/AKfycbzDXRDZUXn4mYl1pSTOdW05sT50foV94CrK9L1U026nDzbAxHIR3n0o9FOr2ayU-de8/exec";
 
         let pedidos = [];
-        let modoVista = 'ventas'; // 'ventas' (solo concretadas) o 'todo'
+        let modoVista = 'ventas'; // 'ventas', 'cotizaciones', 'todo'
 
         function toggleFormManual() {
             document.getElementById('formManual').classList.toggle('hidden');
@@ -212,16 +215,23 @@
         function filtrarModoVistas(modo) {
             modoVista = modo;
             const btnVentas = document.getElementById('btnVerVentas');
+            const btnCotizaciones = document.getElementById('btnVerCotizaciones');
             const btnTodo = document.getElementById('btnVerTodo');
             
+            // Reset de estilos
+            btnVentas.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+            btnCotizaciones.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+            btnTodo.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+
             if(modo === 'ventas') {
                 btnVentas.className = "px-3.5 py-1.5 rounded-lg text-xs font-black transition-all bg-emerald-500 text-slate-950";
-                btnTodo.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
                 document.getElementById('tituloTabla').innerText = "🟢 Ventas Concretadas (Pagadas / Anticipos)";
+            } else if(modo === 'cotizaciones') {
+                btnCotizaciones.className = "px-3.5 py-1.5 rounded-lg text-xs font-black transition-all bg-amber-500 text-slate-950";
+                document.getElementById('tituloTabla').innerText = "📋 Cotizaciones Pendientes (En espera de respuesta)";
             } else {
                 btnTodo.className = "px-3.5 py-1.5 rounded-lg text-xs font-black transition-all bg-pink-500 text-white";
-                btnVentas.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
-                document.getElementById('tituloTabla').innerText = "📥 Registro Completo (Incluye Cotizaciones Pendientes)";
+                document.getElementById('tituloTabla').innerText = "📥 Registro Completo (Ventas y Cotizaciones)";
             }
             renderTabla();
         }
@@ -369,6 +379,7 @@
 
             let pedidosMes = pedidos.filter(p => String(p.mes).startsWith(mesSel));
 
+            // KPIs calculados SOLO con ventas concretadas (Pagado o Anticipo)
             pedidosMes.forEach(p => {
                 if(!p.estatus_pago.includes('Pendiente') && !p.estatus_pago.includes('Descartado')) {
                     sumVentas += p.total;
@@ -378,9 +389,15 @@
                 }
             });
 
-            let pedidosFiltrados = modoVista === 'ventas' ? 
-                pedidosMes.filter(p => !p.estatus_pago.includes('Pendiente') && !p.estatus_pago.includes('Descartado')) : 
-                pedidosMes.filter(p => !p.estatus_pago.includes('Descartado'));
+            // Filtrado según la vista seleccionada
+            let pedidosFiltrados = [];
+            if(modoVista === 'ventas') {
+                pedidosFiltrados = pedidosMes.filter(p => !p.estatus_pago.includes('Pendiente') && !p.estatus_pago.includes('Descartado'));
+            } else if(modoVista === 'cotizaciones') {
+                pedidosFiltrados = pedidosMes.filter(p => p.estatus_pago.includes('Pendiente'));
+            } else {
+                pedidosFiltrados = pedidosMes.filter(p => !p.estatus_pago.includes('Descartado'));
+            }
 
             pedidosFiltrados.forEach((p) => {
                 const idxOriginal = pedidos.findIndex(item => item.id === p.id);
@@ -390,11 +407,15 @@
                               p.estatus_pago.includes('Anticipo') ? 'bg-amber-950/80 text-amber-400 border-amber-500/50' : 
                               'bg-rose-950/80 text-rose-400 border-rose-500/50';
 
-                let botonConcretar = p.estatus_pago.includes('Pendiente') ? `
-                    <button onclick="concretarVentaDirecta(${idxOriginal})" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-3 py-1.5 rounded-xl shadow-md transition-all flex items-center gap-1">
-                        ⚡ Concretar Venta
-                    </button>
-                ` : '';
+                // Botón dinámico: si está pendiente muestra "⚡ Concretar Venta"
+                let botonesAccion = '';
+                if(p.estatus_pago.includes('Pendiente')) {
+                    botonesAccion = `
+                        <button onclick="concretarVenta(${idxOriginal})" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-3 py-2 rounded-xl shadow-md transition-all flex items-center gap-1">
+                            ⚡ Concretar
+                        </button>
+                    `;
+                }
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-800/60 transition-colors">
@@ -413,7 +434,7 @@
                         <td class="p-4 font-black text-pink-300 text-lg">$${p.utilidad.toFixed(2)}</td>
                         <td class="p-4">
                             <select onchange="cambiarEstatusDirecto(${idxOriginal}, this)" class="border text-xs rounded-xl p-2.5 font-black shadow-sm bg-slate-900 cursor-pointer focus:outline-none transition-all ${colorBg}">
-                                <option value="🔴 Pendiente" ${p.estatus_pago.includes('Pendiente') ? 'selected' : ''}>🔴 Cotización / Pendiente</option>
+                                <option value="🔴 Pendiente" ${p.estatus_pago.includes('Pendiente') ? 'selected' : ''}>🔴 Pendiente (Cotización)</option>
                                 <option value="🟡 Anticipo 50%" ${p.estatus_pago.includes('Anticipo') ? 'selected' : ''}>🟡 Anticipo 50%</option>
                                 <option value="🟢 Pagado" ${p.estatus_pago.includes('Pagado') ? 'selected' : ''}>🟢 Pagado (Concretada)</option>
                             </select>
@@ -426,8 +447,8 @@
                             </select>
                         </td>
                         <td class="p-4 flex items-center gap-2">
-                            ${botonConcretar}
-                            <button onclick="eliminarPedido(${idxOriginal})" title="Descartar / Ocultar" class="text-base text-slate-400 hover:text-rose-400 p-1.5 transition-colors">🗑️</button>
+                            ${botonesAccion}
+                            <button onclick="descartarPedido(${idxOriginal})" title="Descartar / Eliminar" class="text-base text-slate-400 hover:text-rose-400 p-1.5 transition-colors">🗑️</button>
                         </td>
                     </tr>
                 `;
@@ -439,7 +460,7 @@
             document.getElementById('kpiUtilidad').innerText = `$${sumUtilidad.toFixed(2)} MXN`;
         }
 
-        async function concretarVentaDirecta(idx) {
+        async function concretarVenta(idx) {
             pedidos[idx].estatus_pago = '🟢 Pagado';
             if(pedidos[idx].metodo_pago === 'Pendiente') pedidos[idx].metodo_pago = 'Transferencia';
             await guardarPedidos();
@@ -458,8 +479,8 @@
             guardarPedidos();
         }
 
-        function eliminarPedido(idx) {
-            if(confirm("¿Deseas descartar o eliminar este registro?")) {
+        function descartarPedido(idx) {
+            if(confirm("¿Deseas descartar o eliminar este registro del historial?")) {
                 pedidos.splice(idx, 1);
                 guardarPedidos();
             }
