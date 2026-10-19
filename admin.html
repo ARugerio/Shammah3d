@@ -28,102 +28,103 @@
             outline: none;
         }
         .tab-btn.active {
-            border-bottom: 3px solid #ec4899;
+            border-bottom: 4px solid #ec4899;
             color: #f472b6;
             font-weight: 800;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8">
+<body class="min-h-screen flex flex-col items-center p-3 sm:p-6 lg:p-8">
 
-    <main class="w-full max-w-7xl glass-card rounded-[2.5rem] p-6 sm:p-8 lg:p-10 shadow-2xl my-auto">
+    <!-- CONTENEDOR AMPLIFICADO AL 95% DEL ANCHO DE PANTALLA -->
+    <main class="w-full max-w-[95%] glass-card rounded-[2.5rem] p-6 sm:p-10 shadow-2xl my-auto">
         
         <!-- HEADER PRINCIPAL -->
         <header class="border-b border-slate-700/70 pb-6 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
-                <div class="flex items-center gap-3 justify-center sm:justify-start">
-                    <h1 class="text-3xl font-black text-white">SHAMMAH <span class="text-pink-500">CREA</span></h1>
-                    <span class="bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold px-3 py-1 rounded-full uppercase">Panel Gerencial</span>
+                <div class="flex items-center gap-4 justify-center sm:justify-start">
+                    <h1 class="text-4xl font-black text-white tracking-tight">SHAMMAH <span class="text-pink-500">CREA</span></h1>
+                    <span class="bg-slate-800 border border-slate-700 text-slate-200 text-xs font-extrabold px-3.5 py-1.5 rounded-full uppercase tracking-wider">Panel Gerencial</span>
                 </div>
-                <p class="text-sm text-slate-300 mt-1">Control Financiero, RESICO (1%), Fondo Redes (5%) y Pedidos</p>
+                <p class="text-base text-slate-300 mt-1.5 font-medium">Control Financiero, RESICO (1%), Fondo Redes (5%) y Pedidos Taller 3D</p>
             </div>
 
-            <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto justify-between">
-                <div class="flex gap-6 border-b border-slate-700 sm:border-none">
-                    <button onclick="cambiarPestana('crm')" id="tab-crm" class="tab-btn active pb-3 text-base font-bold transition-all">
+            <div class="flex flex-col sm:flex-row items-center gap-5 w-full sm:w-auto justify-between">
+                <div class="flex gap-8 border-b border-slate-700 sm:border-none">
+                    <button onclick="cambiarPestana('crm')" id="tab-crm" class="tab-btn active pb-3 text-lg font-bold transition-all">
                         📋 Pedidos & Corte Mensual
                     </button>
-                    <button onclick="cambiarPestana('config')" id="tab-config" class="tab-btn pb-3 text-base font-bold text-slate-400 hover:text-slate-200 transition-all">
+                    <button onclick="cambiarPestana('config')" id="tab-config" class="tab-btn pb-3 text-lg font-bold text-slate-400 hover:text-slate-200 transition-all">
                         ⚙️ Tarifas & Parámetros
                     </button>
                 </div>
 
-                <a href="index.html" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-md">
+                <a href="index.html" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-100 px-5 py-3 rounded-xl text-base font-bold transition-all flex items-center gap-2 shadow-md">
                     ⬅️ Volver al Mostrador
                 </a>
             </div>
         </header>
 
         <!-- SECCIÓN 1: CRM Y DASHBOARD FINANCIERO -->
-        <section id="sec-crm" class="space-y-6">
+        <section id="sec-crm" class="space-y-8">
             
-            <!-- FILTRO DE MES Y MENSAJE -->
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-900/90 p-4 rounded-2xl border border-slate-700">
-                <div class="flex items-center gap-3">
-                    <span class="text-sm font-extrabold text-slate-300 uppercase tracking-wider">Filtrar por Mes:</span>
-                    <select id="selectMes" onchange="renderTabla()" class="bg-slate-950 border border-slate-600 text-white font-bold text-base rounded-xl p-2.5 focus:outline-none focus:border-pink-500">
+            <!-- FILTRO DE MES Y MENSAJE DE ESTADO -->
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-900/90 p-5 rounded-2xl border border-slate-700">
+                <div class="flex items-center gap-4">
+                    <span class="text-base font-extrabold text-slate-200 uppercase tracking-wider">Filtrar por Mes:</span>
+                    <select id="selectMes" onchange="renderTabla()" class="bg-slate-950 border border-slate-600 text-white font-bold text-lg rounded-xl p-3 focus:outline-none focus:border-pink-500">
                         <!-- Opciones dinámicas de mes -->
                     </select>
                 </div>
-                <div class="text-xs text-slate-300 font-semibold flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <div class="text-sm text-slate-300 font-bold flex items-center gap-2.5">
+                    <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
                     Sincronización en vivo con Google Sheets cada 5s
                 </div>
             </div>
 
-            <!-- TARJETAS GERENCIALES -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-emerald-500">
-                    <span class="text-xs text-slate-300 font-extrabold uppercase tracking-wider block mb-1">Ventas Totales ($MXN)</span>
-                    <strong id="kpiVentas" class="text-3xl font-black text-emerald-400">$0.00</strong>
+            <!-- TARJETAS GERENCIALES (KPIs AMPLIADOS) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="glass-card p-6 rounded-2xl border-l-4 border-l-emerald-500">
+                    <span class="text-xs text-slate-300 font-black uppercase tracking-widest block mb-1">Ventas Totales ($MXN)</span>
+                    <strong id="kpiVentas" class="text-4xl font-black text-emerald-400">$0.00</strong>
                 </div>
-                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-indigo-500">
-                    <span class="text-xs text-slate-300 font-extrabold uppercase tracking-wider block mb-1">📱 Fondo Redes (5%)</span>
-                    <strong id="kpiRedes" class="text-3xl font-black text-indigo-300">$0.00</strong>
+                <div class="glass-card p-6 rounded-2xl border-l-4 border-l-indigo-500">
+                    <span class="text-xs text-slate-300 font-black uppercase tracking-widest block mb-1">📱 Fondo Redes (5%)</span>
+                    <strong id="kpiRedes" class="text-4xl font-black text-indigo-300">$0.00</strong>
                 </div>
-                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-sky-500">
-                    <span class="text-xs text-slate-300 font-extrabold uppercase tracking-wider block mb-1">🏛️ Reserva RESICO (1%)</span>
-                    <strong id="kpiResico" class="text-3xl font-black text-sky-300">$0.00</strong>
+                <div class="glass-card p-6 rounded-2xl border-l-4 border-l-sky-500">
+                    <span class="text-xs text-slate-300 font-black uppercase tracking-widest block mb-1">🏛️ Reserva RESICO (1%)</span>
+                    <strong id="kpiResico" class="text-4xl font-black text-sky-300">$0.00</strong>
                 </div>
-                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-pink-500">
-                    <span class="text-xs text-slate-300 font-extrabold uppercase tracking-wider block mb-1">Utilidad Neta SHAMMAH</span>
-                    <strong id="kpiUtilidad" class="text-3xl font-black text-pink-400">$0.00</strong>
+                <div class="glass-card p-6 rounded-2xl border-l-4 border-l-pink-500">
+                    <span class="text-xs text-slate-300 font-black uppercase tracking-widest block mb-1">Utilidad Neta SHAMMAH</span>
+                    <strong id="kpiUtilidad" class="text-4xl font-black text-pink-400">$0.00</strong>
                 </div>
             </div>
 
-            <!-- TABLA PRINCIPAL DE CONTROL -->
+            <!-- TABLA PRINCIPAL (AMPLIADA Y CON TIPOGRAFÍA CÓMODA) -->
             <div class="glass-card rounded-2xl overflow-hidden border border-slate-700">
-                <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900/80">
-                    <h2 class="text-sm font-bold text-slate-100 uppercase tracking-wider">Histórico de Pedidos & Desglose Financiero</h2>
-                    <button onclick="exportarCSV()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3 py-2 rounded-xl border border-slate-600 transition-all">
+                <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/80">
+                    <h2 class="text-base font-extrabold text-slate-100 uppercase tracking-wider">Histórico de Pedidos & Desglose Financiero</h2>
+                    <button onclick="exportarCSV()" class="text-sm bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold px-4 py-2.5 rounded-xl border border-slate-600 transition-all">
                         📥 Exportar a Excel (CSV)
                     </button>
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm text-slate-100">
-                        <thead class="bg-slate-950 text-slate-300 uppercase font-extrabold text-xs border-b border-slate-700">
+                    <table class="w-full text-left text-base text-slate-100">
+                        <thead class="bg-slate-950 text-slate-300 uppercase font-black text-xs border-b border-slate-700">
                             <tr>
-                                <th class="p-3.5">Folio / Fecha</th>
-                                <th class="p-3.5">Cliente / Producto</th>
-                                <th class="p-3.5">Q</th>
-                                <th class="p-3.5">Monto Total</th>
-                                <th class="p-3.5">Redes (5%)</th>
-                                <th class="p-3.5">RESICO (1%)</th>
-                                <th class="p-3.5">Utilidad Neta</th>
-                                <th class="p-3.5">Estatus Pago</th>
-                                <th class="p-3.5">Método</th>
-                                <th class="p-3.5">Acción</th>
+                                <th class="p-4">Folio / Fecha</th>
+                                <th class="p-4">Cliente / Producto</th>
+                                <th class="p-4">Q</th>
+                                <th class="p-4">Monto Total</th>
+                                <th class="p-4">Redes (5%)</th>
+                                <th class="p-4">RESICO (1%)</th>
+                                <th class="p-4">Utilidad Neta</th>
+                                <th class="p-4">Estatus Pago</th>
+                                <th class="p-4">Método</th>
+                                <th class="p-4">Acción</th>
                             </tr>
                         </thead>
                         <tbody id="tablaPedidos" class="divide-y divide-slate-800">
@@ -136,27 +137,27 @@
 
         <!-- SECCIÓN 2: AJUSTE DE TARIFAS -->
         <section id="sec-config" class="hidden space-y-6">
-            <div class="glass-card p-6 rounded-2xl border border-slate-700 space-y-5">
-                <h2 class="text-base font-bold text-white uppercase tracking-wider border-b border-slate-700 pb-3">Configurador Local de Tarifas</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div class="glass-card p-8 rounded-2xl border border-slate-700 space-y-6">
+                <h2 class="text-lg font-bold text-white uppercase tracking-wider border-b border-slate-700 pb-4">Configurador Local de Tarifas</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Costo por Gramo ($ MXN)</label>
-                        <input type="number" step="0.01" id="cfgCostoGramo" value="0.50" class="w-full glass-input rounded-xl p-3 font-bold text-white text-base">
+                        <label class="block text-sm font-bold text-slate-300 mb-1.5">Costo por Gramo ($ MXN)</label>
+                        <input type="number" step="0.01" id="cfgCostoGramo" value="0.50" class="w-full glass-input rounded-xl p-3.5 font-bold text-white text-lg">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Tarifa Hora Máquina ($ MXN/h)</label>
-                        <input type="number" step="0.50" id="cfgCostoHora" value="9.00" class="w-full glass-input rounded-xl p-3 font-bold text-white text-base">
+                        <label class="block text-sm font-bold text-slate-300 mb-1.5">Tarifa Hora Máquina ($ MXN/h)</label>
+                        <input type="number" step="0.50" id="cfgCostoHora" value="9.00" class="w-full glass-input rounded-xl p-3.5 font-bold text-white text-lg">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Herraje Clicker ($ MXN/unidad)</label>
-                        <input type="number" step="0.10" id="cfgHerrajeClicker" value="2.63" class="w-full glass-input rounded-xl p-3 font-bold text-white text-base">
+                        <label class="block text-sm font-bold text-slate-300 mb-1.5">Herraje Clicker ($ MXN/unidad)</label>
+                        <input type="number" step="0.10" id="cfgHerrajeClicker" value="2.63" class="w-full glass-input rounded-xl p-3.5 font-bold text-white text-lg">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">WhatsApp de Atención Taller</label>
-                        <input type="text" id="cfgNumWhatsapp" value="5215559650025" class="w-full glass-input rounded-xl p-3 font-bold text-white text-base">
+                        <label class="block text-sm font-bold text-slate-300 mb-1.5">WhatsApp de Atención Taller</label>
+                        <input type="text" id="cfgNumWhatsapp" value="5215559650025" class="w-full glass-input rounded-xl p-3.5 font-bold text-white text-lg">
                     </div>
                 </div>
-                <button onclick="guardarConfiguracion()" class="bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-extrabold px-6 py-3.5 rounded-xl shadow-lg transition-all text-sm">
+                <button onclick="guardarConfiguracion()" class="bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-extrabold px-8 py-4 rounded-xl shadow-lg transition-all text-base">
                     💾 Guardar Parámetros
                 </button>
             </div>
@@ -223,13 +224,11 @@
             });
         }
 
-        // Función para convertir fecha/hora a formato 12 HORAS (AM/PM)
         function formatearHora12H(strFecha) {
             if (!strFecha) return '';
             try {
                 let d = new Date(strFecha);
                 if (isNaN(d.getTime())) {
-                    // Si viene como "YYYY-MM-DD HH:mm", parsear manualmente
                     let partes = String(strFecha).split(' ');
                     if (partes.length >= 2) {
                         let horaMin = partes[1].split(':');
@@ -273,38 +272,37 @@
                 sumResico += p.f_resico;
                 sumUtilidad += p.utilidad;
 
-                // Aplicar formato 12 Horas AM/PM
                 let fecha12h = formatearHora12H(p.fecha);
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-800/60 transition-colors">
-                        <td class="p-3.5 font-mono font-bold text-pink-400 text-sm">
+                        <td class="p-4 font-mono font-bold text-pink-400 text-base">
                             ${p.id}
-                            <span class="block text-xs text-slate-300 font-sans font-normal mt-0.5">${fecha12h}</span>
+                            <span class="block text-xs text-slate-300 font-sans font-semibold mt-1">${fecha12h}</span>
                         </td>
-                        <td class="p-3.5">
-                            <strong class="text-white block text-sm font-extrabold">${p.cliente}</strong>
-                            <span class="text-xs text-slate-300">${p.producto}</span>
+                        <td class="p-4">
+                            <strong class="text-white block text-base font-extrabold">${p.cliente}</strong>
+                            <span class="text-sm text-slate-300 font-medium">${p.producto}</span>
                         </td>
-                        <td class="p-3.5 font-bold text-white text-sm">${p.Q} pz</td>
-                        <td class="p-3.5 font-black text-emerald-400 text-base">$${p.total.toFixed(2)}</td>
-                        <td class="p-3.5 font-bold text-indigo-300 text-sm">$${p.f_redes.toFixed(2)}</td>
-                        <td class="p-3.5 font-bold text-sky-300 text-sm">$${p.f_resico.toFixed(2)}</td>
-                        <td class="p-3.5 font-black text-pink-300 text-base">$${p.utilidad.toFixed(2)}</td>
-                        <td class="p-3.5">
-                            <button onclick="toggleEstatus(${idxOriginal})" class="px-3 py-1.5 rounded-full text-xs font-black border transition-all ${p.estatus_pago.includes('Pagado') ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50' : p.estatus_pago.includes('Anticipo') ? 'bg-amber-500/20 text-amber-400 border-amber-500/50' : 'bg-rose-500/20 text-rose-400 border-rose-500/50'}">
+                        <td class="p-4 font-black text-white text-base">${p.Q} pz</td>
+                        <td class="p-4 font-black text-emerald-400 text-lg">$${p.total.toFixed(2)}</td>
+                        <td class="p-4 font-bold text-indigo-300 text-base">$${p.f_redes.toFixed(2)}</td>
+                        <td class="p-4 font-bold text-sky-300 text-base">$${p.f_resico.toFixed(2)}</td>
+                        <td class="p-4 font-black text-pink-300 text-lg">$${p.utilidad.toFixed(2)}</td>
+                        <td class="p-4">
+                            <button onclick="toggleEstatus(${idxOriginal})" class="px-4 py-2 rounded-full text-xs font-black border transition-all shadow-sm ${p.estatus_pago.includes('Pagado') ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50' : p.estatus_pago.includes('Anticipo') ? 'bg-amber-500/20 text-amber-400 border-amber-500/50' : 'bg-rose-500/20 text-rose-400 border-rose-500/50'}">
                                 ${p.estatus_pago}
                             </button>
                         </td>
-                        <td class="p-3.5">
-                            <select onchange="cambiarMetodo(${idxOriginal}, this.value)" class="bg-slate-900 border border-slate-600 text-xs rounded-xl p-2 font-bold text-slate-100">
+                        <td class="p-4">
+                            <select onchange="cambiarMetodo(${idxOriginal}, this.value)" class="bg-slate-900 border border-slate-600 text-xs rounded-xl p-2.5 font-bold text-slate-100 shadow-sm">
                                 <option value="Efectivo" ${p.metodo_pago === 'Efectivo' ? 'selected' : ''}>💸 Efectivo</option>
                                 <option value="Transferencia" ${p.metodo_pago === 'Transferencia' || p.metodo_pago === 'SPEI' ? 'selected' : ''}>💳 SPEI</option>
                                 <option value="Pendiente" ${p.metodo_pago === 'Pendiente' ? 'selected' : ''}>⏳ Pendiente</option>
                             </select>
                         </td>
-                        <td class="p-3.5">
-                            <button onclick="eliminarPedido(${idxOriginal})" class="text-sm text-slate-400 hover:text-rose-400 p-1 transition-colors">🗑️</button>
+                        <td class="p-4">
+                            <button onclick="eliminarPedido(${idxOriginal})" class="text-base text-slate-400 hover:text-rose-400 p-1.5 transition-colors">🗑️</button>
                         </td>
                     </tr>
                 `;
