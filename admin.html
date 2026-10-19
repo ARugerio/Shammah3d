@@ -68,7 +68,7 @@
         <!-- SECCIÓN 1: CRM Y DASHBOARD FINANCIERO -->
         <section id="sec-crm" class="space-y-8">
             
-            <!-- FILTRO DE MES Y MENSAJE DE ESTADO -->
+            <!-- FILTRO DE MES Y BOTÓN DE ALTA MANUAL -->
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-900/90 p-5 rounded-2xl border border-slate-700">
                 <div class="flex items-center gap-4">
                     <span class="text-base font-extrabold text-slate-200 uppercase tracking-wider">Filtrar por Mes:</span>
@@ -76,13 +76,75 @@
                         <!-- Opciones dinámicas de mes -->
                     </select>
                 </div>
-                <div class="text-sm text-slate-300 font-bold flex items-center gap-2.5">
-                    <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
-                    Sincronización en vivo con Google Sheets cada 5s
+                
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleFormManual()" class="bg-pink-500 hover:bg-pink-600 text-white font-extrabold px-5 py-3 rounded-xl text-sm transition-all shadow-lg flex items-center gap-2">
+                        ➕ Capturar Pedido Manual / Servicio Extra
+                    </button>
+                    <div class="text-sm text-slate-300 font-bold flex items-center gap-2.5 hidden sm:flex">
+                        <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+                        En vivo
+                    </div>
                 </div>
             </div>
 
-            <!-- TARJETAS GERENCIALES (KPIs AMPLIADOS) -->
+            <!-- FORMULARIO DE CAPTURA MANUAL -->
+            <div id="formManual" class="hidden glass-card p-6 sm:p-8 rounded-3xl border-2 border-pink-500/40 space-y-6 bg-slate-900/90 shadow-2xl">
+                <div class="flex justify-between items-center border-b border-slate-700 pb-4">
+                    <h3 class="text-lg font-black text-pink-400 uppercase tracking-wider">➕ Registro Manual de Cobro / Servicio Especial</h3>
+                    <button onclick="toggleFormManual()" class="text-slate-400 hover:text-white font-bold text-sm">✕ Cerrar</button>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div>
+                        <label class="block text-xs font-black text-slate-300 uppercase mb-1.5">Nombre del Cliente</label>
+                        <input type="text" id="mCliente" placeholder="Ej. Pedro Gómez" class="w-full glass-input rounded-xl p-3 text-base font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black text-slate-300 uppercase mb-1.5">Concepto / Servicio</label>
+                        <input type="text" id="mProducto" placeholder="Ej. Diseño CAD 3D / Envío / Ensamblado" class="w-full glass-input rounded-xl p-3 text-base font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black text-slate-300 uppercase mb-1.5">Cantidad (Pz/Servicio)</label>
+                        <input type="number" id="mCantidad" value="1" min="1" class="w-full glass-input rounded-xl p-3 text-base font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black text-slate-300 uppercase mb-1.5">Monto Total Cobrado ($ MXN)</label>
+                        <input type="number" step="0.50" id="mMontoTotal" placeholder="0.00" class="w-full glass-input rounded-xl p-3 text-base font-black text-emerald-400">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                    <div>
+                        <label class="block text-xs font-black text-slate-300 uppercase mb-1.5">Estatus de Pago</label>
+                        <select id="mEstatusPago" class="w-full glass-input rounded-xl p-3 text-base font-bold text-white bg-slate-900">
+                            <option value="🔴 Pendiente">🔴 Pendiente</option>
+                            <option value="🟡 Anticipo 50%">🟡 Anticipo 50%</option>
+                            <option value="🟢 Pagado" selected>🟢 Pagado</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black text-slate-300 uppercase mb-1.5">Método de Pago</label>
+                        <select id="mMetodoPago" class="w-full glass-input rounded-xl p-3 text-base font-bold text-white bg-slate-900">
+                            <option value="Efectivo">💸 Efectivo</option>
+                            <option value="Transferencia" selected>💳 SPEI / Transferencia</option>
+                            <option value="Pendiente">⏳ Pendiente</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black text-slate-300 uppercase mb-1.5">Costo Directo Insumos ($ MXN)</label>
+                        <input type="number" step="0.50" id="mCostoDirecto" value="0.00" class="w-full glass-input rounded-xl p-3 text-base font-bold" placeholder="0.00 si es servicio puro">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-4 pt-2">
+                    <button onclick="guardarPedidoManual()" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-black px-8 py-3.5 rounded-xl shadow-lg transition-all text-base">
+                        💾 Guardar Registro en Google Sheets
+                    </button>
+                </div>
+            </div>
+
+            <!-- TARJETAS GERENCIALES (KPIs) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="glass-card p-6 rounded-2xl border-l-4 border-l-emerald-500">
                     <span class="text-xs text-slate-300 font-black uppercase tracking-widest block mb-1">Ventas Totales ($MXN)</span>
@@ -102,7 +164,7 @@
                 </div>
             </div>
 
-            <!-- TABLA PRINCIPAL (AMPLIADA Y CON TIPOGRAFÍA CÓMODA) -->
+            <!-- TABLA PRINCIPAL DE CONTROL -->
             <div class="glass-card rounded-2xl overflow-hidden border border-slate-700">
                 <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/80">
                     <h2 class="text-base font-extrabold text-slate-100 uppercase tracking-wider">Histórico de Pedidos & Desglose Financiero</h2>
@@ -177,6 +239,10 @@
             document.getElementById('tab-config').classList.toggle('active', p === 'config');
         }
 
+        function toggleFormManual() {
+            document.getElementById('formManual').classList.toggle('hidden');
+        }
+
         async function cargarDesdeGoogle() {
             try {
                 let res = await fetch(URL_API_GOOGLE);
@@ -201,6 +267,62 @@
             } catch(e) {
                 console.error("Error al guardar en Google:", e);
             }
+        }
+
+        async function guardarPedidoManual() {
+            const cliente = document.getElementById('mCliente').value.trim() || "Cliente Taller";
+            const producto = document.getElementById('mProducto').value.trim() || "Servicio / Concepto Extra";
+            const Q = parseInt(document.getElementById('mCantidad').value) || 1;
+            const total = parseFloat(document.getElementById('mMontoTotal').value) || 0;
+            const estatus = document.getElementById('mEstatusPago').value;
+            const metodo = document.getElementById('mMetodoPago').value;
+            const costoDir = parseFloat(document.getElementById('mCostoDirecto').value) || 0;
+
+            if(total <= 0) {
+                alert("Por favor ingresa un monto total válido.");
+                return;
+            }
+
+            const f_redes = total * 0.05;
+            const f_resico = total * 0.01;
+            const utilidad = total - (f_redes + f_resico + costoDir);
+
+            const ahora = new Date();
+            const anio = ahora.getFullYear();
+            const mesNum = String(ahora.getMonth() + 1).padStart(2, '0');
+            const mesStr = `${anio}-${mesNum}`;
+            const timestamp = `${anio}-${mesNum}-${String(ahora.getDate()).padStart(2, '0')} ${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}`;
+            const folioId = `SHM-MAN-${anio.toString().slice(-2)}${mesNum}-${Math.floor(100 + Math.random() * 900)}`;
+
+            const nuevoItem = {
+                id: folioId,
+                mes: mesStr,
+                fecha: timestamp,
+                cliente: cliente,
+                contacto: "Directo Taller",
+                producto: producto,
+                Q: Q,
+                gramos: 0,
+                minutos: 0,
+                total: total,
+                f_redes: f_redes,
+                f_resico: f_resico,
+                costo_dir: costoDir,
+                utilidad: utilidad,
+                estatus_pago: estatus,
+                metodo_pago: metodo
+            };
+
+            pedidos.unshift(nuevoItem);
+
+            // Limpiar campos
+            document.getElementById('mCliente').value = '';
+            document.getElementById('mProducto').value = '';
+            document.getElementById('mMontoTotal').value = '';
+            document.getElementById('mCostoDirecto').value = '0.00';
+            toggleFormManual();
+
+            await guardarPedidos();
         }
 
         function poblarSelectMeses() {
@@ -274,6 +396,11 @@
 
                 let fecha12h = formatearHora12H(p.fecha);
 
+                // Estilos según el valor seleccionado
+                let colorBg = p.estatus_pago.includes('Pagado') ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/50' : 
+                              p.estatus_pago.includes('Anticipo') ? 'bg-amber-950/80 text-amber-400 border-amber-500/50' : 
+                              'bg-rose-950/80 text-rose-400 border-rose-500/50';
+
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-800/60 transition-colors">
                         <td class="p-4 font-mono font-bold text-pink-400 text-base">
@@ -290,9 +417,12 @@
                         <td class="p-4 font-bold text-sky-300 text-base">$${p.f_resico.toFixed(2)}</td>
                         <td class="p-4 font-black text-pink-300 text-lg">$${p.utilidad.toFixed(2)}</td>
                         <td class="p-4">
-                            <button onclick="toggleEstatus(${idxOriginal})" class="px-4 py-2 rounded-full text-xs font-black border transition-all shadow-sm ${p.estatus_pago.includes('Pagado') ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50' : p.estatus_pago.includes('Anticipo') ? 'bg-amber-500/20 text-amber-400 border-amber-500/50' : 'bg-rose-500/20 text-rose-400 border-rose-500/50'}">
-                                ${p.estatus_pago}
-                            </button>
+                            <!-- DESPLEGABLE DIRECTO DE ESTATUS DE PAGO -->
+                            <select onchange="cambiarEstatusDirecto(${idxOriginal}, this)" class="border text-xs rounded-xl p-2.5 font-black shadow-sm bg-slate-900 cursor-pointer focus:outline-none transition-all ${colorBg}">
+                                <option value="🔴 Pendiente" ${p.estatus_pago.includes('Pendiente') ? 'selected' : ''}>🔴 Pendiente</option>
+                                <option value="🟡 Anticipo 50%" ${p.estatus_pago.includes('Anticipo') ? 'selected' : ''}>🟡 Anticipo 50%</option>
+                                <option value="🟢 Pagado" ${p.estatus_pago.includes('Pagado') ? 'selected' : ''}>🟢 Pagado</option>
+                            </select>
                         </td>
                         <td class="p-4">
                             <select onchange="cambiarMetodo(${idxOriginal}, this.value)" class="bg-slate-900 border border-slate-600 text-xs rounded-xl p-2.5 font-bold text-slate-100 shadow-sm">
@@ -314,12 +444,12 @@
             document.getElementById('kpiUtilidad').innerText = `$${sumUtilidad.toFixed(2)} MXN`;
         }
 
-        function toggleEstatus(idx) {
-            const actual = pedidos[idx].estatus_pago;
-            if(actual.includes('Pendiente')) pedidos[idx].estatus_pago = '🟡 Anticipo 50%';
-            else if(actual.includes('Anticipo')) pedidos[idx].estatus_pago = '🟢 Pagado';
-            else pedidos[idx].estatus_pago = '🔴 Pendiente';
-            guardarPedidos();
+        async function cambiarEstatusDirecto(idx, selectEl) {
+            selectEl.disabled = true; // Prevenir clics repetidos
+            const val = selectEl.value;
+            pedidos[idx].estatus_pago = val;
+            await guardarPedidos();
+            selectEl.disabled = false;
         }
 
         function cambiarMetodo(idx, val) {
@@ -328,8 +458,10 @@
         }
 
         function eliminarPedido(idx) {
-            pedidos.splice(idx, 1);
-            guardarPedidos();
+            if(confirm("¿Estás seguro de eliminar este registro del historial?")) {
+                pedidos.splice(idx, 1);
+                guardarPedidos();
+            }
         }
 
         function exportarCSV() {
