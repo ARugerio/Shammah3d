@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Admin & CRM | SHAMMAH CREA 3D</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -37,93 +36,110 @@
 </head>
 <body class="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8">
 
-    <!-- CONTENEDOR PRINCIPAL -->
-    <main class="w-full max-w-6xl glass-card rounded-[2.5rem] p-6 sm:p-8 lg:p-10 shadow-2xl my-auto">
+    <main class="w-full max-w-7xl glass-card rounded-[2.5rem] p-6 sm:p-8 lg:p-10 shadow-2xl my-auto">
         
-        <!-- ENCABEZADO, NAVEGACIÓN Y BOTÓN DE RETORNO -->
+        <!-- HEADER PRINCIPAL Y RETORNO AL MOSTRADOR -->
         <header class="border-b border-slate-700/70 pb-6 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
                 <div class="flex items-center gap-3 justify-center sm:justify-start">
                     <h1 class="text-3xl font-black text-white">SHAMMAH <span class="text-pink-500">CREA</span></h1>
-                    <span class="bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold px-3 py-1 rounded-full uppercase">Panel Control</span>
+                    <span class="bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold px-3 py-1 rounded-full uppercase">Panel Gerencial</span>
                 </div>
-                <p class="text-sm text-slate-400 mt-1">Gestión de Cobros, CRM de Clientes y Parámetros del Taller</p>
+                <p class="text-sm text-slate-400 mt-1">Control Financiero, RESICO (1%), Fondo Redes (5%) y Pedidos</p>
             </div>
 
-            <!-- CONTENEDOR DERECHO: PESTAÑAS + BOTÓN VOLVER -->
             <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto justify-between">
                 <div class="flex gap-6 border-b border-slate-700 sm:border-none">
                     <button onclick="cambiarPestana('crm')" id="tab-crm" class="tab-btn active pb-3 text-sm font-semibold transition-all">
-                        📋 Pedidos, CRM & Cobros
+                        📋 Pedidos & Corte Mensual
                     </button>
                     <button onclick="cambiarPestana('config')" id="tab-config" class="tab-btn pb-3 text-sm font-semibold text-slate-400 hover:text-slate-200 transition-all">
                         ⚙️ Tarifas & Parámetros
                     </button>
                 </div>
 
-                <!-- BOTÓN PARA REGRESAR AL INDEX -->
                 <a href="index.html" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md">
                     ⬅️ Volver al Mostrador
                 </a>
             </div>
         </header>
 
-        <!-- SECCIÓN 1: CRM, PEDIDOS Y GESTIÓN DE COBROS -->
+        <!-- SECCIÓN 1: CRM Y DASHBOARD FINANCIERO -->
         <section id="sec-crm" class="space-y-6">
             
-            <!-- TARJETAS DE RESUMEN RÁPIDO DE COBROS -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-emerald-500">
-                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block mb-1">Cobrado Quincena</span>
-                    <strong id="montoCobrado" class="text-2xl font-black text-emerald-400">$0.00 MXN</strong>
+            <!-- FILTRO DE MES Y TARJETAS DE KPIS -->
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Filtrar por Mes:</span>
+                    <select id="selectMes" onchange="renderTabla()" class="bg-slate-950 border border-slate-700 text-white font-bold text-sm rounded-xl p-2.5 focus:outline-none focus:border-pink-500">
+                        <!-- Opciones dinámicas de mes -->
+                    </select>
                 </div>
-                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-rose-500">
-                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block mb-1">Por Cobrar (Pendiente)</span>
-                    <strong id="montoPendiente" class="text-2xl font-black text-rose-400">$0.00 MXN</strong>
-                </div>
-                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-pink-500">
-                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block mb-1">Total Pedidos</span>
-                    <strong id="numPedidos" class="text-2xl font-black text-white">0 registrados</strong>
+                <div class="text-xs text-slate-400 font-semibold">
+                    🔄 Sincronización en vivo con Google Sheets cada 5s
                 </div>
             </div>
 
-            <!-- TABLA DE CONTROL DE PEDIDOS -->
+            <!-- TARJETAS GERENCIALES DE CORTE FINANCIERO -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-emerald-500">
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block mb-1">Ventas Totales ($MXN)</span>
+                    <strong id="kpiVentas" class="text-2xl font-black text-emerald-400">$0.00</strong>
+                </div>
+                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-indigo-500">
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block mb-1">📱 Fondo Redes (5%)</span>
+                    <strong id="kpiRedes" class="text-2xl font-black text-indigo-400">$0.00</strong>
+                </div>
+                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-sky-500">
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block mb-1">🏛️ Reserva RESICO (1%)</span>
+                    <strong id="kpiResico" class="text-2xl font-black text-sky-400">$0.00</strong>
+                </div>
+                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-pink-500">
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block mb-1">Utilidad Neta SHAMMAH</span>
+                    <strong id="kpiUtilidad" class="text-2xl font-black text-pink-400">$0.00</strong>
+                </div>
+            </div>
+
+            <!-- TABLA PRINCIPAL DE CONTROL -->
             <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
                 <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/60">
-                    <h2 class="text-sm font-bold text-slate-200 uppercase tracking-wider">Histórico de Pedidos & Cobros</h2>
+                    <h2 class="text-sm font-bold text-slate-200 uppercase tracking-wider">Histórico de Pedidos & Desglose Financiero</h2>
                     <button onclick="exportarCSV()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3 py-2 rounded-xl transition-all">
                         📥 Exportar a Excel (CSV)
                     </button>
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm text-slate-300">
-                        <thead class="bg-slate-950 text-slate-400 text-xs uppercase font-extrabold border-b border-slate-800">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-950 text-slate-400 uppercase font-extrabold border-b border-slate-800">
                             <tr>
-                                <th class="p-4">Cliente / Producto</th>
-                                <th class="p-4">Cantidad</th>
-                                <th class="p-4">Total MXN</th>
-                                <th class="p-4">Estatus Pago</th>
-                                <th class="p-4">Método Pago</th>
-                                <th class="p-4">Acción</th>
+                                <th class="p-3">Folio / Fecha</th>
+                                <th class="p-3">Cliente / Producto</th>
+                                <th class="p-3">Q</th>
+                                <th class="p-3">Monto Total</th>
+                                <th class="p-3">Redes (5%)</th>
+                                <th class="p-3">RESICO (1%)</th>
+                                <th class="p-3">Utilidad Neta</th>
+                                <th class="p-3">Estatus Pago</th>
+                                <th class="p-3">Método</th>
+                                <th class="p-3">Acción</th>
                             </tr>
                         </thead>
                         <tbody id="tablaPedidos" class="divide-y divide-slate-800/80">
-                            <!-- Filas dinámicas generadas por JS -->
+                            <!-- Filas dinámicas -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <!-- SECCIÓN 2: AJUSTE DE TARIFAS Y PARÁMETROS -->
+        <!-- SECCIÓN 2: AJUSTE DE TARIFAS -->
         <section id="sec-config" class="hidden space-y-6">
             <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-5">
-                <h2 class="text-base font-bold text-white uppercase tracking-wider border-b border-slate-800 pb-3">Configurador Local de Tarifas (Afecta al Mostrador)</h2>
-                
+                <h2 class="text-base font-bold text-white uppercase tracking-wider border-b border-slate-800 pb-3">Configurador Local de Tarifas</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Costo por Gramo de Filamento ($ MXN)</label>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Costo por Gramo ($ MXN)</label>
                         <input type="number" step="0.01" id="cfgCostoGramo" value="0.50" class="w-full glass-input rounded-xl p-3 font-bold text-white">
                     </div>
                     <div>
@@ -131,7 +147,7 @@
                         <input type="number" step="0.50" id="cfgCostoHora" value="9.00" class="w-full glass-input rounded-xl p-3 font-bold text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Herraje Clicker / Switch ($ MXN/unidad)</label>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Herraje Clicker ($ MXN/unidad)</label>
                         <input type="number" step="0.10" id="cfgHerrajeClicker" value="2.63" class="w-full glass-input rounded-xl p-3 font-bold text-white">
                     </div>
                     <div>
@@ -139,19 +155,39 @@
                         <input type="text" id="cfgNumWhatsapp" value="5215559650025" class="w-full glass-input rounded-xl p-3 font-bold text-white">
                     </div>
                 </div>
-
-                <div class="pt-3">
-                    <button onclick="guardarConfiguracion()" class="bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-extrabold px-6 py-3.5 rounded-xl shadow-lg transition-all text-sm">
-                        💾 Guardar Parámetros en Taller
-                    </button>
-                </div>
+                <button onclick="guardarConfiguracion()" class="bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-extrabold px-6 py-3.5 rounded-xl shadow-lg transition-all text-sm">
+                    💾 Guardar Parámetros
+                </button>
             </div>
         </section>
 
     </main>
 
     <script>
-        // Cambiar entre pestañas
+        // PEGA AQUÍ LA URL OBTENIDA DE TU PASO DE GOOGLE APPS SCRIPT
+        const URL_API_GOOGLE = "PEGA_AQUI_TU_URL_DE_APPS_SCRIPT";
+
+        let pedidos = [
+            {
+                id: "SHM-2610-001",
+                mes: "2026-10",
+                fecha: "2026-10-19 13:15",
+                cliente: "Ejemplo Juan Pérez",
+                contacto: "5551234567",
+                producto: "Llavero Batman 3D",
+                Q: 5,
+                gramos: 45,
+                minutos: 60,
+                total: 450.00,
+                f_redes: 22.50,
+                f_resico: 4.50,
+                costo_dir: 31.50,
+                utilidad: 391.50,
+                estatus_pago: "🔴 Pendiente",
+                metodo_pago: "Pendiente"
+            }
+        ];
+
         function cambiarPestana(p) {
             document.getElementById('sec-crm').classList.toggle('hidden', p !== 'crm');
             document.getElementById('sec-config').classList.toggle('hidden', p !== 'config');
@@ -159,91 +195,144 @@
             document.getElementById('tab-config').classList.toggle('active', p === 'config');
         }
 
-        // Datos en LocalStorage de pruebas/demostración
-        let pedidos = JSON.parse(localStorage.getItem('shammah_pedidos')) || [
-            { id: 1, cliente: "Juan Pérez", producto: "Llavero Batman", Q: 2, total: 198, pagado: false, metodo: "Pendiente" },
-            { id: 2, cliente: "María Gómez", producto: "Clicker Logo Custom", Q: 12, total: 420, pagado: true, metodo: "Transferencia" }
-        ];
+        async function cargarDesdeGoogle() {
+            if(URL_API_GOOGLE === "PEGA_AQUI_TU_URL_DE_APPS_SCRIPT") {
+                poblarSelectMeses();
+                renderTabla();
+                return;
+            }
+            try {
+                let res = await fetch(URL_API_GOOGLE);
+                let data = await res.json();
+                if(data && data.length > 0) {
+                    pedidos = data;
+                }
+                poblarSelectMeses();
+                renderTabla();
+            } catch(e) {
+                console.error("Error al cargar desde Google:", e);
+            }
+        }
+
+        async function guardarPedidos() {
+            renderTabla();
+            if(URL_API_GOOGLE === "PEGA_AQUI_TU_URL_DE_APPS_SCRIPT") return;
+            try {
+                await fetch(URL_API_GOOGLE, {
+                    method: "POST",
+                    body: JSON.stringify(pedidos)
+                });
+            } catch(e) {
+                console.error("Error al guardar en Google:", e);
+            }
+        }
+
+        function poblarSelectMeses() {
+            const select = document.getElementById('selectMes');
+            const mesActualSel = select.value;
+            const mesesUnicos = [...new Set(pedidos.map(p => p.mes))].sort().reverse();
+            
+            select.innerHTML = '';
+            if(mesesUnicos.length === 0) {
+                const actual = new Date().toISOString().slice(0,7);
+                select.innerHTML = `<option value="${actual}">${actual}</option>`;
+                return;
+            }
+
+            mesesUnicos.forEach(m => {
+                select.innerHTML += `<option value="${m}" ${m === mesActualSel ? 'selected' : ''}>${m}</option>`;
+            });
+        }
 
         function renderTabla() {
+            const mesSel = document.getElementById('selectMes').value || new Date().toISOString().slice(0,7);
             const tbody = document.getElementById('tablaPedidos');
             tbody.innerHTML = '';
-            let cobrado = 0;
-            let pendiente = 0;
 
-            pedidos.forEach((p, index) => {
-                if(p.pagado) cobrado += p.total;
-                else pendiente += p.total;
+            let sumVentas = 0, sumRedes = 0, sumResico = 0, sumUtilidad = 0;
+
+            const pedidosFiltrados = pedidos.filter(p => p.mes === mesSel);
+
+            pedidosFiltrados.forEach((p, index) => {
+                const idxOriginal = pedidos.findIndex(item => item.id === p.id);
+                sumVentas += p.total;
+                sumRedes += p.f_redes;
+                sumResico += p.f_resico;
+                sumUtilidad += p.utilidad;
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-800/40 transition-colors">
-                        <td class="p-4">
-                            <strong class="text-white block">${p.cliente}</strong>
-                            <span class="text-xs text-slate-400">${p.producto}</span>
+                        <td class="p-3 font-mono font-bold text-pink-400">
+                            ${p.id}
+                            <span class="block text-[10px] text-slate-500 font-sans">${p.fecha}</span>
                         </td>
-                        <td class="p-4 font-bold text-white">${p.Q} pz</td>
-                        <td class="p-4 font-black text-pink-400">$${p.total.toFixed(2)} MXN</td>
-                        <td class="p-4">
-                            <button onclick="togglePago(${index})" class="px-3 py-1 rounded-full text-xs font-extrabold ${p.pagado ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-400 border border-rose-500/40'}">
-                                ${p.pagado ? '🟢 Pagado' : '🔴 Pendiente'}
+                        <td class="p-3">
+                            <strong class="text-white block">${p.cliente}</strong>
+                            <span class="text-[11px] text-slate-400">${p.producto}</span>
+                        </td>
+                        <td class="p-3 font-bold text-white">${p.Q} pz</td>
+                        <td class="p-3 font-black text-emerald-400">$${p.total.toFixed(2)}</td>
+                        <td class="p-3 font-bold text-indigo-300">$${p.f_redes.toFixed(2)}</td>
+                        <td class="p-3 font-bold text-sky-300">$${p.f_resico.toFixed(2)}</td>
+                        <td class="p-3 font-black text-pink-300">$${p.utilidad.toFixed(2)}</td>
+                        <td class="p-3">
+                            <button onclick="toggleEstatus(${idxOriginal})" class="px-2.5 py-1 rounded-full text-[11px] font-extrabold border ${p.estatus_pago.includes('Pagado') ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' : p.estatus_pago.includes('Anticipo') ? 'bg-amber-500/20 text-amber-400 border-amber-500/40' : 'bg-rose-500/20 text-rose-400 border-rose-500/40'}">
+                                ${p.estatus_pago}
                             </button>
                         </td>
-                        <td class="p-4">
-                            <select onchange="cambiarMetodo(${index}, this.value)" class="bg-slate-900 border border-slate-700 text-xs rounded-lg p-1.5 font-bold text-slate-200">
-                                <option value="Efectivo" ${p.metodo === 'Efectivo' ? 'selected' : ''}>💸 Efectivo</option>
-                                <option value="Transferencia" ${p.metodo === 'Transferencia' ? 'selected' : ''}>💳 Transferencia</option>
-                                <option value="Pendiente" ${p.metodo === 'Pendiente' ? 'selected' : ''}>⏳ Pendiente</option>
+                        <td class="p-3">
+                            <select onchange="cambiarMetodo(${idxOriginal}, this.value)" class="bg-slate-900 border border-slate-700 text-[11px] rounded-lg p-1 font-bold text-slate-200">
+                                <option value="Efectivo" ${p.metodo_pago === 'Efectivo' ? 'selected' : ''}>💸 Efectivo</option>
+                                <option value="Transferencia" ${p.metodo_pago === 'Transferencia' ? 'selected' : ''}>💳 SPEI</option>
+                                <option value="Pendiente" ${p.metodo_pago === 'Pendiente' ? 'selected' : ''}>⏳ Pendiente</option>
                             </select>
                         </td>
-                        <td class="p-4">
-                            <button onclick="eliminarPedido(${index})" class="text-xs text-slate-500 hover:text-rose-400 transition-colors">🗑️ Borrar</button>
+                        <td class="p-3">
+                            <button onclick="eliminarPedido(${idxOriginal})" class="text-[11px] text-slate-500 hover:text-rose-400 transition-colors">🗑️</button>
                         </td>
                     </tr>
                 `;
             });
 
-            document.getElementById('montoCobrado').innerText = `$${cobrado.toFixed(2)} MXN`;
-            document.getElementById('montoPendiente').innerText = `$${pendiente.toFixed(2)} MXN`;
-            document.getElementById('numPedidos').innerText = `${pedidos.length} registrados`;
+            document.getElementById('kpiVentas').innerText = `$${sumVentas.toFixed(2)} MXN`;
+            document.getElementById('kpiRedes').innerText = `$${sumRedes.toFixed(2)} MXN`;
+            document.getElementById('kpiResico').innerText = `$${sumResico.toFixed(2)} MXN`;
+            document.getElementById('kpiUtilidad').innerText = `$${sumUtilidad.toFixed(2)} MXN`;
         }
 
-        function togglePago(index) {
-            pedidos[index].pagado = !pedidos[index].pagado;
-            if(pedidos[index].pagado && pedidos[index].metodo === 'Pendiente') {
-                pedidos[index].metodo = 'Transferencia';
-            }
+        function toggleEstatus(idx) {
+            const actual = pedidos[idx].estatus_pago;
+            if(actual.includes('Pendiente')) pedidos[idx].estatus_pago = '🟡 Anticipo 50%';
+            else if(actual.includes('Anticipo')) pedidos[idx].estatus_pago = '🟢 Pagado';
+            else pedidos[idx].estatus_pago = '🔴 Pendiente';
             guardarPedidos();
         }
 
-        function cambiarMetodo(index, val) {
-            pedidos[index].metodo = val;
+        function cambiarMetodo(idx, val) {
+            pedidos[idx].metodo_pago = val;
             guardarPedidos();
         }
 
-        function eliminarPedido(index) {
-            pedidos.splice(index, 1);
+        function eliminarPedido(idx) {
+            pedidos.splice(idx, 1);
             guardarPedidos();
-        }
-
-        function guardarPedidos() {
-            localStorage.setItem('shammah_pedidos', JSON.stringify(pedidos));
-            renderTabla();
         }
 
         function exportarCSV() {
-            let csv = "Cliente,Producto,Cantidad,Total_MXN,Estatus_Pago,Metodo_Pago\n";
+            let csv = "ID,Mes,Fecha,Cliente,Contacto,Producto,Q,Gramos,Minutos,Total,Fondo_Redes_5,RESICO_1,Costo_Directo,Utilidad_Neta,Estatus_Pago,Metodo_Pago\n";
             pedidos.forEach(p => {
-                csv += `"${p.cliente}","${p.producto}",${p.Q},${p.total},"${p.pagado ? 'Pagado' : 'Pendiente'}","${p.metodo}"\n`;
+                csv += `"${p.id}","${p.mes}","${p.fecha}","${p.cliente}","${p.contacto}","${p.producto}",${p.Q},${p.gramos},${p.minutos},${p.total},${p.f_redes},${p.f_resico},${p.costo_dir},${p.utilidad},"${p.estatus_pago}","${p.metodo_pago}"\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.setAttribute('href', url);
-            a.setAttribute('download', `Reporte_Ventas_SHAMMAH_${new Date().toISOString().slice(0,10)}.csv`);
+            a.setAttribute('download', `SHAMMAH_Corte_${new Date().toISOString().slice(0,10)}.csv`);
             a.click();
         }
 
-        renderTabla();
+        setInterval(cargarDesdeGoogle, 5000);
+        cargarDesdeGoogle();
     </script>
 </body>
 </html>
