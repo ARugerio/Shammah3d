@@ -1,10 +1,15 @@
 // ==========================================
-// CONFIGURACIÓN PÚBLICA (CLIENTE)
-// Solo contiene endpoints y datos no sensibles
+// CONFIGURACIÓN GLOBAL Y PARÁMETROS DEL TALLER
 // ==========================================
 const CONFIG_SHAMMAH = {
     URL_API_GOOGLE: "https://script.google.com/macros/s/AKfycbzDXRDZUXn4mYl1pSTOdW05sT50foV94CrK9L1U026nDzbAxHIR3n0o9FOr2ayU-de8/exec",
-    NUM_WHATSAPP: "5215559650025"
+    COSTO_GRAMO: 0.50,
+    COSTO_HORA: 9.00,
+    HERRAJE_CLICKER: 2.63,
+    PORCENTAJE_REDES: 0.05,
+    PORCENTAJE_RESICO: 0.01,
+    NUM_WHATSAPP: "5215559650025",
+    PIN_ADMIN: "0000" // Puedes cambiar este PIN de acceso para admin.html
 };
 
 // ==========================================
@@ -36,31 +41,34 @@ function formatTiempoVisual(horasDec) {
 }
 
 // ==========================================
-// SOLICITUD DE COTIZACIÓN SEGURA (SERVIDORES)
+// MOTOR DE COTIZACIÓN Y REGLAS DE NEGOCIO
 // ==========================================
-async function obtenerCotizacionSegura(datosProducto) {
-    try {
-        const respuesta = await fetch(CONFIG_SHAMMAH.URL_API_GOOGLE, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                accion: "cotizar",
-                gramos: datosProducto.gramos,
-                horas: datosProducto.horasDecimales,
-                cantidad: datosProducto.cantidad,
-                tipoNegocio: datosProducto.tipoNegocio
-            })
-        });
-        
-        return await respuesta.json();
-    } catch (e) {
-        console.error("Error al procesar cotización segura:", e);
-        return { exito: false, mensaje: "No se pudo obtener la cotización." };
-    }
+function calcularCostoDirectoUnitario(gramos, horasDecimales, tipoNegocio) {
+    const g = parseFloat(gramos) || 0;
+    const h = parseFloat(horasDecimales) || 0;
+    let costo = (g * CONFIG_SHAMMAH.COSTO_GRAMO) + (h * CONFIG_SHAMMAH.COSTO_HORA);
+    if (tipoNegocio === 'clicker') costo += CONFIG_SHAMMAH.HERRAJE_CLICKER;
+    return costo;
+}
+
+function obtenerMultiplicadorMayoreo(cantidad) {
+    if (cantidad >= 12) return 2.2;
+    if (cantidad >= 6) return 2.5;
+    return 3.0;
+}
+
+function calcularDesgloseFinanciero(totalMonto, costoDirectoTotal = 0) {
+    const total = parseFloat(totalMonto) || 0;
+    const costoDir = parseFloat(costoDirectoTotal) || 0;
+    const f_redes = total * CONFIG_SHAMMAH.PORCENTAJE_REDES;
+    const f_resico = total * CONFIG_SHAMMAH.PORCENTAJE_RESICO;
+    const utilidad = total - (f_redes + f_resico + costoDir);
+
+    return { total, f_redes, f_resico, costoDir, utilidad };
 }
 
 // ==========================================
-// CONECTOR Y SINCRONIZACIÓN DE REGISTROS
+// CONECTOR API GOOGLE SHEETS (PERSISTENCIA)
 // ==========================================
 async function obtenerDatosSheets() {
     try {
