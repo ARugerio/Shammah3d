@@ -148,7 +148,21 @@
         let DB_GITHUB = [];
         let vistaActual = 'pagados';
 
+        function autenticarAdmin() {
+            const sesionIniciada = sessionStorage.getItem("shammah_admin_auth");
+            if (!sesionIniciada) {
+                const pinIngresado = prompt("🔒 Acceso Restringido. Ingrese el PIN Gerencial:");
+                if (pinIngresado === CONFIG_SHAMMAH.PIN_ADMIN) {
+                    sessionStorage.setItem("shammah_admin_auth", "true");
+                } else {
+                    alert("PIN incorrecto. Redirigiendo al mostrador.");
+                    window.location.href = "index.html";
+                }
+            }
+        }
+
         async function cargarDatos() {
+            autenticarAdmin();
             DB_GITHUB = await obtenerDatosSheets();
             renderizar();
         }
@@ -289,7 +303,7 @@
         }
 
         cargarDatos();
-        setInterval(cargarDatos, 5000);
+        setInterval(cargarDatos, 10000);
     </script>
 </body>
 </html>
