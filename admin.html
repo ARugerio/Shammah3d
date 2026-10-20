@@ -31,7 +31,6 @@
 </head>
 <body class="min-h-screen p-4 sm:p-8 flex flex-col items-center">
 
-    <!-- ENCABEZADO GERENCIAL -->
     <header class="w-full max-w-[95%] mb-8 flex flex-wrap items-center justify-between gap-4 glass-card p-6 rounded-3xl shadow-2xl">
         <div>
             <div class="flex items-center gap-3">
@@ -45,10 +44,8 @@
         </a>
     </header>
 
-    <!-- CONTENEDOR PRINCIPAL -->
     <main class="w-full max-w-[95%] space-y-8">
         
-        <!-- CONTROLES Y NAVEGACIÓN DE VISTAS -->
         <div class="flex flex-wrap items-center justify-between gap-4 glass-card p-4 rounded-2xl">
             <div class="flex items-center gap-2">
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mr-2">Filtro Vista:</span>
@@ -68,7 +65,6 @@
             </button>
         </div>
 
-        <!-- TARJETAS DE KPIS FINANCIEROS -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             <div class="glass-card p-6 rounded-3xl border-l-4 border-l-emerald-500">
                 <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Ventas Concretadas ($MXN)</span>
@@ -88,7 +84,6 @@
             </div>
         </div>
 
-        <!-- TABLA DE MOVIMIENTOS Y VENTAS -->
         <div class="glass-card rounded-3xl p-6 shadow-2xl overflow-x-auto">
             <h2 id="tituloTabla" class="text-lg font-black text-white mb-4 flex items-center gap-2">
                 🟢 Ventas Concretadas
@@ -108,13 +103,11 @@
                     </tr>
                 </thead>
                 <tbody id="tablaBody" class="divide-y divide-slate-800/60 font-medium">
-                    <!-- Filas renderizadas por JS -->
                 </tbody>
             </table>
         </div>
     </main>
 
-    <!-- MODAL DE CAPTURA MANUAL CON PRECIO OVERRIDE -->
     <div id="modalManual" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
         <div class="glass-card w-full max-w-lg p-8 rounded-3xl space-y-6 shadow-2xl border border-slate-700">
             <div class="flex justify-between items-center border-b border-slate-700 pb-4">
@@ -149,21 +142,15 @@
         </div>
     </div>
 
-    <!-- SCRIPT DE INTERACCIÓN Y SINCRONIZACIÓN -->
+    <!-- MÓDULO DE LÓGICA CENTRAL Y EVENTOS DE INTERFAZ -->
+    <script src="app.js"></script>
     <script>
-        const URL_API_GOOGLE = "https://script.google.com/macros/s/AKfycbzDXRDZUXn4mYl1pSTOdW05sT50foV94CrK9L1U026nDzbAxHIR3n0o9FOr2ayU-de8/exec";
         let DB_GITHUB = [];
         let vistaActual = 'pagados';
 
         async function cargarDatos() {
-            try {
-                const res = await fetch(URL_API_GOOGLE);
-                const data = await res.json();
-                DB_GITHUB = Array.isArray(data) ? data : [];
-                renderizar();
-            } catch(e) {
-                console.error("Error al cargar datos:", e);
-            }
+            DB_GITHUB = await obtenerDatosSheets();
+            renderizar();
         }
 
         function cambiarVista(vista) {
@@ -185,7 +172,6 @@
             DB_GITHUB.forEach((item, index) => {
                 const esPagado = item.estatus_pago && item.estatus_pago.includes('🟢');
                 
-                // Sumar KPIs de ventas concretadas
                 if (esPagado) {
                     kpiV += parseFloat(item.total) || 0;
                     kpiR += parseFloat(item.f_redes) || 0;
@@ -193,7 +179,6 @@
                     kpiU += parseFloat(item.utilidad) || 0;
                 }
 
-                // Filtrar según vista seleccionada
                 if (vistaActual === 'pagados' && !esPagado) return;
                 if (vistaActual === 'pendientes' && esPagado) return;
 
@@ -210,7 +195,6 @@
                     </td>
                     <td class="p-4 text-center font-bold">${item.Q} pz</td>
                     
-                    <!-- EDICIÓN MANUAL DIRECTA EN LA CELDA DE MONTO TOTAL -->
                     <td class="p-4 text-right">
                         <div class="flex items-center justify-end gap-1">
                             <span class="text-emerald-400 font-black">$</span>
@@ -236,58 +220,38 @@
                 body.appendChild(tr);
             });
 
-            // Actualizar KPIs de tarjetas
             document.getElementById('kpiVentas').innerText = `$${kpiV.toFixed(2)} MXN`;
             document.getElementById('kpiRedes').innerText = `$${kpiR.toFixed(2)} MXN`;
             document.getElementById('kpiResico').innerText = `$${kpiRes.toFixed(2)} MXN`;
             document.getElementById('kpiUtilidad').innerText = `$${kpiU.toFixed(2)} MXN`;
         }
 
-        // LÓGICA DE RECALCULO AUTOMÁTICO AL CAMBIAR EL MONTO MANUALMENTE
         async function actualizarMontoManual(index, nuevoMonto) {
-            const monto = parseFloat(nuevoMonto) || 0;
             const item = DB_GITHUB[index];
-
-            const redes = monto * 0.05;
-            const resico = monto * 0.01;
             const costoDirecto = parseFloat(item.costo_dir) || 0;
-            const utilidad = monto - (redes + resico + costoDirecto);
+            const desglose = calcularDesgloseFinanciero(nuevoMonto, costoDirecto);
 
-            item.total = monto;
-            item.f_redes = redes;
-            item.f_resico = resico;
-            item.utilidad = utilidad;
+            item.total = desglose.total;
+            item.f_redes = desglose.f_redes;
+            item.f_resico = desglose.f_resico;
+            item.utilidad = desglose.utilidad;
 
             renderizar();
-            await sincronizarGoogleSheets();
+            await sincronizarGoogleSheets(DB_GITHUB);
         }
 
         async function cambiarEstatus(index, nuevoEstatus) {
             DB_GITHUB[index].estatus_pago = nuevoEstatus;
             renderizar();
-            await sincronizarGoogleSheets();
+            await sincronizarGoogleSheets(DB_GITHUB);
         }
 
         async function concretarVenta(index) {
             DB_GITHUB[index].estatus_pago = "🟢 Pagado";
             renderizar();
-            await sincronizarGoogleSheets();
+            await sincronizarGoogleSheets(DB_GITHUB);
         }
 
-        async function sincronizarGoogleSheets() {
-            try {
-                await fetch(URL_API_GOOGLE, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(DB_GITHUB)
-                });
-            } catch(e) {
-                console.error("Error al sincronizar:", e);
-            }
-        }
-
-        // CAPTURA MANUAL MODAL
         function abrirModalManual() { document.getElementById('modalManual').classList.remove('hidden'); }
         function cerrarModalManual() { document.getElementById('modalManual').classList.add('hidden'); }
 
@@ -298,10 +262,8 @@
             const Q = parseInt(document.getElementById('mCantidad').value) || 1;
             const total = parseFloat(document.getElementById('mMonto').value) || 0;
 
-            const redes = total * 0.05;
-            const resico = total * 0.01;
-            const costoDir = total * 0.25; // Costo directo estimado al 25% para entradas manuales
-            const utilidad = total - (redes + resico + costoDir);
+            const costoDir = total * 0.25;
+            const desglose = calcularDesgloseFinanciero(total, costoDir);
 
             const ahora = new Date();
             const timestamp = `${ahora.getFullYear()}-${String(ahora.getMonth()+1).padStart(2,'0')}-${String(ahora.getDate()).padStart(2,'0')} ${String(ahora.getHours()).padStart(2,'0')}:${String(ahora.getMinutes()).padStart(2,'0')}`;
@@ -312,21 +274,20 @@
                 cliente: cliente,
                 producto: producto,
                 Q: Q,
-                total: total,
-                f_redes: redes,
-                f_resico: resico,
+                total: desglose.total,
+                f_redes: desglose.f_redes,
+                f_resico: desglose.f_resico,
                 costo_dir: costoDir,
-                utilidad: utilidad,
+                utilidad: desglose.utilidad,
                 estatus_pago: "🔴 Cotización / Pendiente"
             };
 
             DB_GITHUB.unshift(nuevoRegistro);
             cerrarModalManual();
             renderizar();
-            await sincronizarGoogleSheets();
+            await sincronizarGoogleSheets(DB_GITHUB);
         }
 
-        // Carga inicial y auto-sync cada 5 segundos
         cargarDatos();
         setInterval(cargarDatos, 5000);
     </script>
