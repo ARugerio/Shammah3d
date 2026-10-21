@@ -39,9 +39,14 @@
             </div>
             <p class="text-slate-300 text-sm font-medium mt-1">Control Financiero, RESICO (1%), Fondo Redes (5%) y Pedidos Taller 3D</p>
         </div>
-        <a href="index.html" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 px-5 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-2">
-            ⬅️ Volver al Mostrador
-        </a>
+        <div class="flex gap-2">
+            <a href="index.html" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 px-4 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-2">
+                ⬅️ Volver
+            </a>
+            <button onclick="cerrarSesionAdmin()" class="bg-rose-950/80 hover:bg-rose-900 border border-rose-500/50 text-rose-200 px-4 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-2">
+                🔒 Salir
+            </button>
+        </div>
     </header>
 
     <main class="w-full max-w-[95%] space-y-8">
@@ -142,29 +147,41 @@
         </div>
     </div>
 
-    <!-- MÓDULO DE LÓGICA CENTRAL Y EVENTOS DE INTERFAZ -->
     <script src="app.js"></script>
     <script>
         let DB_GITHUB = [];
         let vistaActual = 'pagados';
 
-        function autenticarAdmin() {
-            const sesionIniciada = sessionStorage.getItem("shammah_admin_auth");
-            if (!sesionIniciada) {
-                const pinIngresado = prompt("🔒 Acceso Restringido. Ingrese el PIN Gerencial:");
-                if (pinIngresado === CONFIG_SHAMMAH.PIN_ADMIN) {
-                    sessionStorage.setItem("shammah_admin_auth", "true");
-                } else {
-                    alert("PIN incorrecto. Redirigiendo al mostrador.");
-                    window.location.href = "index.html";
-                }
-            }
+        function obtenerPinSesion() {
+            return sessionStorage.getItem("shammah_admin_pin");
+        }
+
+        function cerrarSesionAdmin() {
+            sessionStorage.removeItem("shammah_admin_pin");
+            window.location.href = "index.html";
         }
 
         async function cargarDatos() {
-            autenticarAdmin();
-            DB_GITHUB = await obtenerDatosSheets();
-            renderizar();
+            let pin = obtenerPinSesion();
+            if (!pin) {
+                pin = prompt("🔒 Acceso Restringido. Ingrese el PIN Gerencial:");
+                if (!pin) {
+                    window.location.href = "index.html";
+                    return;
+                }
+            }
+
+            const respuesta = await obtenerDatosSheets(pin);
+
+            if (respuesta && respuesta.autorizado) {
+                sessionStorage.setItem("shammah_admin_pin", pin);
+                DB_GITHUB = respuesta.datos || [];
+                renderizar();
+            } else {
+                sessionStorage.removeItem("shammah_admin_pin");
+                alert("❌ Acceso Denegado: PIN no válido en el servidor.");
+                window.location.href = "index.html";
+            }
         }
 
         function cambiarVista(vista) {
@@ -251,19 +268,19 @@
             item.utilidad = desglose.utilidad;
 
             renderizar();
-            await sincronizarGoogleSheets(DB_GITHUB);
+            await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
         }
 
         async function cambiarEstatus(index, nuevoEstatus) {
             DB_GITHUB[index].estatus_pago = nuevoEstatus;
             renderizar();
-            await sincronizarGoogleSheets(DB_GITHUB);
+            await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
         }
 
         async function concretarVenta(index) {
             DB_GITHUB[index].estatus_pago = "🟢 Pagado";
             renderizar();
-            await sincronizarGoogleSheets(DB_GITHUB);
+            await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
         }
 
         function abrirModalManual() { document.getElementById('modalManual').classList.remove('hidden'); }
@@ -299,7 +316,7 @@
             DB_GITHUB.unshift(nuevoRegistro);
             cerrarModalManual();
             renderizar();
-            await sincronizarGoogleSheets(DB_GITHUB);
+            await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
         }
 
         cargarDatos();
