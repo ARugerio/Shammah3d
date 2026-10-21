@@ -1,5 +1,5 @@
 // ==========================================
-// CONFIGURACIÓN GLOBAL Y PARÁMETROS DEL TALLER
+// CONFIGURACIÓN PÚBLICA (CLIENTE)
 // ==========================================
 const CONFIG_SHAMMAH = {
     URL_API_GOOGLE: "https://script.google.com/macros/s/AKfycbzDXRDZUXn4mYl1pSTOdW05sT50foV94CrK9L1U026nDzbAxHIR3n0o9FOr2ayU-de8/exec",
@@ -8,8 +8,7 @@ const CONFIG_SHAMMAH = {
     HERRAJE_CLICKER: 2.63,
     PORCENTAJE_REDES: 0.05,
     PORCENTAJE_RESICO: 0.01,
-    NUM_WHATSAPP: "5215559650025",
-    PIN_ADMIN: "0000" // Puedes cambiar este PIN de acceso para admin.html
+    NUM_WHATSAPP: "5215559650025"
 };
 
 // ==========================================
@@ -41,7 +40,7 @@ function formatTiempoVisual(horasDec) {
 }
 
 // ==========================================
-// MOTOR DE COTIZACIÓN Y REGLAS DE NEGOCIO
+// MOTOR DE COTIZACIÓN
 // ==========================================
 function calcularCostoDirectoUnitario(gramos, horasDecimales, tipoNegocio) {
     const g = parseFloat(gramos) || 0;
@@ -68,30 +67,52 @@ function calcularDesgloseFinanciero(totalMonto, costoDirectoTotal = 0) {
 }
 
 // ==========================================
-// CONECTOR API GOOGLE SHEETS (PERSISTENCIA)
+// CONEXIÓN API CON AUTORIZACIÓN POR SERVIDOR
 // ==========================================
-async function obtenerDatosSheets() {
+async function obtenerDatosSheets(pin) {
     try {
-        const res = await fetch(CONFIG_SHAMMAH.URL_API_GOOGLE);
+        const url = `${CONFIG_SHAMMAH.URL_API_GOOGLE}?pin=${encodeURIComponent(pin || '')}`;
+        const res = await fetch(url);
         const data = await res.json();
-        return Array.isArray(data) ? data : [];
+        return data;
     } catch (e) {
-        console.error("Error al obtener datos de Google Sheets:", e);
-        return [];
+        console.error("Error al obtener datos:", e);
+        return { autorizado: false, error: e.toString() };
     }
 }
 
-async function sincronizarGoogleSheets(dataArray) {
+async function sincronizarGoogleSheets(dataArray, pin) {
     try {
         await fetch(CONFIG_SHAMMAH.URL_API_GOOGLE, {
             method: "POST",
             mode: "no-cors",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(dataArray)
+            body: JSON.stringify({
+                pin: pin,
+                data: dataArray
+            })
         });
         return true;
     } catch (e) {
-        console.error("Error al sincronizar con Google Sheets:", e);
+        console.error("Error al sincronizar:", e);
+        return false;
+    }
+}
+
+async function enviarCotizacionDesdeMostrador(datosCotizacion) {
+    try {
+        await fetch(CONFIG_SHAMMAH.URL_API_GOOGLE, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                tipo: "NUEVA_COTIZACION",
+                datos: datosCotizacion
+            })
+        });
+        return true;
+    } catch (e) {
+        console.error("Error enviando cotización:", e);
         return false;
     }
 }
