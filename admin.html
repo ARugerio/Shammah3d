@@ -31,7 +31,7 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-8">
 
-    <!-- PANTALLA DE BLOQUEO OPACO -->
+    <!-- 1. PANTALLA DE BLOQUEO OPACO -->
     <div id="pantallaBloqueo" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-md p-8 rounded-3xl shadow-2xl border border-slate-800 text-center space-y-6">
             <div class="space-y-2">
@@ -42,12 +42,12 @@
 
             <form id="formPin" onsubmit="procesarLogin(event)" class="space-y-4">
                 <div>
-                    <input type="password" id="inputPin" maxlength="10" placeholder="••••" required autofocus
-                        class="w-full text-center text-3xl tracking-[0.4em] font-black glass-input py-4 rounded-2xl border-slate-700 focus:border-pink-500 transition-all">
+                    <input type="password" id="inputPin" maxlength="40" placeholder="Escribe tu contraseña" required autofocus
+                        class="w-full text-center text-xl tracking-wider font-bold glass-input py-4 rounded-2xl border-slate-700 focus:border-pink-500 transition-all">
                 </div>
 
                 <div id="errorPin" class="text-xs font-bold text-rose-400 hidden bg-rose-500/10 border border-rose-500/30 p-3 rounded-xl">
-                    ❌ PIN no válido en el servidor.
+                    ❌ Contraseña no válida en el servidor.
                 </div>
 
                 <button type="submit" id="btnEntrar" class="w-full bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-extrabold py-4 rounded-2xl shadow-xl shadow-pink-500/20 transition-all">
@@ -61,8 +61,9 @@
         </div>
     </div>
 
-    <!-- PANEL GERENCIAL REAL -->
+    <!-- 2. PANEL GERENCIAL REAL -->
     <div id="panelGerencial" class="w-full max-w-[95%] hidden space-y-8">
+        
         <header class="w-full flex flex-wrap items-center justify-between gap-4 glass-card p-6 rounded-3xl shadow-2xl">
             <div>
                 <div class="flex items-center gap-3">
@@ -128,14 +129,14 @@
                     <thead class="bg-slate-900/90 text-slate-400 text-xs uppercase font-extrabold tracking-wider border-b border-slate-700">
                         <tr>
                             <th class="p-4">Folio / Fecha</th>
-                            <th class="p-4">Cliente / Producto</th>
-                            <th class="p-4 text-center">Q</th>
+                            <th class="p-4">Cliente / Piezas Cotizadas</th>
+                            <th class="p-4 text-center">Q Total</th>
                             <th class="p-4 text-right">Monto Total ✏️</th>
                             <th class="p-4 text-right">Redes (5%)</th>
                             <th class="p-4 text-right">RESICO (1%)</th>
                             <th class="p-4 text-right">Utilidad Neta</th>
                             <th class="p-4 text-center">Estatus Pago</th>
-                            <th class="p-4 text-center">Acción</th>
+                            <th class="p-4 text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tablaBody" class="divide-y divide-slate-800/60 font-medium">
@@ -145,41 +146,122 @@
         </main>
     </div>
 
-    <!-- MODAL MANUAL -->
-    <div id="modalManual" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
-        <div class="glass-card w-full max-w-lg p-8 rounded-3xl space-y-6 shadow-2xl border border-slate-700">
+    <!-- 3. MODAL DE CAPTURA MANUAL CON PARTIDAS MÚLTIPLES -->
+    <div id="modalManual" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="glass-card w-full max-w-2xl p-6 sm:p-8 rounded-3xl space-y-6 shadow-2xl border border-slate-700 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-slate-700 pb-4">
-                <h3 class="text-xl font-black text-white">➕ Capturar Pedido Manual</h3>
-                <button onclick="cerrarModalManual()" class="text-slate-400 hover:text-white font-bold">✕</button>
+                <div>
+                    <h3 class="text-xl font-black text-white">➕ Capturar Pedido Manual</h3>
+                    <p class="text-xs text-slate-400 font-medium">Registra una o varias partidas para una misma cotización</p>
+                </div>
+                <button type="button" onclick="cerrarModalManual()" class="text-slate-400 hover:text-white font-bold text-lg">✕</button>
             </div>
             
-            <form id="formManual" class="space-y-4" onsubmit="guardarManual(event)">
+            <form id="formManual" class="space-y-5" onsubmit="guardarManual(event)">
                 <div>
-                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Nombre del Cliente</label>
-                    <input type="text" id="mCliente" required placeholder="Ej. Juan Pérez" class="w-full glass-input p-3 rounded-xl text-sm font-bold">
+                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Nombre del Cliente / Empresa</label>
+                    <input type="text" id="mCliente" required placeholder="Ej. Arquitectura & Diseño / Juan Pérez" class="w-full glass-input p-3 rounded-xl text-sm font-bold">
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Producto / Pieza 3D</label>
-                    <input type="text" id="mProducto" required placeholder="Ej. Copa Personalizada" class="w-full glass-input p-3 rounded-xl text-sm font-bold">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Cantidad (Q)</label>
-                        <input type="number" id="mCantidad" value="1" min="1" required class="w-full glass-input p-3 rounded-xl text-sm font-bold">
+
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs font-bold text-slate-300 uppercase">Partidas del Pedido</label>
+                        <button type="button" onclick="agregarRenglonManual()" class="text-xs font-extrabold text-pink-400 hover:text-pink-300 flex items-center gap-1">
+                            ➕ Añadir otra pieza
+                        </button>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Precio Total Acordado ($MXN)</label>
-                        <input type="number" step="0.01" id="mMonto" placeholder="Ej. 120.00" required class="w-full glass-input p-3 rounded-xl text-sm font-bold border-pink-500/50">
+
+                    <div id="contenedorPartidasManuales" class="space-y-3">
+                        <!-- Renglón 1 por defecto -->
+                        <div class="renglon-partida grid grid-cols-12 gap-2 p-3 bg-slate-900/90 rounded-2xl border border-slate-800 items-center">
+                            <div class="col-span-6 sm:col-span-7">
+                                <input type="text" placeholder="Ej. Llavero Logo 3D [PEI]" required class="item-desc w-full glass-input p-2.5 rounded-xl text-xs font-bold">
+                            </div>
+                            <div class="col-span-2">
+                                <input type="number" min="1" value="1" placeholder="Cant" required oninput="calcularTotalesModalManual()" class="item-q w-full glass-input p-2.5 rounded-xl text-xs font-bold text-center">
+                            </div>
+                            <div class="col-span-3 sm:col-span-2">
+                                <input type="number" step="0.01" placeholder="$ Subt" required oninput="calcularTotalesModalManual()" class="item-subt w-full glass-input p-2.5 rounded-xl text-xs font-bold text-right text-emerald-400">
+                            </div>
+                            <div class="col-span-1 text-center">
+                                <button type="button" onclick="eliminarRenglonManual(this)" class="text-rose-400 hover:text-rose-300 text-sm font-bold">✕</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="pt-4 flex justify-end gap-3">
+
+                <!-- RESUMEN AUTOMÁTICO EN EL MODAL -->
+                <div class="p-4 bg-slate-900/70 rounded-2xl border border-slate-800 flex justify-between items-center text-sm">
+                    <div>
+                        <span class="text-xs text-slate-400 block font-bold uppercase">Piezas Totales:</span>
+                        <strong id="lblManualQ" class="text-white text-base font-black">1 pz</strong>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-slate-400 block font-bold uppercase">Inversión Final:</span>
+                        <strong id="lblManualTotal" class="text-emerald-400 text-xl font-black">$0.00 MXN</strong>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-3">
                     <button type="button" onclick="cerrarModalManual()" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-bold">Cancelar</button>
-                    <button type="submit" class="px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-xl text-sm shadow-lg">Guardar Registro</button>
+                    <button type="submit" class="px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-xl text-sm shadow-lg">Guardar Registro en Hoja</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- 4. MODAL DE EDICIÓN COMPLETA DE REGISTROS EXISTENTES -->
+    <div id="modalEdicion" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="glass-card w-full max-w-lg p-6 sm:p-8 rounded-3xl space-y-6 shadow-2xl border border-slate-700">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-4">
+                <div>
+                    <h3 class="text-xl font-black text-white flex items-center gap-2">✏️ Editar Pedido</h3>
+                    <span id="editFolioBadge" class="text-xs font-black text-pink-400">SHM-0000</span>
+                </div>
+                <button type="button" onclick="cerrarModalEdicion()" class="text-slate-400 hover:text-white font-bold text-lg">✕</button>
+            </div>
+            
+            <form id="formEdicion" class="space-y-4" onsubmit="guardarEdicion(event)">
+                <input type="hidden" id="editIndex">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Nombre del Cliente</label>
+                    <input type="text" id="editCliente" required class="w-full glass-input p-3 rounded-xl text-sm font-bold">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Piezas / Descripción de Partidas</label>
+                    <textarea id="editProducto" rows="2" required class="w-full glass-input p-3 rounded-xl text-sm font-bold"></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Cantidad Total (Q)</label>
+                        <input type="number" id="editQ" min="1" required class="w-full glass-input p-3 rounded-xl text-sm font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Monto Total ($MXN)</label>
+                        <input type="number" step="0.01" id="editTotal" required class="w-full glass-input p-3 rounded-xl text-sm font-black text-emerald-400">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Estatus del Pedido</label>
+                    <select id="editEstatus" class="w-full glass-input p-3 rounded-xl text-sm font-bold">
+                        <option value="🔴 Cotización / Pendiente">🔴 Cotización / Pendiente</option>
+                        <option value="🟢 Pagado">🟢 Pagado</option>
+                    </select>
+                </div>
+
+                <div class="pt-4 flex justify-end gap-3">
+                    <button type="button" onclick="cerrarModalEdicion()" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-bold">Cancelar</button>
+                    <button type="submit" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black rounded-xl text-sm shadow-lg">Actualizar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE LÓGICA Y SEGURIDAD -->
     <script src="app.js"></script>
     <script>
         let DB_GITHUB = [];
@@ -278,9 +360,9 @@
                         <span class="block font-bold text-pink-400">${item.id}</span>
                         <span class="text-xs text-slate-400">${item.fecha || ''}</span>
                     </td>
-                    <td class="p-4">
+                    <td class="p-4 max-w-xs">
                         <span class="block font-bold text-white">${item.cliente}</span>
-                        <span class="text-xs text-slate-400">${item.producto}</span>
+                        <span class="text-xs text-slate-400 line-clamp-2" title="${item.producto}">${item.producto}</span>
                     </td>
                     <td class="p-4 text-center font-bold">${item.Q} pz</td>
                     
@@ -303,7 +385,12 @@
                         </select>
                     </td>
                     <td class="p-4 text-center">
-                        ${!esPagado ? `<button onclick="concretarVenta(${index})" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs px-3 py-1.5 rounded-xl transition-all shadow-md">⚡ Concretar</button>` : '✨'}
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="abrirModalEdicion(${index})" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-xs px-2.5 py-1.5 rounded-xl transition-all" title="Editar orden completa">
+                                ✏️
+                            </button>
+                            ${!esPagado ? `<button onclick="concretarVenta(${index})" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs px-3 py-1.5 rounded-xl transition-all shadow-md">⚡ Concretar</button>` : '✨'}
+                        </div>
                     </td>
                 `;
                 body.appendChild(tr);
@@ -345,20 +432,88 @@
             await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
         }
 
-        function abrirModalManual() { document.getElementById('modalManual').classList.remove('hidden'); }
-        function cerrarModalManual() { document.getElementById('modalManual').classList.add('hidden'); }
+        // ==========================================
+        // FUNCIONES DE CAPTURA MANUAL MULTI-PARTIDA
+        // ==========================================
+        function abrirModalManual() { 
+            document.getElementById('modalManual').classList.remove('hidden'); 
+            calcularTotalesModalManual();
+        }
+
+        function cerrarModalManual() { 
+            document.getElementById('modalManual').classList.add('hidden'); 
+        }
+
+        function agregarRenglonManual() {
+            const cont = document.getElementById('contenedorPartidasManuales');
+            const div = document.createElement('div');
+            div.className = "renglon-partida grid grid-cols-12 gap-2 p-3 bg-slate-900/90 rounded-2xl border border-slate-800 items-center";
+            div.innerHTML = `
+                <div class="col-span-6 sm:col-span-7">
+                    <input type="text" placeholder="Ej. Copa Trofeo [PEO]" required class="item-desc w-full glass-input p-2.5 rounded-xl text-xs font-bold">
+                </div>
+                <div class="col-span-2">
+                    <input type="number" min="1" value="1" placeholder="Cant" required oninput="calcularTotalesModalManual()" class="item-q w-full glass-input p-2.5 rounded-xl text-xs font-bold text-center">
+                </div>
+                <div class="col-span-3 sm:col-span-2">
+                    <input type="number" step="0.01" placeholder="$ Subt" required oninput="calcularTotalesModalManual()" class="item-subt w-full glass-input p-2.5 rounded-xl text-xs font-bold text-right text-emerald-400">
+                </div>
+                <div class="col-span-1 text-center">
+                    <button type="button" onclick="eliminarRenglonManual(this)" class="text-rose-400 hover:text-rose-300 text-sm font-bold">✕</button>
+                </div>
+            `;
+            cont.appendChild(div);
+            calcularTotalesModalManual();
+        }
+
+        function eliminarRenglonManual(btn) {
+            const cont = document.getElementById('contenedorPartidasManuales');
+            if (cont.children.length > 1) {
+                btn.closest('.renglon-partida').remove();
+                calcularTotalesModalManual();
+            } else {
+                alert("El pedido debe contener al menos una partida.");
+            }
+        }
+
+        function calcularTotalesModalManual() {
+            let totalQ = 0;
+            let totalMonto = 0;
+
+            document.querySelectorAll('.renglon-partida').forEach(r => {
+                const q = parseInt(r.querySelector('.item-q').value) || 0;
+                const sub = parseFloat(r.querySelector('.item-subt').value) || 0;
+                totalQ += q;
+                totalMonto += sub;
+            });
+
+            document.getElementById('lblManualQ').innerText = `${totalQ} pz`;
+            document.getElementById('lblManualTotal').innerText = `$${totalMonto.toFixed(2)} MXN`;
+        }
 
         async function guardarManual(e) {
             e.preventDefault();
-            const cliente = document.getElementById('mCliente').value;
-            const producto = document.getElementById('mProducto').value;
-            const Q = parseInt(document.getElementById('mCantidad').value) || 1;
-            const total = parseFloat(document.getElementById('mMonto').value) || 0;
+            const cliente = document.getElementById('mCliente').value.trim();
 
-            const costoDir = total * 0.25;
-            const f_redes = total * 0.05;
-            const f_resico = total * 0.01;
-            const utilidad = total - (f_redes + f_resico + costoDir);
+            let partes = [];
+            let totalQ = 0;
+            let totalMonto = 0;
+
+            document.querySelectorAll('.renglon-partida').forEach(r => {
+                const desc = r.querySelector('.item-desc').value.trim();
+                const q = parseInt(r.querySelector('.item-q').value) || 1;
+                const sub = parseFloat(r.querySelector('.item-subt').value) || 0;
+
+                partes.push(`[${q}x ${desc}]`);
+                totalQ += q;
+                totalMonto += sub;
+            });
+
+            const productoCadena = partes.join(" + ");
+            const costoDir = totalMonto * 0.25; // Provisión de costo directo para registros directos
+            const f_redes = totalMonto * 0.05;
+            const f_resico = totalMonto * 0.01;
+            const utilidad = totalMonto - (f_redes + f_resico + costoDir);
 
             const ahora = new Date();
             const timestamp = `${ahora.getFullYear()}-${String(ahora.getMonth()+1).padStart(2,'0')}-${String(ahora.getDate()).padStart(2,'0')} ${String(ahora.getHours()).padStart(2,'0')}:${String(ahora.getMinutes()).padStart(2,'0')}`;
@@ -369,11 +524,11 @@
                 fecha: timestamp,
                 cliente: cliente,
                 contacto: "Registro Manual",
-                producto: producto,
-                Q: Q,
+                producto: productoCadena,
+                Q: totalQ,
                 gramos: 0,
                 minutos: 0,
-                total: total,
+                total: totalMonto,
                 f_redes: f_redes,
                 f_resico: f_resico,
                 costo_dir: costoDir,
@@ -384,6 +539,57 @@
 
             DB_GITHUB.unshift(nuevoRegistro);
             cerrarModalManual();
+            renderizar();
+            await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
+        }
+
+        // ==========================================
+        // FUNCIONES DE EDICIÓN DE PEDIDOS EXISTENTES
+        // ==========================================
+        function abrirModalEdicion(index) {
+            const item = DB_GITHUB[index];
+            document.getElementById('editIndex').value = index;
+            document.getElementById('editFolioBadge').innerText = item.id;
+            document.getElementById('editCliente').value = item.cliente;
+            document.getElementById('editProducto').value = item.producto;
+            document.getElementById('editQ').value = item.Q;
+            document.getElementById('editTotal').value = (parseFloat(item.total) || 0).toFixed(2);
+            document.getElementById('editEstatus').value = item.estatus_pago && item.estatus_pago.includes('🟢') ? "🟢 Pagado" : "🔴 Cotización / Pendiente";
+
+            document.getElementById('modalEdicion').classList.remove('hidden');
+        }
+
+        function cerrarModalEdicion() {
+            document.getElementById('modalEdicion').classList.add('hidden');
+        }
+
+        async function guardarEdicion(e) {
+            e.preventDefault();
+            const index = document.getElementById('editIndex').value;
+            const item = DB_GITHUB[index];
+
+            const nuevoCliente = document.getElementById('editCliente').value.trim();
+            const nuevoProducto = document.getElementById('editProducto').value.trim();
+            const nuevoQ = parseInt(document.getElementById('editQ').value) || 1;
+            const nuevoTotal = parseFloat(document.getElementById('editTotal').value) || 0;
+            const nuevoEstatus = document.getElementById('editEstatus').value;
+
+            // Recálculo financiero manteniendo la integridad de costos
+            const costoDir = parseFloat(item.costo_dir) || (nuevoTotal * 0.25);
+            const f_redes = nuevoTotal * 0.05;
+            const f_resico = nuevoTotal * 0.01;
+            const utilidad = nuevoTotal - (f_redes + f_resico + costoDir);
+
+            item.cliente = nuevoCliente;
+            item.producto = nuevoProducto;
+            item.Q = nuevoQ;
+            item.total = nuevoTotal;
+            item.f_redes = f_redes;
+            item.f_resico = f_resico;
+            item.utilidad = utilidad;
+            item.estatus_pago = nuevoEstatus;
+
+            cerrarModalEdicion();
             renderizar();
             await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
         }
