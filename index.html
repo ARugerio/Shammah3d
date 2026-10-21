@@ -350,9 +350,7 @@
         }
 
         async function registrarEnGoogleSheets(datosCotizacion) {
-            let historialActual = await obtenerDatosSheets();
-            historialActual.unshift(datosCotizacion);
-            await sincronizarGoogleSheets(historialActual);
+            await enviarCotizacionDesdeMostrador(datosCotizacion);
         }
 
         function mostrarToast() {
