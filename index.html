@@ -214,11 +214,11 @@
                     <div class="space-y-5 pt-2">
                         <div class="flex justify-between items-baseline border-b border-slate-700/80 pb-4">
                             <span class="text-sm sm:text-base uppercase font-bold text-slate-300 tracking-wider">Precio Unitario</span>
-                            <span class="text-2xl sm:text-3xl font-black text-white" id="lblPrecioUnitario">$99.00 <span class="text-xs font-bold text-slate-400">MXN</span></span>
+                            <span class="text-2xl sm:text-3xl font-black text-white" id="lblPrecioUnitario">$0.00 <span class="text-xs font-bold text-slate-400">MXN</span></span>
                         </div>
                         <div class="flex justify-between items-baseline pt-1">
                             <span class="text-sm sm:text-base uppercase font-extrabold text-pink-400 tracking-wider">Inversión Total</span>
-                            <span class="text-4xl sm:text-5xl font-black text-pink-500 tracking-tight" id="lblPrecioTotal">$99.00 <span class="text-xs font-bold text-slate-400">MXN</span></span>
+                            <span class="text-4xl sm:text-5xl font-black text-pink-500 tracking-tight" id="lblPrecioTotal">$0.00 <span class="text-xs font-bold text-slate-400">MXN</span></span>
                         </div>
                     </div>
                 </div>
@@ -250,18 +250,18 @@
         ¡Cotización registrada y copiada con éxito! 📋⚡
     </div>
 
-    <!-- MÓDULO DE LÓGICA CENTRAL Y EVENTOS DE INTERFAZ -->
     <script src="app.js"></script>
     <script>
         let currentPriceUnit = 0;
         let currentPriceTotal = 0;
         let placaSeleccionada = 'PEI Bambu Lab';
+        let debounceTimer = null;
 
         function seleccionarPlaca(nombrePlaca, btnEl) {
             placaSeleccionada = nombrePlaca;
             document.querySelectorAll('.plate-btn').forEach(btn => btn.classList.remove('active'));
             btnEl.classList.add('active');
-            calcular();
+            programarCalculo();
         }
 
         function seleccionarPresets(tipo, tiempoDef, pesoDef) {
@@ -274,35 +274,49 @@
             }
             document.getElementById('tiempoHoras').value = tiempoDef;
             document.getElementById('pesoTotal').value = pesoDef;
-            calcular();
+            programarCalculo();
         }
 
-        function calcular() {
+        function programarCalculo() {
+            const cantidad = parseInt(document.getElementById('cantidad').value) || 1;
+            const gramosU = parseFloat(document.getElementById('pesoTotal').value) || 0;
+            const tiempoDecU = parseTiempo(document.getElementById('tiempoHoras').value);
+
+            // Actualización instantánea en la interfaz
+            document.getElementById('lblPesoTotal').innerText = `${gramosU * cantidad}g`;
+            document.getElementById('lblTiempoTotal').innerText = formatTiempoVisual(tiempoDecU * cantidad);
+
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(calcularEnServidor, 250);
+        }
+
+        async function calcularEnServidor() {
             const cantidad = parseInt(document.getElementById('cantidad').value) || 1;
             const gramosU = parseFloat(document.getElementById('pesoTotal').value) || 0;
             const tiempoDecU = parseTiempo(document.getElementById('tiempoHoras').value);
             const tipoNegocio = document.getElementById('lineaNegocio').value;
 
-            const costoInternoUnitario = calcularCostoDirectoUnitario(gramosU, tiempoDecU, tipoNegocio);
-            const multiplicador = obtenerMultiplicadorMayoreo(cantidad);
+            const res = await solicitarCotizacionSegura({
+                gramos: gramosU,
+                horas: tiempoDecU,
+                cantidad: cantidad,
+                tipoNegocio: tipoNegocio
+            });
 
-            let precioU = costoInternoUnitario * multiplicador;
-            if(precioU < 35 && cantidad === 1) precioU = 35;
+            if (res && res.exito) {
+                currentPriceUnit = res.precioUnitario;
+                currentPriceTotal = res.totalMonto;
 
-            currentPriceUnit = precioU;
-            currentPriceTotal = precioU * cantidad;
+                document.getElementById('lblPrecioUnitario').innerHTML = `$${currentPriceUnit.toFixed(2)} <span class="text-xs font-bold text-slate-400">MXN</span>`;
+                document.getElementById('lblPrecioTotal').innerHTML = `$${currentPriceTotal.toFixed(2)} <span class="text-xs font-bold text-slate-400">MXN</span>`;
 
-            document.getElementById('lblPesoTotal').innerText = `${gramosU * cantidad}g`;
-            document.getElementById('lblTiempoTotal').innerText = formatTiempoVisual(tiempoDecU * cantidad);
-            document.getElementById('lblPrecioUnitario').innerHTML = `$${currentPriceUnit.toFixed(2)} <span class="text-xs font-bold text-slate-400">MXN</span>`;
-            document.getElementById('lblPrecioTotal').innerHTML = `$${currentPriceTotal.toFixed(2)} <span class="text-xs font-bold text-slate-400">MXN</span>`;
-
-            const badge = document.getElementById('badgeMayoreo');
-            if(cantidad >= 6) {
-                badge.classList.remove('hidden');
-                badge.innerText = cantidad >= 12 ? "🎉 ¡Descuento de Mayoreo Mayor (12+ pz) Aplicado!" : "🔥 ¡Descuento de Mayoreo (6+ pz) Aplicado!";
-            } else {
-                badge.classList.add('hidden');
+                const badge = document.getElementById('badgeMayoreo');
+                if (res.esMayoreo) {
+                    badge.classList.remove('hidden');
+                    badge.innerText = res.tipoMayoreo === "mayor" ? "🎉 ¡Descuento de Mayoreo Mayor (12+ pz) Aplicado!" : "🔥 ¡Descuento de Mayoreo (6+ pz) Aplicado!";
+                } else {
+                    badge.classList.add('hidden');
+                }
             }
         }
 
@@ -319,16 +333,9 @@
             const producto = `${productoBase} [Placa: ${placaSeleccionada}]`;
             const Q = parseInt(document.getElementById('cantidad').value) || 1;
             const gramos = (parseFloat(document.getElementById('pesoTotal').value) || 0) * Q;
-            const minutos = parseTiempo(document.getElementById('tiempoHoras').value) * 60 * Q;
-            const total = currentPriceTotal;
+            const minutos = Math.round(parseTiempo(document.getElementById('tiempoHoras').value) * 60 * Q);
 
-            const tipoNegocio = document.getElementById('lineaNegocio').value;
-            const gramosUnit = parseFloat(document.getElementById('pesoTotal').value) || 0;
-            const tiempoUnit = parseTiempo(document.getElementById('tiempoHoras').value);
-            const costoDir = calcularCostoDirectoUnitario(gramosUnit, tiempoUnit, tipoNegocio) * Q;
-
-            const desglose = calcularDesgloseFinanciero(total, costoDir);
-
+            // El frontend no incluye ni expone costo_dir ni utilidad
             return {
                 id: folioId,
                 mes: mesStr,
@@ -338,19 +345,12 @@
                 producto: producto,
                 Q: Q,
                 gramos: gramos,
-                minutos: Math.round(minutos),
-                total: desglose.total,
-                f_redes: desglose.f_redes,
-                f_resico: desglose.f_resico,
-                costo_dir: costoDir,
-                utilidad: desglose.utilidad,
+                minutos: minutos,
+                total: currentPriceTotal,
+                tipoNegocio: document.getElementById('lineaNegocio').value,
                 estatus_pago: "🔴 Pendiente",
                 metodo_pago: "Pendiente"
             };
-        }
-
-        async function registrarEnGoogleSheets(datosCotizacion) {
-            await enviarCotizacionDesdeMostrador(datosCotizacion);
         }
 
         function mostrarToast() {
@@ -361,8 +361,8 @@
             }, 3000);
         }
 
-        document.getElementById('cotizadorForm').addEventListener('input', calcular);
-        document.getElementById('lineaNegocio').addEventListener('change', calcular);
+        document.getElementById('cotizadorForm').addEventListener('input', programarCalculo);
+        document.getElementById('lineaNegocio').addEventListener('change', programarCalculo);
 
         document.getElementById('btnCopiar').addEventListener('click', async (e) => {
             const btn = e.currentTarget;
@@ -372,9 +372,7 @@
             const textoOriginal = btn.innerHTML;
             btn.innerHTML = `<span>⏳ Registrando...</span>`;
 
-            calcular();
             const payload = generarPayloadDatos();
-
             const textoResumen = `*SHAMMAH CREA - COTIZACIÓN 3D* 🖨️✨\n` +
                 `• Folio: ${payload.id}\n` +
                 `• Cliente: ${payload.cliente}\n` +
@@ -390,7 +388,7 @@
                 console.error("Error al copiar:", err);
             }
 
-            await registrarEnGoogleSheets(payload);
+            await enviarCotizacionDesdeMostrador(payload);
 
             btn.disabled = false;
             btn.innerHTML = textoOriginal;
@@ -404,20 +402,17 @@
             const textoOriginal = btn.innerHTML;
             btn.innerHTML = `<span>⏳ Abriendo WhatsApp...</span>`;
 
-            calcular();
             const payload = generarPayloadDatos();
-
             const textoWp = `Hola! Me interesa cotizar en SHAMMAH CREA:\n` +
                 `*${payload.producto}* (Cant: ${payload.Q} pz)\n` +
                 `Total estimado: *$${payload.total.toFixed(2)} MXN*\n` +
                 `Folio: ${payload.id}`;
 
             const urlWp = `https://api.whatsapp.com/send?phone=${CONFIG_SHAMMAH.NUM_WHATSAPP}&text=${encodeURIComponent(textoWp)}`;
-            
             window.open(urlWp, '_blank');
             mostrarToast();
 
-            await registrarEnGoogleSheets(payload);
+            await enviarCotizacionDesdeMostrador(payload);
 
             btn.disabled = false;
             btn.innerHTML = textoOriginal;
@@ -427,7 +422,7 @@
             window.print();
         });
 
-        calcular();
+        programarCalculo();
     </script>
 </body>
 </html>
