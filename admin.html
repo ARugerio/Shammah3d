@@ -9,7 +9,7 @@
     <style>
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: radial-gradient(circle at top left, #1e293b, #0f172a, #020617);
+            background: #020617;
             color: #f8fafc;
         }
         .glass-card {
@@ -29,90 +29,124 @@
         }
     </style>
 </head>
-<body class="min-h-screen p-4 sm:p-8 flex flex-col items-center">
+<body class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-8">
 
-    <header class="w-full max-w-[95%] mb-8 flex flex-wrap items-center justify-between gap-4 glass-card p-6 rounded-3xl shadow-2xl">
-        <div>
-            <div class="flex items-center gap-3">
-                <h1 class="text-3xl sm:text-4xl font-black text-white">SHAMMAH <span class="text-pink-500">CREA</span></h1>
-                <span class="bg-pink-500/20 border border-pink-500/40 text-pink-300 text-xs font-extrabold px-3 py-1 rounded-full uppercase">Panel Gerencial</span>
+    <!-- 1. PANTALLA DE BLOQUEO OPACO (VISIBLE POR DEFECTO, CERO FILTRACIONES) -->
+    <div id="pantallaBloqueo" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-8 rounded-3xl shadow-2xl border border-slate-800 text-center space-y-6">
+            <div class="space-y-2">
+                <span class="p-4 bg-pink-500/10 border border-pink-500/30 rounded-2xl inline-block text-3xl mb-2">🔒</span>
+                <h2 class="text-2xl font-black text-white tracking-tight">Acceso Gerencial</h2>
+                <p class="text-slate-400 text-xs uppercase font-extrabold tracking-wider">SHAMMAH CREA 3D</p>
             </div>
-            <p class="text-slate-300 text-sm font-medium mt-1">Control Financiero, RESICO (1%), Fondo Redes (5%) y Pedidos Taller 3D</p>
-        </div>
-        <div class="flex gap-2">
-            <a href="index.html" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 px-4 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-2">
-                ⬅️ Volver
+
+            <form id="formPin" onsubmit="procesarLogin(event)" class="space-y-4">
+                <div>
+                    <input type="password" id="inputPin" maxlength="10" placeholder="••••" required autofocus
+                        class="w-full text-center text-3xl tracking-[0.4em] font-black glass-input py-4 rounded-2xl border-slate-700 focus:border-pink-500 transition-all">
+                </div>
+
+                <div id="errorPin" class="text-xs font-bold text-rose-400 hidden bg-rose-500/10 border border-rose-500/30 p-3 rounded-xl">
+                    ❌ PIN no válido en el servidor.
+                </div>
+
+                <button type="submit" id="btnEntrar" class="w-full bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-extrabold py-4 rounded-2xl shadow-xl shadow-pink-500/20 transition-all">
+                    Ingresar al Panel
+                </button>
+            </form>
+
+            <a href="index.html" class="inline-block text-xs text-slate-400 hover:text-slate-200 underline font-bold transition-all pt-2">
+                ⬅️ Cancelar y volver al Mostrador
             </a>
-            <button onclick="cerrarSesionAdmin()" class="bg-rose-950/80 hover:bg-rose-900 border border-rose-500/50 text-rose-200 px-4 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-2">
-                🔒 Salir
-            </button>
         </div>
-    </header>
+    </div>
 
-    <main class="w-full max-w-[95%] space-y-8">
+    <!-- 2. PANEL ADMINISTRATIVO REAL (OCULTO EN EL DOM HASTA QUE SE VALIDE EL PIN) -->
+    <div id="panelGerencial" class="w-full max-w-[95%] hidden space-y-8">
         
-        <div class="flex flex-wrap items-center justify-between gap-4 glass-card p-4 rounded-2xl">
-            <div class="flex items-center gap-2">
-                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mr-2">Filtro Vista:</span>
-                <button onclick="cambiarVista('pagados')" id="tabPagados" class="bg-emerald-500 text-slate-950 font-black px-4 py-2 rounded-xl text-sm transition-all shadow-lg">
+        <header class="w-full flex flex-wrap items-center justify-between gap-4 glass-card p-6 rounded-3xl shadow-2xl">
+            <div>
+                <div class="flex items-center gap-3">
+                    <h1 class="text-3xl sm:text-4xl font-black text-white">SHAMMAH <span class="text-pink-500">CREA</span></h1>
+                    <span class="bg-pink-500/20 border border-pink-500/40 text-pink-300 text-xs font-extrabold px-3 py-1 rounded-full uppercase">Panel Gerencial</span>
+                </div>
+                <p class="text-slate-300 text-sm font-medium mt-1">Control Financiero, RESICO (1%), Fondo Redes (5%) y Pedidos Taller 3D</p>
+            </div>
+            <div class="flex gap-2">
+                <a href="index.html" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 px-4 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-2">
+                    ⬅️ Volver
+                </a>
+                <button onclick="cerrarSesionAdmin()" class="bg-rose-950/80 hover:bg-rose-900 border border-rose-500/50 text-rose-200 px-4 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-2">
+                    🔒 Salir
+                </button>
+            </div>
+        </header>
+
+        <main class="space-y-8">
+            <div class="flex flex-wrap items-center justify-between gap-4 glass-card p-4 rounded-2xl">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mr-2">Filtro Vista:</span>
+                    <button onclick="cambiarVista('pagados')" id="tabPagados" class="bg-emerald-500 text-slate-950 font-black px-4 py-2 rounded-xl text-sm transition-all shadow-lg">
+                        🟢 Ventas Concretadas
+                    </button>
+                    <button onclick="cambiarVista('pendientes')" id="tabPendientes" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2 rounded-xl text-sm transition-all">
+                        📋 Cotizaciones Pendientes
+                    </button>
+                    <button onclick="cambiarVista('todos')" id="tabTodos" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2 rounded-xl text-sm transition-all">
+                        📥 Ver Todo
+                    </button>
+                </div>
+
+                <button onclick="abrirModalManual()" class="bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-extrabold px-6 py-3 rounded-2xl text-sm shadow-xl transition-all flex items-center gap-2">
+                    ➕ Capturar Pedido Manual
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="glass-card p-6 rounded-3xl border-l-4 border-l-emerald-500">
+                    <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Ventas Concretadas ($MXN)</span>
+                    <strong id="kpiVentas" class="text-3xl font-black text-emerald-400">$0.00 MXN</strong>
+                </div>
+                <div class="glass-card p-6 rounded-3xl border-l-4 border-l-indigo-500">
+                    <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Fondo Redes (5%)</span>
+                    <strong id="kpiRedes" class="text-3xl font-black text-indigo-300">$0.00 MXN</strong>
+                </div>
+                <div class="glass-card p-6 rounded-3xl border-l-4 border-l-cyan-500">
+                    <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Reserva RESICO (1%)</span>
+                    <strong id="kpiResico" class="text-3xl font-black text-cyan-300">$0.00 MXN</strong>
+                </div>
+                <div class="glass-card p-6 rounded-3xl border-l-4 border-l-pink-500">
+                    <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Utilidad Neta SHAMMAH</span>
+                    <strong id="kpiUtilidad" class="text-3xl font-black text-pink-400">$0.00 MXN</strong>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-3xl p-6 shadow-2xl overflow-x-auto">
+                <h2 id="tituloTabla" class="text-lg font-black text-white mb-4 flex items-center gap-2">
                     🟢 Ventas Concretadas
-                </button>
-                <button onclick="cambiarVista('pendientes')" id="tabPendientes" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2 rounded-xl text-sm transition-all">
-                    📋 Cotizaciones Pendientes
-                </button>
-                <button onclick="cambiarVista('todos')" id="tabTodos" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2 rounded-xl text-sm transition-all">
-                    📥 Ver Todo
-                </button>
+                </h2>
+                <table class="w-full text-left text-sm text-slate-200">
+                    <thead class="bg-slate-900/90 text-slate-400 text-xs uppercase font-extrabold tracking-wider border-b border-slate-700">
+                        <tr>
+                            <th class="p-4">Folio / Fecha</th>
+                            <th class="p-4">Cliente / Producto</th>
+                            <th class="p-4 text-center">Q</th>
+                            <th class="p-4 text-right">Monto Total ✏️</th>
+                            <th class="p-4 text-right">Redes (5%)</th>
+                            <th class="p-4 text-right">RESICO (1%)</th>
+                            <th class="p-4 text-right">Utilidad Neta</th>
+                            <th class="p-4 text-center">Estatus Pago</th>
+                            <th class="p-4 text-center">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaBody" class="divide-y divide-slate-800/60 font-medium">
+                    </tbody>
+                </table>
             </div>
+        </main>
+    </div>
 
-            <button onclick="abrirModalManual()" class="bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-extrabold px-6 py-3 rounded-2xl text-sm shadow-xl transition-all flex items-center gap-2">
-                ➕ Capturar Pedido Manual
-            </button>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <div class="glass-card p-6 rounded-3xl border-l-4 border-l-emerald-500">
-                <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Ventas Concretadas ($MXN)</span>
-                <strong id="kpiVentas" class="text-3xl font-black text-emerald-400">$0.00 MXN</strong>
-            </div>
-            <div class="glass-card p-6 rounded-3xl border-l-4 border-l-indigo-500">
-                <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Fondo Redes (5%)</span>
-                <strong id="kpiRedes" class="text-3xl font-black text-indigo-300">$0.00 MXN</strong>
-            </div>
-            <div class="glass-card p-6 rounded-3xl border-l-4 border-l-cyan-500">
-                <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Reserva RESICO (1%)</span>
-                <strong id="kpiResico" class="text-3xl font-black text-cyan-300">$0.00 MXN</strong>
-            </div>
-            <div class="glass-card p-6 rounded-3xl border-l-4 border-l-pink-500">
-                <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Utilidad Neta SHAMMAH</span>
-                <strong id="kpiUtilidad" class="text-3xl font-black text-pink-400">$0.00 MXN</strong>
-            </div>
-        </div>
-
-        <div class="glass-card rounded-3xl p-6 shadow-2xl overflow-x-auto">
-            <h2 id="tituloTabla" class="text-lg font-black text-white mb-4 flex items-center gap-2">
-                🟢 Ventas Concretadas
-            </h2>
-            <table class="w-full text-left text-sm text-slate-200">
-                <thead class="bg-slate-900/90 text-slate-400 text-xs uppercase font-extrabold tracking-wider border-b border-slate-700">
-                    <tr>
-                        <th class="p-4">Folio / Fecha</th>
-                        <th class="p-4">Cliente / Producto</th>
-                        <th class="p-4 text-center">Q</th>
-                        <th class="p-4 text-right">Monto Total ✏️</th>
-                        <th class="p-4 text-right">Redes (5%)</th>
-                        <th class="p-4 text-right">RESICO (1%)</th>
-                        <th class="p-4 text-right">Utilidad Neta</th>
-                        <th class="p-4 text-center">Estatus Pago</th>
-                        <th class="p-4 text-center">Acción</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaBody" class="divide-y divide-slate-800/60 font-medium">
-                </tbody>
-            </table>
-        </div>
-    </main>
-
+    <!-- MODAL MANUAL -->
     <div id="modalManual" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
         <div class="glass-card w-full max-w-lg p-8 rounded-3xl space-y-6 shadow-2xl border border-slate-700">
             <div class="flex justify-between items-center border-b border-slate-700 pb-4">
@@ -147,6 +181,7 @@
         </div>
     </div>
 
+    <!-- SCRIPT DE LÓGICA Y SEGURIDAD -->
     <script src="app.js"></script>
     <script>
         let DB_GITHUB = [];
@@ -158,29 +193,55 @@
 
         function cerrarSesionAdmin() {
             sessionStorage.removeItem("shammah_admin_pin");
+            document.getElementById('panelGerencial').classList.add('hidden');
+            document.getElementById('pantallaBloqueo').classList.remove('hidden');
+            document.getElementById('inputPin').value = "";
+            document.getElementById('errorPin').classList.add('hidden');
             window.location.href = "index.html";
         }
 
-        async function cargarDatos() {
-            let pin = obtenerPinSesion();
-            if (!pin) {
-                pin = prompt("🔒 Acceso Restringido. Ingrese el PIN Gerencial:");
-                if (!pin) {
-                    window.location.href = "index.html";
-                    return;
-                }
-            }
-
+        async function verificarPin(pin) {
             const respuesta = await obtenerDatosSheets(pin);
-
             if (respuesta && respuesta.autorizado) {
                 sessionStorage.setItem("shammah_admin_pin", pin);
                 DB_GITHUB = respuesta.datos || [];
+                
+                // Mostrar panel y ocultar bloqueo
+                document.getElementById('pantallaBloqueo').classList.add('hidden');
+                document.getElementById('panelGerencial').classList.remove('hidden');
                 renderizar();
+                return true;
             } else {
                 sessionStorage.removeItem("shammah_admin_pin");
-                alert("❌ Acceso Denegado: PIN no válido en el servidor.");
-                window.location.href = "index.html";
+                document.getElementById('errorPin').classList.remove('hidden');
+                return false;
+            }
+        }
+
+        async function procesarLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnEntrar');
+            const input = document.getElementById('inputPin');
+            const pin = input.value.trim();
+
+            btn.disabled = true;
+            btn.innerText = "Verificando...";
+            document.getElementById('errorPin').classList.add('hidden');
+
+            const ok = await verificarPin(pin);
+            if (!ok) {
+                input.value = "";
+                input.focus();
+            }
+            btn.disabled = false;
+            btn.innerText = "Ingresar al Panel";
+        }
+
+        async function inicializar() {
+            const pinGuardado = obtenerPinSesion();
+            if (pinGuardado) {
+                const ok = await verificarPin(pinGuardado);
+                if (!ok) sessionStorage.removeItem("shammah_admin_pin");
             }
         }
 
@@ -319,8 +380,11 @@
             await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
         }
 
-        cargarDatos();
-        setInterval(cargarDatos, 10000);
+        inicializar();
+        setInterval(() => {
+            const pin = obtenerPinSesion();
+            if (pin) verificarPin(pin);
+        }, 10000);
     </script>
 </body>
 </html>
