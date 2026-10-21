@@ -80,13 +80,21 @@
                         <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-white">SHAMMAH <span class="text-pink-500">CREA</span></h1>
                         <span class="bg-pink-500/20 border border-pink-500/40 text-pink-300 text-xs font-black px-3.5 py-1.5 rounded-full uppercase tracking-wider">3D Studio</span>
                     </div>
-                    <p class="text-base sm:text-lg font-medium text-slate-300 mt-2">Simulador & Mostrador Digital de Cotización de Manufactura Aditiva</p>
+                    <p class="text-base sm:text-lg font-medium text-slate-300 mt-2">Simulador & Mostrador Digital de Cotización con Soporte Multi-Partida</p>
                 </div>
             </div>
         </header>
 
         <form id="cotizadorForm" class="grid grid-cols-1 lg:grid-cols-12 gap-8" onsubmit="return false;">
+            
+            <!-- COLUMNA IZQUIERDA: CONFIGURADOR DE PIEZA -->
             <div class="lg:col-span-7 space-y-7">
+                
+                <div>
+                    <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5 uppercase tracking-wider">Nombre del Cliente / Proyecto</label>
+                    <input type="text" id="nombreCliente" placeholder="Ej. Cliente Mostrador, Juan..." value="Cliente Mostrador" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white placeholder-slate-500">
+                </div>
+
                 <section class="space-y-3">
                     <label class="block text-sm sm:text-base font-extrabold text-slate-200 uppercase tracking-wider">Acceso Rápido / Catálogo Taller</label>
                     <div class="grid grid-cols-2 gap-4">
@@ -110,39 +118,34 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5 uppercase tracking-wider">Nombre del Producto / Pieza</label>
+                        <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5 uppercase tracking-wider">Nombre de esta Pieza</label>
                         <input type="text" id="nombreProducto" placeholder="Ej. Llavero Batman, Figura 3D..." value="Pieza Personalizada 3D" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white placeholder-slate-500">
                     </div>
                     <div>
-                        <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5 uppercase tracking-wider">Nombre del Cliente</label>
-                        <input type="text" id="nombreCliente" placeholder="Ej. Cliente Mostrador, Juan..." value="Cliente Mostrador" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white placeholder-slate-500">
+                        <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5 uppercase tracking-wider">Tipo de Proyecto / Insumo</label>
+                        <select id="lineaNegocio" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-slate-100 focus:ring-2 focus:ring-pink-500 transition-all">
+                            <option value="3.0" selected>🎨 Línea B2C (Aretes, Figuras, Decoración)</option>
+                            <option value="clicker">🎛️ Clicker Mecánico (Switch + Tapa)</option>
+                        </select>
                     </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5 uppercase tracking-wider">Tipo de Proyecto / Insumo</label>
-                    <select id="lineaNegocio" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-slate-100 focus:ring-2 focus:ring-pink-500 transition-all">
-                        <option value="3.0" selected>🎨 Línea B2C (Aretes, Figuras, Shadowboxes, Decoración)</option>
-                        <option value="clicker">🎛️ Clicker / Fidget Mecánico (Switch Integrado + Tapa Personalizada)</option>
-                    </select>
                 </div>
 
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
                         <label class="block text-sm sm:text-base font-extrabold text-slate-200 uppercase tracking-wider">Acabado de Base (Placa Bambu Lab)</label>
-                        <span class="text-xs sm:text-sm text-slate-300 font-semibold">💡 Pasa el cursor para ver detalles</span>
+                        <span class="text-xs sm:text-sm text-slate-300 font-semibold">💡 Textura de superficie</span>
                     </div>
                     
                     <div class="grid grid-cols-3 gap-4">
                         <div class="relative has-tooltip">
                             <button type="button" onclick="seleccionarPlaca('PEI Bambu Lab', this)" class="plate-btn active w-full p-4 glass-card rounded-2xl border border-slate-700 text-center transition-all">
                                 <span class="block text-2xl">🪨</span>
-                                <span class="block text-sm sm:text-base font-black text-white mt-2">PEI Bambu Lab</span>
+                                <span class="block text-sm sm:text-base font-black text-white mt-2">PEI Oficial</span>
                                 <span class="block text-xs sm:text-sm text-slate-300 mt-0.5">Mate Rugoso</span>
                             </button>
                             <div class="tooltip-box absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-60 p-3.5 bg-slate-900 border border-slate-700 rounded-xl text-xs sm:text-sm text-slate-200 text-center shadow-2xl z-20 pointer-events-none">
-                                <strong class="text-white block mb-1">Placa PEI Oficial Bambu:</strong>
-                                Acabado profesional mate de grano fino. Disimula líneas de capa y da máxima adherencia.
+                                <strong class="text-white block mb-1">PEI Texturizado Oficial:</strong>
+                                Disimula líneas de capa y brinda adherencia óptima.
                             </div>
                         </div>
 
@@ -150,11 +153,11 @@
                             <button type="button" onclick="seleccionarPlaca('PEO Diamante', this)" class="plate-btn w-full p-4 glass-card rounded-2xl border border-slate-700 text-center transition-all">
                                 <span class="block text-2xl">💎</span>
                                 <span class="block text-sm sm:text-base font-black text-white mt-2">PEO Diamante</span>
-                                <span class="block text-xs sm:text-sm text-slate-300 mt-0.5">Patrón Prismático</span>
+                                <span class="block text-xs sm:text-sm text-slate-300 mt-0.5">Prismático</span>
                             </button>
                             <div class="tooltip-box absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-60 p-3.5 bg-slate-900 border border-slate-700 rounded-xl text-xs sm:text-sm text-slate-200 text-center shadow-2xl z-20 pointer-events-none">
-                                <strong class="text-white block mb-1">Efecto PEO Diamante:</strong>
-                                Transfiere un patrón geométrico brillante a la base que destella con la luz.
+                                <strong class="text-white block mb-1">Efecto PEO:</strong>
+                                Transfiere un patrón de diamantes brillantes que destellan.
                             </div>
                         </div>
 
@@ -162,11 +165,11 @@
                             <button type="button" onclick="seleccionarPlaca('PEY Holo-Efecto', this)" class="plate-btn w-full p-4 glass-card rounded-2xl border border-slate-700 text-center transition-all">
                                 <span class="block text-2xl">🌈</span>
                                 <span class="block text-sm sm:text-base font-black text-white mt-2">PEY Holo</span>
-                                <span class="block text-xs sm:text-sm text-slate-300 mt-0.5">Reflejo Arcoíris</span>
+                                <span class="block text-xs sm:text-sm text-slate-300 mt-0.5">Arcoíris</span>
                             </button>
                             <div class="tooltip-box absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-60 p-3.5 bg-slate-900 border border-slate-700 rounded-xl text-xs sm:text-sm text-slate-200 text-center shadow-2xl z-20 pointer-events-none">
-                                <strong class="text-white block mb-1">Efecto Holográfico PEY:</strong>
-                                Refleja colores arcoíris dinámicos al girar la pieza bajo luz directa.
+                                <strong class="text-white block mb-1">Efecto PEY:</strong>
+                                Reflejo dinámico holográfico con la luz.
                             </div>
                         </div>
                     </div>
@@ -178,68 +181,97 @@
                         <input type="number" id="cantidad" value="1" min="1" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white">
                     </div>
                     <div>
-                        <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5">Tiempo (Ej: 1:20 o 59m)</label>
+                        <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5">Tiempo (ej. 59m, 1:20)</label>
                         <input type="text" id="tiempoHoras" value="59m" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white">
                     </div>
                     <div>
-                        <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5">Peso Total (Gramos)</label>
+                        <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5">Peso Unitario (Gramos)</label>
                         <input type="number" id="pesoTotal" value="14" min="1" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white">
                     </div>
                 </div>
+
+                <!-- BOTÓN PARA AGREGAR AL CARRITO -->
+                <div class="pt-2">
+                    <button type="button" onclick="agregarPartidaAlCarrito()" class="w-full bg-slate-800 hover:bg-slate-700 border-2 border-dashed border-pink-500/60 hover:border-pink-500 text-pink-300 hover:text-white font-extrabold py-4 rounded-2xl transition-all flex items-center justify-center gap-3 text-base shadow-lg">
+                        <span class="text-xl">➕</span>
+                        <span>Agregar Partida a la Cotización</span>
+                        <span id="previewSubtotalBtn" class="bg-pink-500/20 text-pink-300 px-3 py-1 rounded-xl text-xs font-black">($0.00)</span>
+                    </button>
+                </div>
             </div>
 
+            <!-- COLUMNA DERECHA: RESUMEN Y LISTA DE PARTIDAS -->
             <div class="lg:col-span-5 flex flex-col justify-between space-y-6 bg-slate-900/80 p-6 sm:p-8 rounded-3xl border border-slate-700 shadow-2xl">
-                <div class="space-y-6">
-                    <div id="badgeMayoreo" class="hidden w-full bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-sm sm:text-base font-extrabold py-4 px-4 rounded-2xl text-center shadow-lg backdrop-blur-sm">
-                        🎉 ¡Precio Promocional de Mayoreo Aplicado! (+12 piezas)
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 border-b border-slate-700 pb-6 text-sm">
-                        <div class="flex items-center gap-3.5">
-                            <span class="p-3.5 bg-slate-800 rounded-2xl text-xl">📦</span>
-                            <div>
-                                <span class="block text-xs text-slate-300 font-extrabold uppercase tracking-wider">Masa Material</span>
-                                <strong id="lblPesoTotal" class="text-white text-lg font-black">14g</strong>
-                            </div>
+                <div class="space-y-5">
+                    
+                    <div class="flex items-center justify-between border-b border-slate-700 pb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">📦</span>
+                            <h3 class="text-base font-black text-white uppercase tracking-wider">Partidas Cotizadas</h3>
                         </div>
-                        <div class="flex items-center gap-3.5 border-l border-slate-700 pl-4">
-                            <span class="p-3.5 bg-slate-800 rounded-2xl text-xl">⏱️</span>
-                            <div>
-                                <span class="block text-xs text-slate-300 font-extrabold uppercase tracking-wider">Tiempo P2S</span>
-                                <strong id="lblTiempoTotal" class="text-white text-lg font-black">59m</strong>
-                            </div>
+                        <div id="badgeContador" class="bg-pink-500/20 text-pink-400 text-xs font-black px-3 py-1 rounded-full">
+                            0 partidas
                         </div>
                     </div>
 
-                    <div class="space-y-5 pt-2">
-                        <div class="flex justify-between items-baseline border-b border-slate-700/80 pb-4">
-                            <span class="text-sm sm:text-base uppercase font-bold text-slate-300 tracking-wider">Precio Unitario</span>
-                            <span class="text-2xl sm:text-3xl font-black text-white" id="lblPrecioUnitario">$0.00 <span class="text-xs font-bold text-slate-400">MXN</span></span>
+                    <!-- CONTENEDOR DE PARTIDAS AGREGADAS -->
+                    <div id="listaPartidas" class="space-y-3 max-h-56 overflow-y-auto pr-1">
+                        <!-- Se llena dinámicamente -->
+                        <div id="cartEmptyState" class="text-center py-6 text-slate-400 text-xs font-medium border border-dashed border-slate-800 rounded-2xl p-4">
+                            Mostrando cotización de la pieza actual.<br>
+                            Pulsa <strong class="text-pink-400">"➕ Agregar Partida"</strong> para armar un paquete múltiple.
                         </div>
-                        <div class="flex justify-between items-baseline pt-1">
-                            <span class="text-sm sm:text-base uppercase font-extrabold text-pink-400 tracking-wider">Inversión Total</span>
+                    </div>
+
+                    <div id="badgeMayoreo" class="hidden w-full bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-xs sm:text-sm font-extrabold py-3 px-4 rounded-2xl text-center shadow-lg backdrop-blur-sm">
+                        🎉 ¡Descuento de Mayoreo Aplicado!
+                    </div>
+
+                    <!-- MÉTRICAS ACUMULADAS -->
+                    <div class="grid grid-cols-3 gap-2 border-y border-slate-700 py-4 text-center">
+                        <div class="p-2 bg-slate-800/60 rounded-xl">
+                            <span class="block text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Piezas (Q)</span>
+                            <strong id="lblCantTotal" class="text-white text-base font-black">1 pz</strong>
+                        </div>
+                        <div class="p-2 bg-slate-800/60 rounded-xl">
+                            <span class="block text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Filamento</span>
+                            <strong id="lblPesoTotal" class="text-white text-base font-black">14g</strong>
+                        </div>
+                        <div class="p-2 bg-slate-800/60 rounded-xl">
+                            <span class="block text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Tiempo Taller</span>
+                            <strong id="lblTiempoTotal" class="text-white text-base font-black">59m</strong>
+                        </div>
+                    </div>
+
+                    <!-- TOTAL CONSOLIDADO -->
+                    <div class="space-y-1 pt-1">
+                        <div class="flex justify-between items-baseline">
+                            <span class="text-sm uppercase font-extrabold text-pink-400 tracking-wider">Inversión Total</span>
                             <span class="text-4xl sm:text-5xl font-black text-pink-500 tracking-tight" id="lblPrecioTotal">$0.00 <span class="text-xs font-bold text-slate-400">MXN</span></span>
                         </div>
                     </div>
                 </div>
 
-                <div class="space-y-4 pt-4">
-                    <button type="button" id="btnWhatsapp" class="w-full bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-extrabold py-5 rounded-2xl shadow-xl shadow-pink-500/30 transition-all flex items-center justify-center gap-3 text-base sm:text-lg active:scale-98 no-print">
-                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                <!-- ACCIONES DE SALIDA -->
+                <div class="space-y-3 pt-2">
+                    <button type="button" id="btnWhatsapp" class="w-full bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-extrabold py-4 rounded-2xl shadow-xl shadow-pink-500/30 transition-all flex items-center justify-center gap-3 text-base active:scale-98 no-print">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
                             <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
                         </svg>
                         <span>Enviar Cotización a WhatsApp</span>
                     </button>
 
-                    <button type="button" id="btnCopiar" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-100 font-extrabold py-4 rounded-2xl transition-all flex items-center justify-center gap-2.5 text-sm sm:text-base active:scale-98 no-print shadow-md">
+                    <button type="button" id="btnCopiar" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-100 font-extrabold py-3.5 rounded-2xl transition-all flex items-center justify-center gap-2 text-sm active:scale-98 no-print shadow-md">
                         <span>📋 Copiar Resumen de Cotización</span>
                     </button>
                     
-                    <div class="flex justify-between items-center text-sm sm:text-base text-slate-300 px-1 pt-2 no-print">
+                    <div class="flex justify-between items-center text-xs text-slate-400 px-1 pt-1 no-print">
+                        <button type="button" onclick="limpiarTodoElCarrito()" class="hover:text-rose-400 underline transition-all font-bold">
+                            🗑️ Limpiar partidas
+                        </button>
                         <button type="button" id="btnPDF" class="hover:text-white underline transition-all font-bold">
                             📄 Descargar PDF
                         </button>
-                        <span class="font-semibold">Taller SHAMMAH CREA © 2026</span>
                     </div>
                 </div>
             </div>
@@ -252,16 +284,23 @@
 
     <script src="app.js"></script>
     <script>
-        let currentPriceUnit = 0;
-        let currentPriceTotal = 0;
         let placaSeleccionada = 'PEI Bambu Lab';
         let debounceTimer = null;
+        
+        // Estado de la pieza en edición actual
+        let piezaActualPreview = {
+            precioUnitario: 0,
+            totalMonto: 0
+        };
+
+        // Estado del Carrito Multi-Partida
+        let carritoPartidas = [];
 
         function seleccionarPlaca(nombrePlaca, btnEl) {
             placaSeleccionada = nombrePlaca;
             document.querySelectorAll('.plate-btn').forEach(btn => btn.classList.remove('active'));
             btnEl.classList.add('active');
-            programarCalculo();
+            programarCalculoPiezaActual();
         }
 
         function seleccionarPresets(tipo, tiempoDef, pesoDef) {
@@ -274,23 +313,15 @@
             }
             document.getElementById('tiempoHoras').value = tiempoDef;
             document.getElementById('pesoTotal').value = pesoDef;
-            programarCalculo();
+            programarCalculoPiezaActual();
         }
 
-        function programarCalculo() {
-            const cantidad = parseInt(document.getElementById('cantidad').value) || 1;
-            const gramosU = parseFloat(document.getElementById('pesoTotal').value) || 0;
-            const tiempoDecU = parseTiempo(document.getElementById('tiempoHoras').value);
-
-            // Actualización instantánea en la interfaz
-            document.getElementById('lblPesoTotal').innerText = `${gramosU * cantidad}g`;
-            document.getElementById('lblTiempoTotal').innerText = formatTiempoVisual(tiempoDecU * cantidad);
-
+        function programarCalculoPiezaActual() {
             clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(calcularEnServidor, 250);
+            debounceTimer = setTimeout(calcularPiezaEnServidor, 250);
         }
 
-        async function calcularEnServidor() {
+        async function calcularPiezaEnServidor() {
             const cantidad = parseInt(document.getElementById('cantidad').value) || 1;
             const gramosU = parseFloat(document.getElementById('pesoTotal').value) || 0;
             const tiempoDecU = parseTiempo(document.getElementById('tiempoHoras').value);
@@ -304,53 +335,222 @@
             });
 
             if (res && res.exito) {
-                currentPriceUnit = res.precioUnitario;
-                currentPriceTotal = res.totalMonto;
+                piezaActualPreview.precioUnitario = res.precioUnitario;
+                piezaActualPreview.totalMonto = res.totalMonto;
+                piezaActualPreview.esMayoreo = res.esMayoreo;
+                piezaActualPreview.tipoMayoreo = res.tipoMayoreo;
 
-                document.getElementById('lblPrecioUnitario').innerHTML = `$${currentPriceUnit.toFixed(2)} <span class="text-xs font-bold text-slate-400">MXN</span>`;
-                document.getElementById('lblPrecioTotal').innerHTML = `$${currentPriceTotal.toFixed(2)} <span class="text-xs font-bold text-slate-400">MXN</span>`;
-
-                const badge = document.getElementById('badgeMayoreo');
-                if (res.esMayoreo) {
-                    badge.classList.remove('hidden');
-                    badge.innerText = res.tipoMayoreo === "mayor" ? "🎉 ¡Descuento de Mayoreo Mayor (12+ pz) Aplicado!" : "🔥 ¡Descuento de Mayoreo (6+ pz) Aplicado!";
-                } else {
-                    badge.classList.add('hidden');
+                document.getElementById('previewSubtotalBtn').innerText = `($${res.totalMonto.toFixed(2)} MXN)`;
+                
+                // Si el carrito está vacío, reflejar la pieza actual en la columna derecha
+                if (carritoPartidas.length === 0) {
+                    actualizarMetricasVisuales();
                 }
             }
         }
 
-        function generarPayloadDatos() {
+        function agregarPartidaAlCarrito() {
+            const productoNombre = document.getElementById('nombreProducto').value.trim() || "Pieza 3D";
+            const cantidad = parseInt(document.getElementById('cantidad').value) || 1;
+            const gramosU = parseFloat(document.getElementById('pesoTotal').value) || 0;
+            const tiempoStr = document.getElementById('tiempoHoras').value.trim();
+            const tiempoDecU = parseTiempo(tiempoStr);
+            const tipoNegocio = document.getElementById('lineaNegocio').value;
+
+            const nuevaPartida = {
+                id: Date.now(),
+                nombre: productoNombre,
+                placa: placaSeleccionada,
+                cantidad: cantidad,
+                gramosUnit: gramosU,
+                gramosTotal: gramosU * cantidad,
+                minutosUnit: Math.round(tiempoDecU * 60),
+                minutosTotal: Math.round(tiempoDecU * 60 * cantidad),
+                tiempoStr: formatTiempoVisual(tiempoDecU * cantidad),
+                tipoNegocio: tipoNegocio,
+                precioUnitario: piezaActualPreview.precioUnitario,
+                subtotal: piezaActualPreview.totalMonto
+            };
+
+            carritoPartidas.push(nuevaPartida);
+            renderizarCarrito();
+
+            // Resetear nombre para la siguiente pieza
+            document.getElementById('nombreProducto').value = "Siguiente Pieza 3D";
+            document.getElementById('cantidad').value = 1;
+            programarCalculoPiezaActual();
+        }
+
+        function eliminarPartida(index) {
+            carritoPartidas.splice(index, 1);
+            renderizarCarrito();
+        }
+
+        function limpiarTodoElCarrito() {
+            carritoPartidas = [];
+            renderizarCarrito();
+        }
+
+        function renderizarCarrito() {
+            const contenedor = document.getElementById('listaPartidas');
+            const badgeContador = document.getElementById('badgeContador');
+            badgeContador.innerText = `${carritoPartidas.length} partidas`;
+
+            if (carritoPartidas.length === 0) {
+                contenedor.innerHTML = `
+                    <div id="cartEmptyState" class="text-center py-6 text-slate-400 text-xs font-medium border border-dashed border-slate-800 rounded-2xl p-4">
+                        Mostrando cotización de la pieza actual.<br>
+                        Pulsa <strong class="text-pink-400">"➕ Agregar Partida"</strong> para armar un paquete múltiple.
+                    </div>
+                `;
+            } else {
+                contenedor.innerHTML = "";
+                carritoPartidas.forEach((p, idx) => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = "bg-slate-800/80 p-3.5 rounded-2xl border border-slate-700/80 flex justify-between items-center";
+                    itemDiv.innerHTML = `
+                        <div class="pr-2">
+                            <div class="font-extrabold text-white text-xs sm:text-sm line-clamp-1">${p.nombre}</div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">
+                                ${p.cantidad} pz • ${p.placa} • ${p.gramosTotal}g • ${p.tiempoStr}
+                            </div>
+                            <div class="text-[11px] font-bold text-pink-400">$${p.precioUnitario.toFixed(2)} c/u</div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-black text-white text-sm sm:text-base">$${p.subtotal.toFixed(2)}</span>
+                            <button type="button" onclick="eliminarPartida(${idx})" class="text-rose-400 hover:text-rose-300 p-1.5 rounded-lg hover:bg-rose-500/10 font-bold transition-all">✕</button>
+                        </div>
+                    `;
+                    contenedor.appendChild(itemDiv);
+                });
+            }
+
+            actualizarMetricasVisuales();
+        }
+
+        function actualizarMetricasVisuales() {
+            let totalQ = 0, totalGramos = 0, totalMinutos = 0, totalMonto = 0;
+
+            if (carritoPartidas.length > 0) {
+                carritoPartidas.forEach(p => {
+                    totalQ += p.cantidad;
+                    totalGramos += p.gramosTotal;
+                    totalMinutos += p.minutosTotal;
+                    totalMonto += p.subtotal;
+                });
+            } else {
+                // Modo pieza individual
+                const cant = parseInt(document.getElementById('cantidad').value) || 1;
+                const gU = parseFloat(document.getElementById('pesoTotal').value) || 0;
+                const tU = parseTiempo(document.getElementById('tiempoHoras').value);
+
+                totalQ = cant;
+                totalGramos = gU * cant;
+                totalMinutos = Math.round(tU * 60 * cant);
+                totalMonto = piezaActualPreview.totalMonto;
+            }
+
+            document.getElementById('lblCantTotal').innerText = `${totalQ} pz`;
+            document.getElementById('lblPesoTotal').innerText = `${totalGramos}g`;
+            document.getElementById('lblTiempoTotal').innerText = formatTiempoVisual(totalMinutos / 60);
+            document.getElementById('lblPrecioTotal').innerHTML = `$${totalMonto.toFixed(2)} <span class="text-xs font-bold text-slate-400">MXN</span>`;
+
+            const badge = document.getElementById('badgeMayoreo');
+            if (totalQ >= 6) {
+                badge.classList.remove('hidden');
+                badge.innerText = totalQ >= 12 ? "🎉 ¡Descuento de Mayoreo Mayor (12+ pz) en Orden!" : "🔥 ¡Descuento de Mayoreo (6+ pz) en Orden!";
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function generarPayloadConsolidado() {
             const ahora = new Date();
             const anio = ahora.getFullYear();
             const mesNum = String(ahora.getMonth() + 1).padStart(2, '0');
             const mesStr = `${anio}-${mesNum}`;
             const timestamp = `${anio}-${mesNum}-${String(ahora.getDate()).padStart(2, '0')} ${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}`;
             const folioId = `SHM-${anio.toString().slice(-2)}${mesNum}-${Math.floor(100 + Math.random() * 900)}`;
-
             const cliente = document.getElementById('nombreCliente').value.trim() || "Cliente Mostrador";
-            const productoBase = document.getElementById('nombreProducto').value.trim() || "Pieza 3D";
-            const producto = `${productoBase} [Placa: ${placaSeleccionada}]`;
-            const Q = parseInt(document.getElementById('cantidad').value) || 1;
-            const gramos = (parseFloat(document.getElementById('pesoTotal').value) || 0) * Q;
-            const minutos = Math.round(parseTiempo(document.getElementById('tiempoHoras').value) * 60 * Q);
 
-            // El frontend no incluye ni expone costo_dir ni utilidad
+            let lista = [];
+            let totalQ = 0, totalGramos = 0, totalMinutos = 0, totalMonto = 0;
+            let totalClickers = 0;
+
+            if (carritoPartidas.length > 0) {
+                lista = [...carritoPartidas];
+            } else {
+                // Si no agregaron al carrito, tomar la pieza que está en pantalla
+                const productoBase = document.getElementById('nombreProducto').value.trim() || "Pieza 3D";
+                const cant = parseInt(document.getElementById('cantidad').value) || 1;
+                const gU = parseFloat(document.getElementById('pesoTotal').value) || 0;
+                const tU = parseTiempo(document.getElementById('tiempoHoras').value);
+                const tipoNegocio = document.getElementById('lineaNegocio').value;
+
+                lista.push({
+                    nombre: productoBase,
+                    placa: placaSeleccionada,
+                    cantidad: cant,
+                    gramosTotal: gU * cant,
+                    minutosTotal: Math.round(tU * 60 * cant),
+                    tiempoStr: formatTiempoVisual(tU * cant),
+                    tipoNegocio: tipoNegocio,
+                    precioUnitario: piezaActualPreview.precioUnitario,
+                    subtotal: piezaActualPreview.totalMonto
+                });
+            }
+
+            // Consolidación de nombres y números
+            let nombresArr = [];
+            lista.forEach(p => {
+                nombresArr.push(`[${p.cantidad}x ${p.nombre} (${p.placa})]`);
+                totalQ += p.cantidad;
+                totalGramos += p.gramosTotal;
+                totalMinutos += p.minutosTotal;
+                totalMonto += p.subtotal;
+                if (p.tipoNegocio === 'clicker') totalClickers += p.cantidad;
+            });
+
+            const productoCadena = nombresArr.join(" + ");
+
             return {
                 id: folioId,
                 mes: mesStr,
                 fecha: timestamp,
                 cliente: cliente,
                 contacto: "Cotizador Web",
-                producto: producto,
-                Q: Q,
-                gramos: gramos,
-                minutos: minutos,
-                total: currentPriceTotal,
-                tipoNegocio: document.getElementById('lineaNegocio').value,
+                producto: productoCadena,
+                Q: totalQ,
+                gramos: totalGramos,
+                minutos: totalMinutos,
+                total: totalMonto,
+                cantClickers: totalClickers,
+                tipoNegocio: totalClickers > 0 ? 'clicker' : '3.0',
                 estatus_pago: "🔴 Pendiente",
-                metodo_pago: "Pendiente"
+                metodo_pago: "Pendiente",
+                partidasDetalle: lista
             };
+        }
+
+        function construirMensajeTexto(payload) {
+            let lineasPartidas = "";
+            payload.partidasDetalle.forEach((p, i) => {
+                lineasPartidas += `\n${i + 1}. *${p.nombre}* [${p.placa}]\n` +
+                                  `   • Cant: ${p.cantidad} pz | P.U: $${p.precioUnitario.toFixed(2)} MXN\n` +
+                                  `   • Subtotal: *$${p.subtotal.toFixed(2)} MXN*\n`;
+            });
+
+            return `*SHAMMAH CREA 3D — COTIZACIÓN FORMAL* 🖨️✨\n` +
+                `• Folio: ${payload.id}\n` +
+                `• Cliente: ${payload.cliente}\n` +
+                `-----------------------------------------\n` +
+                `📦 *DESGLOSE DE PARTIDAS:*${lineasPartidas}` +
+                `-----------------------------------------\n` +
+                `• Total de piezas: ${payload.Q} pz\n` +
+                `• Filamento total: ${payload.gramos}g\n` +
+                `• Tiempo est. taller: ${formatTiempoVisual(payload.minutos / 60)}\n` +
+                `• *INVERSIÓN FINAL: $${payload.total.toFixed(2)} MXN*\n\n` +
+                `*¡Gracias por tu preferencia!*`;
         }
 
         function mostrarToast() {
@@ -361,8 +561,8 @@
             }, 3000);
         }
 
-        document.getElementById('cotizadorForm').addEventListener('input', programarCalculo);
-        document.getElementById('lineaNegocio').addEventListener('change', programarCalculo);
+        document.getElementById('cotizadorForm').addEventListener('input', programarCalculoPiezaActual);
+        document.getElementById('lineaNegocio').addEventListener('change', programarCalculoPiezaActual);
 
         document.getElementById('btnCopiar').addEventListener('click', async (e) => {
             const btn = e.currentTarget;
@@ -372,14 +572,8 @@
             const textoOriginal = btn.innerHTML;
             btn.innerHTML = `<span>⏳ Registrando...</span>`;
 
-            const payload = generarPayloadDatos();
-            const textoResumen = `*SHAMMAH CREA - COTIZACIÓN 3D* 🖨️✨\n` +
-                `• Folio: ${payload.id}\n` +
-                `• Cliente: ${payload.cliente}\n` +
-                `• Producto: ${payload.producto}\n` +
-                `• Cantidad: ${payload.Q} pz\n` +
-                `• Total: $${payload.total.toFixed(2)} MXN\n` +
-                `*¡Gracias por tu preferencia!*`;
+            const payload = generarPayloadConsolidado();
+            const textoResumen = construirMensajeTexto(payload);
 
             try {
                 await navigator.clipboard.writeText(textoResumen);
@@ -402,11 +596,8 @@
             const textoOriginal = btn.innerHTML;
             btn.innerHTML = `<span>⏳ Abriendo WhatsApp...</span>`;
 
-            const payload = generarPayloadDatos();
-            const textoWp = `Hola! Me interesa cotizar en SHAMMAH CREA:\n` +
-                `*${payload.producto}* (Cant: ${payload.Q} pz)\n` +
-                `Total estimado: *$${payload.total.toFixed(2)} MXN*\n` +
-                `Folio: ${payload.id}`;
+            const payload = generarPayloadConsolidado();
+            const textoWp = construirMensajeTexto(payload);
 
             const urlWp = `https://api.whatsapp.com/send?phone=${CONFIG_SHAMMAH.NUM_WHATSAPP}&text=${encodeURIComponent(textoWp)}`;
             window.open(urlWp, '_blank');
@@ -422,7 +613,7 @@
             window.print();
         });
 
-        programarCalculo();
+        programarCalculoPiezaActual();
     </script>
 </body>
 </html>
