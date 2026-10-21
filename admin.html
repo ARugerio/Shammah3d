@@ -31,7 +31,7 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-8">
 
-    <!-- 1. PANTALLA DE BLOQUEO OPACO (VISIBLE POR DEFECTO, CERO FILTRACIONES) -->
+    <!-- PANTALLA DE BLOQUEO OPACO -->
     <div id="pantallaBloqueo" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
         <div class="glass-card w-full max-w-md p-8 rounded-3xl shadow-2xl border border-slate-800 text-center space-y-6">
             <div class="space-y-2">
@@ -61,9 +61,8 @@
         </div>
     </div>
 
-    <!-- 2. PANEL ADMINISTRATIVO REAL (OCULTO EN EL DOM HASTA QUE SE VALIDE EL PIN) -->
+    <!-- PANEL GERENCIAL REAL -->
     <div id="panelGerencial" class="w-full max-w-[95%] hidden space-y-8">
-        
         <header class="w-full flex flex-wrap items-center justify-between gap-4 glass-card p-6 rounded-3xl shadow-2xl">
             <div>
                 <div class="flex items-center gap-3">
@@ -181,7 +180,6 @@
         </div>
     </div>
 
-    <!-- SCRIPT DE LÓGICA Y SEGURIDAD -->
     <script src="app.js"></script>
     <script>
         let DB_GITHUB = [];
@@ -206,7 +204,6 @@
                 sessionStorage.setItem("shammah_admin_pin", pin);
                 DB_GITHUB = respuesta.datos || [];
                 
-                // Mostrar panel y ocultar bloqueo
                 document.getElementById('pantallaBloqueo').classList.add('hidden');
                 document.getElementById('panelGerencial').classList.remove('hidden');
                 renderizar();
@@ -320,13 +317,17 @@
 
         async function actualizarMontoManual(index, nuevoMonto) {
             const item = DB_GITHUB[index];
-            const costoDirecto = parseFloat(item.costo_dir) || 0;
-            const desglose = calcularDesgloseFinanciero(nuevoMonto, costoDirecto);
+            const nuevoTotal = parseFloat(nuevoMonto) || 0;
+            const costoDir = parseFloat(item.costo_dir) || 0;
 
-            item.total = desglose.total;
-            item.f_redes = desglose.f_redes;
-            item.f_resico = desglose.f_resico;
-            item.utilidad = desglose.utilidad;
+            const f_redes = nuevoTotal * 0.05;
+            const f_resico = nuevoTotal * 0.01;
+            const utilidad = nuevoTotal - (f_redes + f_resico + costoDir);
+
+            item.total = nuevoTotal;
+            item.f_redes = f_redes;
+            item.f_resico = f_resico;
+            item.utilidad = utilidad;
 
             renderizar();
             await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
@@ -355,23 +356,30 @@
             const total = parseFloat(document.getElementById('mMonto').value) || 0;
 
             const costoDir = total * 0.25;
-            const desglose = calcularDesgloseFinanciero(total, costoDir);
+            const f_redes = total * 0.05;
+            const f_resico = total * 0.01;
+            const utilidad = total - (f_redes + f_resico + costoDir);
 
             const ahora = new Date();
             const timestamp = `${ahora.getFullYear()}-${String(ahora.getMonth()+1).padStart(2,'0')}-${String(ahora.getDate()).padStart(2,'0')} ${String(ahora.getHours()).padStart(2,'0')}:${String(ahora.getMinutes()).padStart(2,'0')}`;
             
             const nuevoRegistro = {
                 id: `SHM-MAN-${Math.floor(100+Math.random()*900)}`,
+                mes: `${ahora.getFullYear()}-${String(ahora.getMonth()+1).padStart(2,'0')}`,
                 fecha: timestamp,
                 cliente: cliente,
+                contacto: "Registro Manual",
                 producto: producto,
                 Q: Q,
-                total: desglose.total,
-                f_redes: desglose.f_redes,
-                f_resico: desglose.f_resico,
+                gramos: 0,
+                minutos: 0,
+                total: total,
+                f_redes: f_redes,
+                f_resico: f_resico,
                 costo_dir: costoDir,
-                utilidad: desglose.utilidad,
-                estatus_pago: "🔴 Cotización / Pendiente"
+                utilidad: utilidad,
+                estatus_pago: "🔴 Cotización / Pendiente",
+                metodo_pago: "Pendiente"
             };
 
             DB_GITHUB.unshift(nuevoRegistro);
