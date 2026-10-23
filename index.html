@@ -28,9 +28,10 @@
             box-shadow: 0 0 15px rgba(236, 72, 153, 0.35);
             outline: none;
         }
-        .plate-btn.active {
+        .plate-btn.active, .color-mode-btn.active {
             border-color: #ec4899;
             background: rgba(236, 72, 153, 0.25);
+            color: #ffffff;
         }
         .tooltip-box {
             visibility: hidden;
@@ -82,7 +83,7 @@
             <span class="text-slate-200 text-base">Taller Operativo: <strong class="text-white">Bambu Lab P2S + AMS 2 Pro</strong></span>
         </div>
         <div class="flex items-center gap-3.5 text-slate-300 text-sm sm:text-base">
-            <span>⚡ Multi-Color</span>
+            <span>⚡ Multi-Color AMS</span>
             <span>•</span>
             <span>✨ Placas PEI/PEO/PEY/PET</span>
             <span>•</span>
@@ -157,51 +158,82 @@
                     </div>
                 </section>
 
-                <!-- NOMBRE DE LA PIEZA Y FILAMENTO -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <input type="hidden" id="lineaNegocio" value="3.0">
-                        <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2 uppercase tracking-wider">Descripción de la Pieza</label>
-                        <input type="text" id="nombreProducto" placeholder="Ej. Llavero Batman, Figura 3D..." value="Línea Decorativa / B2C" class="w-full glass-input rounded-2xl px-5 py-3.5 text-base font-bold text-white placeholder-slate-500">
+                <!-- NOMBRE DE LA PIEZA -->
+                <div>
+                    <input type="hidden" id="lineaNegocio" value="3.0">
+                    <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2 uppercase tracking-wider">Descripción de la Pieza</label>
+                    <input type="text" id="nombreProducto" placeholder="Ej. Llavero Batman, Figura 3D..." value="Línea Decorativa / B2C" class="w-full glass-input rounded-2xl px-5 py-3.5 text-base font-bold text-white placeholder-slate-500">
+                </div>
+
+                <!-- SELECTOR DE MATERIAL Y COLORES (MONOCROMÁTICO VS MULTICOLOR AMS 2 PRO) -->
+                <div class="p-5 bg-slate-900/90 rounded-3xl border border-slate-700/80 space-y-4 shadow-xl">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                        <div>
+                            <span class="text-xs sm:text-sm font-black uppercase tracking-wider text-pink-400 block">🎨 Configuración de Filamento</span>
+                            <span class="text-[11px] text-slate-400">Selecciona si la pieza es de 1 solo tono o multicolor con el AMS 2 Pro</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 p-1 bg-slate-950 rounded-xl border border-slate-800">
+                            <button type="button" id="btnModoMono" onclick="cambiarModoColor('mono')" class="color-mode-btn active px-3 py-1.5 rounded-lg text-xs font-black transition-all">
+                                Monocromático
+                            </button>
+                            <button type="button" id="btnModoAms" onclick="cambiarModoColor('ams')" class="color-mode-btn px-3 py-1.5 rounded-lg text-xs font-black text-slate-400 hover:text-white transition-all flex items-center gap-1.5">
+                                <span>🌈 AMS Multi-Color</span>
+                            </button>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2 uppercase tracking-wider">Material / Color</label>
-                        <select id="filamentoSeleccionado" class="w-full glass-input rounded-2xl px-4 py-3.5 text-sm sm:text-base font-bold text-slate-100">
-                            <optgroup label="🎨 PLA Estándar & Pro">
-                                <option value="PLA Blanco Alcatraz">Blanco Alcatraz (MM Pro)</option>
-                                <option value="PLA Negro">Negro (Vlakno / MM)</option>
-                                <option value="PLA Rojo Nochebuena">Rojo Nochebuena (MM Pro)</option>
-                                <option value="PLA Azul Talavera">Azul Talavera (MM Pro)</option>
-                                <option value="PLA Verde Iguana" selected>Verde Iguana (MM Pro)</option>
-                                <option value="PLA Morado Bugambilia">Morado Bugambilia (MM Pro)</option>
-                                <option value="PLA Tono Piel">Tono Piel (MM Pro)</option>
-                                <option value="PLA Transparente">Transparente (MM Pro)</option>
-                                <option value="PLA Lite Cian">Cian (Bambu Lite)</option>
-                                <option value="PLA Lite Naranja">Naranja (Bambu Lite)</option>
-                            </optgroup>
-                            <optgroup label="🌸 PLA Matte">
-                                <option value="PLA Matte Rosa Axolote">Rosa Axolote (MM Matte)</option>
-                                <option value="PLA Matte Verde Militar">Verde Militar (MM Matte)</option>
-                                <option value="PLA Matte Café Moka">Café Moka (MM Matte)</option>
-                                <option value="PLA Matte Amarillo">Amarillo (ELEGOO Matte)</option>
-                                <option value="PLA Matte Lila">Lila (ELEGOO Matte)</option>
-                            </optgroup>
-                            <optgroup label="✨ PLA Silk (Seda / Metálicos)">
-                                <option value="PLA Silk Oro Azteca">Oro Azteca (MM Silk)</option>
-                                <option value="PLA Silk Plata .925">Plata .925 (MM Silk)</option>
-                            </optgroup>
-                            <optgroup label="🗿 PLA Creative & Texturas">
-                                <option value="PLA Creative Mercurio">Mercurio (MM Creative)</option>
-                                <option value="PLA Creative Madera">Madera (MM Creative)</option>
-                                <option value="PLA Creative Mármol">Mármol (MM Creative)</option>
-                            </optgroup>
-                            <optgroup label="⚙️ Filamentos Técnicos">
-                                <option value="PETG Gris">PETG Gris (MM)</option>
-                                <option value="ABS Negro">ABS Negro (MM - Cama 95°C)</option>
-                                <option value="TPU 95A Blanco">TPU 95A Blanco (⚠️ Carrete Externo / NO AMS)</option>
-                            </optgroup>
+
+                    <!-- MODO 1: UN SOLO COLOR -->
+                    <div id="panelModoMono" class="space-y-2">
+                        <label class="block text-xs font-extrabold text-slate-300 uppercase">Filamento / Color de la Pieza</label>
+                        <select id="filamentoSeleccionado" onchange="verificarAlertasTecnicas()" class="w-full glass-input rounded-2xl px-4 py-3 text-sm font-bold text-slate-100">
+                            <!-- Inyectado por JavaScript -->
                         </select>
                     </div>
+
+                    <!-- MODO 2: AMS 2 PRO (HASTA 4 RANURAS) -->
+                    <div id="panelModoAms" class="hidden space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">Ranuras AMS 2 Pro (Carretes a cargar)</span>
+                            <span class="text-[10px] text-slate-400">A1 es obligatorio; A2, A3 y A4 son opcionales</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="p-3 bg-slate-950/70 rounded-2xl border border-slate-800 space-y-1.5">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded-md bg-pink-500/20 text-pink-400 text-xs font-black">A1</span>
+                                    <label class="text-[11px] font-bold text-slate-300 uppercase">Color Base (Principal)</label>
+                                </div>
+                                <select id="amsSlotA1" onchange="verificarAlertasTecnicas()" class="w-full glass-input rounded-xl px-3 py-2 text-xs font-bold text-slate-100"></select>
+                            </div>
+
+                            <div class="p-3 bg-slate-950/70 rounded-2xl border border-slate-800 space-y-1.5">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-400 text-xs font-black">A2</span>
+                                    <label class="text-[11px] font-bold text-slate-300 uppercase">Segundo Color (Acento)</label>
+                                </div>
+                                <select id="amsSlotA2" onchange="verificarAlertasTecnicas()" class="w-full glass-input rounded-xl px-3 py-2 text-xs font-bold text-slate-100"></select>
+                            </div>
+
+                            <div class="p-3 bg-slate-950/70 rounded-2xl border border-slate-800 space-y-1.5">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 text-xs font-black">A3</span>
+                                    <label class="text-[11px] font-bold text-slate-300 uppercase">Tercer Color (Detalle)</label>
+                                </div>
+                                <select id="amsSlotA3" onchange="verificarAlertasTecnicas()" class="w-full glass-input rounded-xl px-3 py-2 text-xs font-bold text-slate-100"></select>
+                            </div>
+
+                            <div class="p-3 bg-slate-950/70 rounded-2xl border border-slate-800 space-y-1.5">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded-md bg-yellow-500/20 text-yellow-400 text-xs font-black">A4</span>
+                                    <label class="text-[11px] font-bold text-slate-300 uppercase">Cuarto Color (Acento)</label>
+                                </div>
+                                <select id="amsSlotA4" onchange="verificarAlertasTecnicas()" class="w-full glass-input rounded-xl px-3 py-2 text-xs font-bold text-slate-100"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BANNER DINÁMICO DE ADVERTENCIAS TÉCNICAS -->
+                    <div id="alertaMaterialTecnico" class="hidden p-3 rounded-2xl text-xs font-bold border"></div>
                 </div>
 
                 <!-- SELECTOR DE PLACAS (4 CAMAS OFICIALES) -->
@@ -251,14 +283,14 @@
                         <div>
                             <label class="block text-xs sm:text-sm font-extrabold text-slate-200 mb-1.5">
                                 Tiempo Total
-                                <span class="text-[10px] text-slate-400 font-normal block">Total con preparación (ej. 32m, 2h 15m)</span>
+                                <span class="text-[10px] text-slate-400 font-normal block">Total con preparación y cambios AMS</span>
                             </label>
                             <input type="text" id="tiempoTotalInput" value="32m" class="w-full glass-input rounded-2xl px-4 py-3 text-base font-bold text-white">
                         </div>
                         <div>
                             <label class="block text-xs sm:text-sm font-extrabold text-slate-200 mb-1.5">
                                 Filamento Total (g)
-                                <span class="text-[10px] text-slate-400 font-normal block">Total con soportes/purga (ej. 5.2, 31.3)</span>
+                                <span class="text-[10px] text-slate-400 font-normal block">Total con torre de purga y soporte</span>
                             </label>
                             <input type="number" id="gramosTotalInput" value="5.2" min="0.1" step="0.1" class="w-full glass-input rounded-2xl px-4 py-3 text-base font-bold text-white">
                         </div>
@@ -487,6 +519,59 @@
             NUM_WHATSAPP: "5215559650025"
         };
 
+        // CATÁLOGO OFICIAL DE FILAMENTOS SHAMMAH CREA 3D
+        const FILAMENTOS_CATALOGO = [
+            {
+                grupo: "🎨 PLA Estándar & Pro",
+                opciones: [
+                    { val: "PLA Blanco Alcatraz", label: "Blanco Alcatraz (MM Pro)" },
+                    { val: "PLA Negro", label: "Negro (Vlakno / MM)" },
+                    { val: "PLA Rojo Nochebuena", label: "Rojo Nochebuena (MM Pro)" },
+                    { val: "PLA Azul Talavera", label: "Azul Talavera (MM Pro)" },
+                    { val: "PLA Verde Iguana", label: "Verde Iguana (MM Pro)" },
+                    { val: "PLA Morado Bugambilia", label: "Morado Bugambilia (MM Pro)" },
+                    { val: "PLA Tono Piel", label: "Tono Piel (MM Pro)" },
+                    { val: "PLA Transparente", label: "Transparente (MM Pro)" },
+                    { val: "PLA Lite Cian", label: "Cian (Bambu Lite)" },
+                    { val: "PLA Lite Naranja", label: "Naranja (Bambu Lite)" }
+                ]
+            },
+            {
+                grupo: "🌸 PLA Matte",
+                opciones: [
+                    { val: "PLA Matte Rosa Axolote", label: "Rosa Axolote (MM Matte)" },
+                    { val: "PLA Matte Verde Militar", label: "Verde Militar (MM Matte)" },
+                    { val: "PLA Matte Café Moka", label: "Café Moka (MM Matte)" },
+                    { val: "PLA Matte Amarillo", label: "Amarillo (ELEGOO Matte)" },
+                    { val: "PLA Matte Lila", label: "Lila (ELEGOO Matte)" }
+                ]
+            },
+            {
+                grupo: "✨ PLA Silk (Seda / Metálicos)",
+                opciones: [
+                    { val: "PLA Silk Oro Azteca", label: "Oro Azteca (MM Silk)" },
+                    { val: "PLA Silk Plata .925", label: "Plata .925 (MM Silk)" }
+                ]
+            },
+            {
+                grupo: "🗿 PLA Creative & Texturas",
+                opciones: [
+                    { val: "PLA Creative Mercurio", label: "Mercurio (MM Creative)" },
+                    { val: "PLA Creative Madera", label: "Madera (MM Creative)" },
+                    { val: "PLA Creative Mármol", label: "Mármol (MM Creative)" }
+                ]
+            },
+            {
+                grupo: "⚙️ Filamentos Técnicos",
+                opciones: [
+                    { val: "PETG Gris", label: "PETG Gris (MM)" },
+                    { val: "ABS Negro", label: "ABS Negro (MM - Cama 95°C)" },
+                    { val: "TPU 95A Blanco", label: "TPU 95A Blanco (⚠️ Carrete Externo / NO AMS)" }
+                ]
+            }
+        ];
+
+        let modoColorActual = 'mono'; // 'mono' o 'ams'
         let placaSeleccionada = 'PEO Diamante';
         let desglosePiezasActivo = false;
         let debounceTimer = null;
@@ -497,6 +582,117 @@
         };
 
         let carritoPartidas = [];
+
+        // Inicialización de selectores
+        function inicializarSelectoresFilamento() {
+            const htmlOpciones = generarHtmlOpciones(false);
+            const htmlOpcionesOpcionales = generarHtmlOpciones(true);
+
+            document.getElementById('filamentoSeleccionado').innerHTML = htmlOpciones;
+            document.getElementById('amsSlotA1').innerHTML = htmlOpciones;
+            document.getElementById('amsSlotA2').innerHTML = htmlOpcionesOpcionales;
+            document.getElementById('amsSlotA3').innerHTML = htmlOpcionesOpcionales;
+            document.getElementById('amsSlotA4').innerHTML = htmlOpcionesOpcionales;
+
+            // Valores por defecto sugeridos
+            document.getElementById('filamentoSeleccionado').value = "PLA Verde Iguana";
+            document.getElementById('amsSlotA1').value = "PLA Negro";
+            document.getElementById('amsSlotA2').value = "PLA Silk Oro Azteca";
+            document.getElementById('amsSlotA3').value = "ninguno";
+            document.getElementById('amsSlotA4').value = "ninguno";
+        }
+
+        function generarHtmlOpciones(esOpcional) {
+            let out = esOpcional ? `<option value="ninguno">⚪ (Ninguno / Sin usar)</option>` : '';
+            FILAMENTOS_CATALOGO.forEach(grupo => {
+                out += `<optgroup label="${grupo.grupo}">`;
+                grupo.opciones.forEach(opt => {
+                    out += `<option value="${opt.val}">${opt.label}</option>`;
+                });
+                out += `</optgroup>`;
+            });
+            return out;
+        }
+
+        function cambiarModoColor(modo) {
+            modoColorActual = modo;
+            const btnMono = document.getElementById('btnModoMono');
+            const btnAms = document.getElementById('btnModoAms');
+            const panelMono = document.getElementById('panelModoMono');
+            const panelAms = document.getElementById('panelModoAms');
+
+            if (modo === 'mono') {
+                btnMono.className = "color-mode-btn active px-3 py-1.5 rounded-lg text-xs font-black transition-all";
+                btnAms.className = "color-mode-btn px-3 py-1.5 rounded-lg text-xs font-black text-slate-400 hover:text-white transition-all flex items-center gap-1.5";
+                panelMono.classList.remove('hidden');
+                panelAms.classList.add('hidden');
+            } else {
+                btnAms.className = "color-mode-btn active px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5";
+                btnMono.className = "color-mode-btn px-3 py-1.5 rounded-lg text-xs font-black text-slate-400 hover:text-white transition-all";
+                panelAms.classList.remove('hidden');
+                panelMono.classList.add('hidden');
+            }
+
+            verificarAlertasTecnicas();
+        }
+
+        function obtenerColorActivo() {
+            if (modoColorActual === 'mono') {
+                return document.getElementById('filamentoSeleccionado').value;
+            }
+
+            const a1 = document.getElementById('amsSlotA1').value;
+            const a2 = document.getElementById('amsSlotA2').value;
+            const a3 = document.getElementById('amsSlotA3').value;
+            const a4 = document.getElementById('amsSlotA4').value;
+
+            let ranuras = [`A1: ${a1}`];
+            if (a2 && a2 !== 'ninguno') ranuras.push(`A2: ${a2}`);
+            if (a3 && a3 !== 'ninguno') ranuras.push(`A3: ${a3}`);
+            if (a4 && a4 !== 'ninguno') ranuras.push(`A4: ${a4}`);
+
+            return `AMS [${ranuras.join(' + ')}]`;
+        }
+
+        function verificarAlertasTecnicas() {
+            const banner = document.getElementById('alertaMaterialTecnico');
+            let materialesSeleccionados = [];
+
+            if (modoColorActual === 'mono') {
+                materialesSeleccionados.push(document.getElementById('filamentoSeleccionado').value);
+            } else {
+                ['amsSlotA1', 'amsSlotA2', 'amsSlotA3', 'amsSlotA4'].forEach(id => {
+                    const v = document.getElementById(id).value;
+                    if (v && v !== 'ninguno') materialesSeleccionados.push(v);
+                });
+            }
+
+            const str = materialesSeleccionados.join(" ").toUpperCase();
+            
+            // Caso 1: TPU dentro de AMS 2 Pro (Error Operativo)
+            if (modoColorActual === 'ams' && str.includes("TPU")) {
+                banner.className = "p-3 rounded-2xl text-xs font-bold border bg-rose-500/20 border-rose-500/50 text-rose-300 block";
+                banner.innerHTML = "🚫 <b>¡BLOQUEO TÉCNICO!</b> El TPU 95A no se puede usar dentro del AMS 2 Pro (se atasca en el alimentador). Debe imprimirse en modo monocromático vía carrete externo.";
+                return false;
+            }
+
+            // Caso 2: TPU en Monocromático (Aviso)
+            if (str.includes("TPU")) {
+                banner.className = "p-3 rounded-2xl text-xs font-bold border bg-amber-500/20 border-amber-500/50 text-amber-300 block";
+                banner.innerHTML = "⚠️ <b>ALIMENTACIÓN EXTERNA:</b> Desconectar PTFE del AMS y alimentar directamente desde el soporte trasero.";
+                return true;
+            }
+
+            // Caso 3: ABS
+            if (str.includes("ABS")) {
+                banner.className = "p-3 rounded-2xl text-xs font-bold border bg-amber-500/20 border-amber-500/50 text-amber-300 block";
+                banner.innerHTML = "⚠️ <b>PARÁMETRO TÉCNICO ABS:</b> Cerrar puerta y tapa superior de P2S, cama a 95°C y precalentar cámara.";
+                return true;
+            }
+
+            banner.className = "hidden";
+            return true;
+        }
 
         function parseTiempo(str) {
             if (!str) return 0;
@@ -525,7 +721,7 @@
             return `${m}m`;
         }
 
-        // MOTOR DE COTIZACIÓN 100% PRIVADO (Sin datos de costo ni márgenes en el cliente)
+        // MOTOR DE COTIZACIÓN 100% PRIVADO
         async function solicitarCotizacionSegura(params) {
             try {
                 if (typeof WEB_APP_URL !== 'undefined' && !WEB_APP_URL.includes("PEGA_AQUI")) {
@@ -536,8 +732,6 @@
                     });
                     const d = await res.json();
                     if (d.exito) return d;
-                } else {
-                    console.warn("Falta configurar la URL real de Apps Script en app.js");
                 }
             } catch (e) {
                 console.error("Error conectando con el motor de Apps Script:", e);
@@ -668,7 +862,6 @@
         }
 
         function programarCalculoPiezaActual() {
-            // Actualización visual inmediata de gramos y tiempo sin esperar al servidor
             const datos = obtenerDatosCalculoActivos();
             document.getElementById('livePesoUnit').innerText = `${datos.gramosU.toFixed(1)}g`;
             document.getElementById('liveTiempoUnit').innerText = formatTiempoVisual(datos.tiempoDecU);
@@ -679,7 +872,7 @@
             document.getElementById('lblSubtotalLive').innerText = "Calculando...";
 
             clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(calcularPiezaEnServidor, 350);
+            debounceTimer = setTimeout(calcularPiezaEnServidor, 300);
         }
 
         async function calcularPiezaEnServidor() {
@@ -717,15 +910,20 @@
                 return;
             }
 
+            if (!verificarAlertasTecnicas() && modoColorActual === 'ams') {
+                alert("No puedes agregar una pieza multicolor con TPU en el AMS 2 Pro. Retira el TPU del AMS.");
+                return;
+            }
+
             const productoNombre = document.getElementById('nombreProducto').value.trim() || "Pieza 3D";
-            const colorNombre = document.getElementById('filamentoSeleccionado').value;
+            const colorCadena = obtenerColorActivo();
             const datos = obtenerDatosCalculoActivos();
 
             const nuevaPartida = {
                 id: Date.now(),
                 nombre: productoNombre,
                 placa: placaSeleccionada,
-                color: colorNombre,
+                color: colorCadena,
                 cantidad: datos.cantidad,
                 gramosUnit: datos.gramosU,
                 gramosTotal: Math.round(datos.gramosTotales),
@@ -845,7 +1043,7 @@
             } else {
                 const datos = obtenerDatosCalculoActivos();
                 const productoBase = document.getElementById('nombreProducto').value.trim() || "Pieza 3D";
-                const colorBase = document.getElementById('filamentoSeleccionado').value;
+                const colorBase = obtenerColorActivo();
 
                 lista.push({
                     nombre: productoBase,
@@ -1005,6 +1203,8 @@
             window.print();
         });
 
+        // Arranque
+        inicializarSelectoresFilamento();
         programarCalculoPiezaActual();
     </script>
 </body>
