@@ -73,3 +73,712 @@
                 <p class="text-slate-300 text-sm font-medium mt-1">Control Financiero, RESICO (1%), Fondo Redes (5%) y Pedidos Taller 3D</p>
             </div>
             <div class="flex items-center gap-2">
+                <button onclick="recargarDatosManualmente()" id="btnRecargar" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 px-4 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-2 shadow-md">
+                    <span id="iconoRefresh">🔄</span>
+                    <span class="hidden sm:inline">Actualizar</span>
+                </button>
+                <a href="index.html" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 px-4 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-2 shadow-md">
+                    ⬅️ Mostrador
+                </a>
+                <button onclick="cerrarSesionAdmin()" class="bg-rose-950/80 hover:bg-rose-900 border border-rose-500/50 text-rose-200 px-4 py-3 rounded-2xl text-sm font-bold transition-all flex items-center gap-2 shadow-md">
+                    🔒 Salir
+                </button>
+            </div>
+        </header>
+
+        <main class="space-y-6">
+            <!-- BARRA DE VISTAS Y ACCIONES -->
+            <div class="flex flex-wrap items-center justify-between gap-4 glass-card p-4 rounded-2xl">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mr-2">Vistas:</span>
+                    <button onclick="cambiarVista('pagados')" id="tabPagados" class="bg-emerald-500 text-slate-950 font-black px-4 py-2 rounded-xl text-sm transition-all shadow-lg">
+                        🟢 Concretados
+                    </button>
+                    <button onclick="cambiarVista('pendientes')" id="tabPendientes" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2 rounded-xl text-sm transition-all">
+                        📋 Cotizaciones / Pendientes
+                    </button>
+                    <button onclick="cambiarVista('oficina')" id="tabOficina" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2 rounded-xl text-sm transition-all">
+                        🏢 Entregas Oficina
+                    </button>
+                    <button onclick="cambiarVista('todos')" id="tabTodos" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2 rounded-xl text-sm transition-all">
+                        📥 Ver Todo
+                    </button>
+                </div>
+
+                <button onclick="abrirModalManual()" class="bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-extrabold px-6 py-3 rounded-2xl text-sm shadow-xl transition-all flex items-center gap-2">
+                    ➕ Capturar Venta Directa
+                </button>
+            </div>
+
+            <!-- TARJETAS DE KPIS FINANCIEROS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="glass-card p-5 rounded-3xl border-l-4 border-l-emerald-500">
+                    <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Cobrado en Firme (Ventas)</span>
+                    <strong id="kpiVentas" class="text-2xl sm:text-3xl font-black text-emerald-400">$0.00 MXN</strong>
+                </div>
+                <div class="glass-card p-5 rounded-3xl border-l-4 border-l-indigo-500">
+                    <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Fondo Redes (5%)</span>
+                    <strong id="kpiRedes" class="text-2xl sm:text-3xl font-black text-indigo-300">$0.00 MXN</strong>
+                </div>
+                <div class="glass-card p-5 rounded-3xl border-l-4 border-l-cyan-500">
+                    <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Reserva RESICO (1%)</span>
+                    <strong id="kpiResico" class="text-2xl sm:text-3xl font-black text-cyan-300">$0.00 MXN</strong>
+                </div>
+                <div class="glass-card p-5 rounded-3xl border-l-4 border-l-pink-500">
+                    <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Utilidad Neta Taller</span>
+                    <strong id="kpiUtilidad" class="text-2xl sm:text-3xl font-black text-pink-400">$0.00 MXN</strong>
+                </div>
+            </div>
+
+            <!-- TABLA DE CONTROL OPERATIVO -->
+            <div class="glass-card rounded-3xl p-6 shadow-2xl overflow-x-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="tituloTabla" class="text-lg font-black text-white flex items-center gap-2">
+                        🟢 Ventas Concretadas
+                    </h2>
+                    <span id="contadorFilas" class="text-xs font-bold text-slate-400 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
+                        0 registros
+                    </span>
+                </div>
+
+                <table class="w-full text-left text-sm text-slate-200">
+                    <thead class="bg-slate-900/90 text-slate-400 text-xs uppercase font-extrabold tracking-wider border-b border-slate-700">
+                        <tr>
+                            <th class="p-3.5">Folio / Fecha</th>
+                            <th class="p-3.5">Cliente & Destino</th>
+                            <th class="p-3.5">Detalle / Placa / Filamento</th>
+                            <th class="p-3.5 text-center">Cant</th>
+                            <th class="p-3.5 text-right">Total ($)</th>
+                            <th class="p-3.5 text-right hidden lg:table-cell">Redes (5%)</th>
+                            <th class="p-3.5 text-right hidden lg:table-cell">RESICO (1%)</th>
+                            <th class="p-3.5 text-right">Utilidad</th>
+                            <th class="p-3.5 text-center">Estatus Pago</th>
+                            <th class="p-3.5 text-center">Método</th>
+                            <th class="p-3.5 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaBody" class="divide-y divide-slate-800/60 font-medium">
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- 3. MODAL DE CAPTURA MANUAL CON CATÁLOGO DE MATERIALES -->
+    <div id="modalManual" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="glass-card w-full max-w-2xl p-6 sm:p-8 rounded-3xl space-y-5 shadow-2xl border border-slate-700 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-4">
+                <div>
+                    <h3 class="text-xl font-black text-white">➕ Captura de Venta Directa</h3>
+                    <p class="text-xs text-slate-400 font-medium">Registra piezas vendidas fuera del cotizador web</p>
+                </div>
+                <button type="button" onclick="cerrarModalManual()" class="text-slate-400 hover:text-white font-bold text-lg">✕</button>
+            </div>
+            
+            <form id="formManual" class="space-y-4" onsubmit="guardarManual(event)">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Nombre del Cliente</label>
+                        <input type="text" id="mCliente" required placeholder="Ej. Alejandra Aguirre" class="w-full glass-input p-3 rounded-xl text-sm font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Destino de Entrega</label>
+                        <select id="mDestino" class="w-full glass-input p-3 rounded-xl text-sm font-bold text-slate-100">
+                            <option value="🏢 Oficina">🏢 Oficina (Alejandro)</option>
+                            <option value="🏠 Casa">🏠 Casa (Abigail)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Placa de Impresión</label>
+                        <select id="mPlaca" class="w-full glass-input p-3 rounded-xl text-xs sm:text-sm font-bold text-slate-100">
+                            <option value="PEI Bambu Lab">✨ PEI Texturizada (Rugoso Mate)</option>
+                            <option value="PEO Diamante">💎 ELEGOO PEO Diamante (Geométrico)</option>
+                            <option value="PEY Estrellado">🌌 ELEGOO PEY Estrellado (Holo)</option>
+                            <option value="PET Fibra Carbono">🏁 ELEGOO PET Fibra de Carbono</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Filamento / Color</label>
+                        <select id="mColor" class="w-full glass-input p-3 rounded-xl text-xs sm:text-sm font-bold text-slate-100">
+                            <optgroup label="🎨 PLA Estándar & Pro">
+                                <option value="PLA Blanco Alcatraz">Blanco Alcatraz (MM Pro)</option>
+                                <option value="PLA Negro">Negro (Vlakno / MM)</option>
+                                <option value="PLA Rojo Nochebuena">Rojo Nochebuena (MM Pro)</option>
+                                <option value="PLA Azul Talavera">Azul Talavera (MM Pro)</option>
+                                <option value="PLA Verde Iguana">Verde Iguana (MM Pro)</option>
+                                <option value="PLA Morado Bugambilia">Morado Bugambilia (MM Pro)</option>
+                                <option value="PLA Tono Piel">Tono Piel (MM Pro)</option>
+                                <option value="PLA Transparente">Transparente (MM Pro)</option>
+                                <option value="PLA Lite Cian">Cian (Bambu Lite)</option>
+                                <option value="PLA Lite Naranja">Naranja (Bambu Lite)</option>
+                            </optgroup>
+                            <optgroup label="🌸 PLA Matte">
+                                <option value="PLA Matte Rosa Axolote">Rosa Axolote (MM Matte)</option>
+                                <option value="PLA Matte Verde Militar">Verde Militar (MM Matte)</option>
+                                <option value="PLA Matte Café Moka">Café Moka (MM Matte)</option>
+                                <option value="PLA Matte Amarillo">Amarillo (ELEGOO Matte)</option>
+                                <option value="PLA Matte Lila">Lila (ELEGOO Matte)</option>
+                            </optgroup>
+                            <optgroup label="✨ PLA Silk & Metálicos">
+                                <option value="PLA Silk Oro Azteca">Oro Azteca (MM Silk)</option>
+                                <option value="PLA Silk Plata .925">Plata .925 (MM Silk)</option>
+                            </optgroup>
+                            <optgroup label="🗿 PLA Creative & Texturas">
+                                <option value="PLA Creative Mercurio">Mercurio (MM Creative)</option>
+                                <option value="PLA Creative Madera">Madera (MM Creative)</option>
+                                <option value="PLA Creative Mármol">Mármol (MM Creative)</option>
+                            </optgroup>
+                            <optgroup label="⚙️ Técnicos">
+                                <option value="PETG Gris">PETG Gris (MM)</option>
+                                <option value="ABS Negro">ABS Negro (MM - Cama 95°C)</option>
+                                <option value="TPU 95A Blanco">TPU 95A Blanco (⚠️ Carrete Externo / NO AMS)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- PARTIDAS DEL PEDIDO -->
+                <div class="space-y-3 pt-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs font-bold text-slate-300 uppercase">Partidas del Pedido</label>
+                        <button type="button" onclick="agregarRenglonManual()" class="text-xs font-extrabold text-pink-400 hover:text-pink-300 flex items-center gap-1">
+                            ➕ Añadir otra pieza
+                        </button>
+                    </div>
+
+                    <div id="contenedorPartidasManuales" class="space-y-3">
+                        <div class="renglon-partida grid grid-cols-12 gap-2 p-3 bg-slate-900/90 rounded-2xl border border-slate-800 items-center">
+                            <div class="col-span-6 sm:col-span-7">
+                                <input type="text" placeholder="Ej. Maxiclips Personalizados" required class="item-desc w-full glass-input p-2.5 rounded-xl text-xs font-bold">
+                            </div>
+                            <div class="col-span-2">
+                                <input type="number" min="1" value="12" placeholder="Cant" required oninput="calcularTotalesModalManual()" class="item-q w-full glass-input p-2.5 rounded-xl text-xs font-bold text-center">
+                            </div>
+                            <div class="col-span-3 sm:col-span-2">
+                                <input type="number" step="0.01" value="336.00" placeholder="$ Subt" required oninput="calcularTotalesModalManual()" class="item-subt w-full glass-input p-2.5 rounded-xl text-xs font-bold text-right text-emerald-400">
+                            </div>
+                            <div class="col-span-1 text-center">
+                                <button type="button" onclick="eliminarRenglonManual(this)" class="text-rose-400 hover:text-rose-300 text-sm font-bold">✕</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Método de Pago</label>
+                        <select id="mMetodoPago" class="w-full glass-input p-3 rounded-xl text-sm font-bold text-slate-100">
+                            <option value="💳 Transferencia" selected>💳 Transferencia</option>
+                            <option value="💵 Efectivo">💵 Efectivo</option>
+                            <option value="Pendiente">⏳ Pendiente</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Estatus Inicial</label>
+                        <select id="mEstatusPago" class="w-full glass-input p-3 rounded-xl text-sm font-bold text-slate-100">
+                            <option value="🟢 Pagado" selected>🟢 Pagado</option>
+                            <option value="🟡 Anticipo 50%">🟡 Anticipo 50%</option>
+                            <option value="🔴 Pendiente">🔴 Pendiente</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- RESUMEN AUTOMÁTICO EN EL MODAL -->
+                <div class="p-4 bg-slate-900/70 rounded-2xl border border-slate-800 flex justify-between items-center text-sm">
+                    <div>
+                        <span class="text-xs text-slate-400 block font-bold uppercase">Piezas Totales:</span>
+                        <strong id="lblManualQ" class="text-white text-base font-black">12 pz</strong>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-slate-400 block font-bold uppercase">Inversión Final:</span>
+                        <strong id="lblManualTotal" class="text-emerald-400 text-xl font-black">$336.00 MXN</strong>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-3">
+                    <button type="button" onclick="cerrarModalManual()" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-bold">Cancelar</button>
+                    <button type="submit" class="px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-xl text-sm shadow-lg">Guardar Registro en Hoja</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. MODAL DE EDICIÓN COMPLETA -->
+    <div id="modalEdicion" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="glass-card w-full max-w-lg p-6 sm:p-8 rounded-3xl space-y-5 shadow-2xl border border-slate-700">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-4">
+                <div>
+                    <h3 class="text-xl font-black text-white flex items-center gap-2">✏️ Editar Pedido</h3>
+                    <span id="editFolioBadge" class="text-xs font-black text-pink-400">SHM-0000</span>
+                </div>
+                <button type="button" onclick="cerrarModalEdicion()" class="text-slate-400 hover:text-white font-bold text-lg">✕</button>
+            </div>
+            
+            <form id="formEdicion" class="space-y-4" onsubmit="guardarEdicion(event)">
+                <input type="hidden" id="editIndex">
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Cliente</label>
+                        <input type="text" id="editCliente" required class="w-full glass-input p-3 rounded-xl text-sm font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Destino</label>
+                        <select id="editDestino" class="w-full glass-input p-3 rounded-xl text-sm font-bold">
+                            <option value="🏢 Oficina">🏢 Oficina</option>
+                            <option value="🏠 Casa">🏠 Casa</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Detalle del Producto</label>
+                    <textarea id="editProducto" rows="2" required class="w-full glass-input p-3 rounded-xl text-xs sm:text-sm font-bold"></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Cantidad (Q)</label>
+                        <input type="number" id="editQ" min="1" required class="w-full glass-input p-3 rounded-xl text-sm font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Total ($MXN)</label>
+                        <input type="number" step="0.01" id="editTotal" required class="w-full glass-input p-3 rounded-xl text-sm font-black text-emerald-400">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Estatus Pago</label>
+                        <select id="editEstatus" class="w-full glass-input p-3 rounded-xl text-sm font-bold">
+                            <option value="🟢 Pagado">🟢 Pagado</option>
+                            <option value="🟡 Anticipo 50%">🟡 Anticipo 50%</option>
+                            <option value="🔴 Pendiente">🔴 Pendiente</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Método Pago</label>
+                        <select id="editMetodo" class="w-full glass-input p-3 rounded-xl text-sm font-bold">
+                            <option value="💳 Transferencia">💳 Transferencia</option>
+                            <option value="💵 Efectivo">💵 Efectivo</option>
+                            <option value="Pendiente">⏳ Pendiente</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pt-3 flex justify-end gap-3">
+                    <button type="button" onclick="cerrarModalEdicion()" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-bold">Cancelar</button>
+                    <button type="submit" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black rounded-xl text-sm shadow-lg">Actualizar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE LÓGICA Y SEGURIDAD -->
+    <script src="app.js"></script>
+    <script>
+        let DB_GITHUB = [];
+        let vistaActual = 'pagados';
+
+        function formatearFechaLimpia(str) {
+            if (!str) return '';
+            let s = str.toString();
+            if (s.includes('T')) {
+                let partes = s.split('T');
+                let fecha = partes[0];
+                let hora = partes[1] ? partes[1].substring(0, 5) : '';
+                return `${fecha} ${hora}`;
+            }
+            return s;
+        }
+
+        function obtenerPinSesion() {
+            return sessionStorage.getItem("shammah_admin_pin");
+        }
+
+        function cerrarSesionAdmin() {
+            sessionStorage.removeItem("shammah_admin_pin");
+            document.getElementById('panelGerencial').classList.add('hidden');
+            document.getElementById('pantallaBloqueo').classList.remove('hidden');
+            document.getElementById('inputPin').value = "";
+            document.getElementById('errorPin').classList.add('hidden');
+            window.location.href = "index.html";
+        }
+
+        async function verificarPin(pin) {
+            const respuesta = await obtenerDatosSheets(pin);
+            if (respuesta && respuesta.autorizado) {
+                sessionStorage.setItem("shammah_admin_pin", pin);
+                DB_GITHUB = respuesta.datos || [];
+                
+                document.getElementById('pantallaBloqueo').classList.add('hidden');
+                document.getElementById('panelGerencial').classList.remove('hidden');
+                renderizar();
+                return true;
+            } else {
+                sessionStorage.removeItem("shammah_admin_pin");
+                document.getElementById('errorPin').classList.remove('hidden');
+                return false;
+            }
+        }
+
+        async function recargarDatosManualmente() {
+            const pin = obtenerPinSesion();
+            if (!pin) return;
+            const icono = document.getElementById('iconoRefresh');
+            icono.classList.add('animate-spin');
+            await verificarPin(pin);
+            setTimeout(() => icono.classList.remove('animate-spin'), 600);
+        }
+
+        async function procesarLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnEntrar');
+            const input = document.getElementById('inputPin');
+            const pin = input.value.trim();
+
+            btn.disabled = true;
+            btn.innerText = "Verificando...";
+            document.getElementById('errorPin').classList.add('hidden');
+
+            const ok = await verificarPin(pin);
+            if (!ok) {
+                input.value = "";
+                input.focus();
+            }
+            btn.disabled = false;
+            btn.innerText = "Ingresar al Panel";
+        }
+
+        async function inicializar() {
+            const pinGuardado = obtenerPinSesion();
+            if (pinGuardado) {
+                const ok = await verificarPin(pinGuardado);
+                if (!ok) sessionStorage.removeItem("shammah_admin_pin");
+            }
+        }
+
+        function cambiarVista(vista) {
+            vistaActual = vista;
+            document.querySelectorAll('[id^="tab"]').forEach(btn => {
+                btn.className = "bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2 rounded-xl text-sm transition-all";
+            });
+            if(vista === 'pagados') document.getElementById('tabPagados').className = "bg-emerald-500 text-slate-950 font-black px-4 py-2 rounded-xl text-sm transition-all shadow-lg";
+            if(vista === 'pendientes') document.getElementById('tabPendientes').className = "bg-yellow-500 text-slate-950 font-black px-4 py-2 rounded-xl text-sm transition-all shadow-lg";
+            if(vista === 'oficina') document.getElementById('tabOficina').className = "bg-indigo-500 text-white font-black px-4 py-2 rounded-xl text-sm transition-all shadow-lg";
+            if(vista === 'todos') document.getElementById('tabTodos').className = "bg-pink-500 text-white font-black px-4 py-2 rounded-xl text-sm transition-all shadow-lg";
+            renderizar();
+        }
+
+        function renderizar() {
+            let kpiV = 0, kpiR = 0, kpiRes = 0, kpiU = 0;
+            const body = document.getElementById('tablaBody');
+            body.innerHTML = "";
+            let filasVisibles = 0;
+
+            DB_GITHUB.forEach((item, index) => {
+                const estatus = (item.estatus_pago || '').toString();
+                const esPagado = estatus.includes('🟢');
+                const esAnticipo = estatus.includes('🟡');
+                const destino = (item.contacto || '🏢 Oficina').toString();
+
+                if (esPagado) {
+                    kpiV += parseFloat(item.total) || 0;
+                    kpiR += parseFloat(item.f_redes) || 0;
+                    kpiRes += parseFloat(item.f_resico) || 0;
+                    kpiU += parseFloat(item.utilidad) || 0;
+                } else if (esAnticipo) {
+                    const medio = (parseFloat(item.total) || 0) * 0.5;
+                    kpiV += medio;
+                    kpiR += (parseFloat(item.f_redes) || 0) * 0.5;
+                    kpiRes += (parseFloat(item.f_resico) || 0) * 0.5;
+                    kpiU += (parseFloat(item.utilidad) || 0) * 0.5;
+                }
+
+                // Filtrado por vista
+                if (vistaActual === 'pagados' && (!esPagado && !esAnticipo)) return;
+                if (vistaActual === 'pendientes' && (esPagado || esAnticipo)) return;
+                if (vistaActual === 'oficina' && !destino.includes('Oficina')) return;
+
+                filasVisibles++;
+                const metodo = (item.metodo_pago || 'Pendiente').toString();
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3.5">
+                        <span class="block font-bold text-pink-400">${item.id}</span>
+                        <span class="text-xs text-slate-400">${formatearFechaLimpia(item.fecha)}</span>
+                    </td>
+                    <td class="p-3.5">
+                        <span class="block font-bold text-white">${item.cliente}</span>
+                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-full inline-block mt-0.5 ${destino.includes('Oficina') ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' : 'bg-pink-500/20 text-pink-300 border border-pink-500/30'}">
+                            ${destino}
+                        </span>
+                    </td>
+                    <td class="p-3.5 max-w-xs">
+                        <span class="text-xs text-slate-300 line-clamp-2" title="${item.producto}">${item.producto}</span>
+                    </td>
+                    <td class="p-3.5 text-center font-bold">${item.Q} pz</td>
+                    
+                    <td class="p-3.5 text-right font-black text-emerald-400">
+                        $${(parseFloat(item.total) || 0).toFixed(2)}
+                    </td>
+
+                    <td class="p-3.5 text-right font-bold text-slate-400 hidden lg:table-cell">$${(parseFloat(item.f_redes) || 0).toFixed(2)}</td>
+                    <td class="p-3.5 text-right font-bold text-slate-400 hidden lg:table-cell">$${(parseFloat(item.f_resico) || 0).toFixed(2)}</td>
+                    <td class="p-3.5 text-right font-black text-pink-400">$${(parseFloat(item.utilidad) || 0).toFixed(2)}</td>
+                    
+                    <td class="p-3.5 text-center">
+                        <select onchange="cambiarEstatusDirecto(${index}, this.value)" class="bg-slate-900 text-xs font-bold p-2 rounded-xl border border-slate-700 focus:border-pink-500">
+                            <option value="🟢 Pagado" ${esPagado ? 'selected' : ''}>🟢 Pagado</option>
+                            <option value="🟡 Anticipo 50%" ${esAnticipo ? 'selected' : ''}>🟡 Anticipo 50%</option>
+                            <option value="🔴 Pendiente" ${(!esPagado && !esAnticipo) ? 'selected' : ''}>🔴 Pendiente</option>
+                        </select>
+                    </td>
+
+                    <td class="p-3.5 text-center">
+                        <select onchange="cambiarMetodoDirecto(${index}, this.value)" class="bg-slate-900 text-xs font-bold p-2 rounded-xl border border-slate-700 focus:border-pink-500">
+                            <option value="💳 Transferencia" ${metodo.includes('Transferencia') ? 'selected' : ''}>💳 Transferencia</option>
+                            <option value="💵 Efectivo" ${metodo.includes('Efectivo') ? 'selected' : ''}>💵 Efectivo</option>
+                            <option value="Pendiente" ${metodo === 'Pendiente' ? 'selected' : ''}>⏳ Pendiente</option>
+                        </select>
+                    </td>
+
+                    <td class="p-3.5 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="abrirModalEdicion(${index})" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-xs px-2.5 py-1.5 rounded-xl transition-all" title="Editar orden">
+                                ✏️
+                            </button>
+                            ${(!esPagado && !esAnticipo) ? `<button onclick="concretarVentaRapida(${index})" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs px-2.5 py-1.5 rounded-xl transition-all shadow-md">⚡ Cobrar</button>` : '✨'}
+                        </div>
+                    </td>
+                `;
+                body.appendChild(tr);
+            });
+
+            document.getElementById('contadorFilas').innerText = `${filasVisibles} pedidos mostrados`;
+            document.getElementById('kpiVentas').innerText = `$${kpiV.toFixed(2)} MXN`;
+            document.getElementById('kpiRedes').innerText = `$${kpiR.toFixed(2)} MXN`;
+            document.getElementById('kpiResico').innerText = `$${kpiRes.toFixed(2)} MXN`;
+            document.getElementById('kpiUtilidad').innerText = `$${kpiU.toFixed(2)} MXN`;
+        }
+
+        async function cambiarEstatusDirecto(index, nuevoEstatus) {
+            DB_GITHUB[index].estatus_pago = nuevoEstatus;
+            if (nuevoEstatus.includes('🟢') && DB_GITHUB[index].metodo_pago === 'Pendiente') {
+                DB_GITHUB[index].metodo_pago = '💳 Transferencia';
+            }
+            renderizar();
+            await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
+        }
+
+        async function cambiarMetodoDirecto(index, nuevoMetodo) {
+            DB_GITHUB[index].metodo_pago = nuevoMetodo;
+            renderizar();
+            await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
+        }
+
+        async function concretarVentaRapida(index) {
+            DB_GITHUB[index].estatus_pago = "🟢 Pagado";
+            if (DB_GITHUB[index].metodo_pago === 'Pendiente') {
+                DB_GITHUB[index].metodo_pago = "💳 Transferencia";
+            }
+            renderizar();
+            await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
+        }
+
+        // ==========================================
+        // CAPTURA MANUAL CON PLACAS Y COLORES
+        // ==========================================
+        function abrirModalManual() { 
+            document.getElementById('modalManual').classList.remove('hidden'); 
+            calcularTotalesModalManual();
+        }
+
+        function cerrarModalManual() { 
+            document.getElementById('modalManual').classList.add('hidden'); 
+        }
+
+        function agregarRenglonManual() {
+            const cont = document.getElementById('contenedorPartidasManuales');
+            const div = document.createElement('div');
+            div.className = "renglon-partida grid grid-cols-12 gap-2 p-3 bg-slate-900/90 rounded-2xl border border-slate-800 items-center";
+            div.innerHTML = `
+                <div class="col-span-6 sm:col-span-7">
+                    <input type="text" placeholder="Ej. Llavero Logo 3D" required class="item-desc w-full glass-input p-2.5 rounded-xl text-xs font-bold">
+                </div>
+                <div class="col-span-2">
+                    <input type="number" min="1" value="1" placeholder="Cant" required oninput="calcularTotalesModalManual()" class="item-q w-full glass-input p-2.5 rounded-xl text-xs font-bold text-center">
+                </div>
+                <div class="col-span-3 sm:col-span-2">
+                    <input type="number" step="0.01" placeholder="$ Subt" required oninput="calcularTotalesModalManual()" class="item-subt w-full glass-input p-2.5 rounded-xl text-xs font-bold text-right text-emerald-400">
+                </div>
+                <div class="col-span-1 text-center">
+                    <button type="button" onclick="eliminarRenglonManual(this)" class="text-rose-400 hover:text-rose-300 text-sm font-bold">✕</button>
+                </div>
+            `;
+            cont.appendChild(div);
+            calcularTotalesModalManual();
+        }
+
+        function eliminarRenglonManual(btn) {
+            const cont = document.getElementById('contenedorPartidasManuales');
+            if (cont.children.length > 1) {
+                btn.closest('.renglon-partida').remove();
+                calcularTotalesModalManual();
+            } else {
+                alert("El pedido debe contener al menos una partida.");
+            }
+        }
+
+        function calcularTotalesModalManual() {
+            let totalQ = 0;
+            let totalMonto = 0;
+
+            document.querySelectorAll('.renglon-partida').forEach(r => {
+                const q = parseInt(r.querySelector('.item-q').value) || 0;
+                const sub = parseFloat(r.querySelector('.item-subt').value) || 0;
+                totalQ += q;
+                totalMonto += sub;
+            });
+
+            document.getElementById('lblManualQ').innerText = `${totalQ} pz`;
+            document.getElementById('lblManualTotal').innerText = `$${totalMonto.toFixed(2)} MXN`;
+        }
+
+        async function guardarManual(e) {
+            e.preventDefault();
+            const cliente = document.getElementById('mCliente').value.trim();
+            const destino = document.getElementById('mDestino').value;
+            const placa = document.getElementById('mPlaca').value;
+            const color = document.getElementById('mColor').value;
+            const metodoPago = document.getElementById('mMetodoPago').value;
+            const estatusPago = document.getElementById('mEstatusPago').value;
+
+            let partes = [];
+            let totalQ = 0;
+            let totalMonto = 0;
+
+            document.querySelectorAll('.renglon-partida').forEach(r => {
+                const desc = r.querySelector('.item-desc').value.trim();
+                const q = parseInt(r.querySelector('.item-q').value) || 1;
+                const sub = parseFloat(r.querySelector('.item-subt').value) || 0;
+
+                partes.push(`${q}x ${desc}`);
+                totalQ += q;
+                totalMonto += sub;
+            });
+
+            const productoCadena = `[${partes.join(" + ")} (${placa}) · ${color}]`;
+            const costoDir = totalMonto * 0.25; 
+            const f_redes = totalMonto * 0.05;
+            const f_resico = totalMonto * 0.01;
+            const utilidad = totalMonto - (f_redes + f_resico + costoDir);
+
+            const ahora = new Date();
+            const mes = `${ahora.getFullYear()}-${String(ahora.getMonth()+1).padStart(2,'0')}`;
+            const timestamp = `${mes}-${String(ahora.getDate()).padStart(2,'0')} ${String(ahora.getHours()).padStart(2,'0')}:${String(ahora.getMinutes()).padStart(2,'0')}`;
+            
+            const nuevoRegistro = {
+                id: `SHM-MAN-${Math.floor(100+Math.random()*900)}`,
+                mes: mes,
+                fecha: timestamp,
+                cliente: cliente,
+                contacto: destino,
+                producto: productoCadena,
+                Q: totalQ,
+                gramos: 0,
+                minutos: 0,
+                total: totalMonto,
+                f_redes: f_redes,
+                f_resico: f_resico,
+                costo_dir: costoDir,
+                utilidad: utilidad,
+                estatus_pago: estatusPago,
+                metodo_pago: metodoPago
+            };
+
+            DB_GITHUB.unshift(nuevoRegistro);
+            cerrarModalManual();
+            renderizar();
+            await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
+        }
+
+        // ==========================================
+        // EDICIÓN DE PEDIDOS EXISTENTES
+        // ==========================================
+        function abrirModalEdicion(index) {
+            const item = DB_GITHUB[index];
+            document.getElementById('editIndex').value = index;
+            document.getElementById('editFolioBadge').innerText = item.id;
+            document.getElementById('editCliente').value = item.cliente;
+            document.getElementById('editDestino').value = (item.contacto && item.contacto.includes('Casa')) ? '🏠 Casa' : '🏢 Oficina';
+            document.getElementById('editProducto').value = item.producto;
+            document.getElementById('editQ').value = item.Q;
+            document.getElementById('editTotal').value = (parseFloat(item.total) || 0).toFixed(2);
+            
+            const est = (item.estatus_pago || '').toString();
+            if (est.includes('🟢')) document.getElementById('editEstatus').value = "🟢 Pagado";
+            else if (est.includes('🟡')) document.getElementById('editEstatus').value = "🟡 Anticipo 50%";
+            else document.getElementById('editEstatus').value = "🔴 Pendiente";
+
+            const met = (item.metodo_pago || 'Pendiente').toString();
+            if (met.includes('Efectivo')) document.getElementById('editMetodo').value = "💵 Efectivo";
+            else if (met.includes('Transferencia')) document.getElementById('editMetodo').value = "💳 Transferencia";
+            else document.getElementById('editMetodo').value = "Pendiente";
+
+            document.getElementById('modalEdicion').classList.remove('hidden');
+        }
+
+        function cerrarModalEdicion() {
+            document.getElementById('modalEdicion').classList.add('hidden');
+        }
+
+        async function guardarEdicion(e) {
+            e.preventDefault();
+            const index = document.getElementById('editIndex').value;
+            const item = DB_GITHUB[index];
+
+            const nuevoCliente = document.getElementById('editCliente').value.trim();
+            const nuevoDestino = document.getElementById('editDestino').value;
+            const nuevoProducto = document.getElementById('editProducto').value.trim();
+            const nuevoQ = parseInt(document.getElementById('editQ').value) || 1;
+            const nuevoTotal = parseFloat(document.getElementById('editTotal').value) || 0;
+            const nuevoEstatus = document.getElementById('editEstatus').value;
+            const nuevoMetodo = document.getElementById('editMetodo').value;
+
+            const costoDir = parseFloat(item.costo_dir) || (nuevoTotal * 0.25);
+            const f_redes = nuevoTotal * 0.05;
+            const f_resico = nuevoTotal * 0.01;
+            const utilidad = nuevoTotal - (f_redes + f_resico + costoDir);
+
+            item.cliente = nuevoCliente;
+            item.contacto = nuevoDestino;
+            item.producto = nuevoProducto;
+            item.Q = nuevoQ;
+            item.total = nuevoTotal;
+            item.f_redes = f_redes;
+            item.f_resico = f_resico;
+            item.utilidad = utilidad;
+            item.estatus_pago = nuevoEstatus;
+            item.metodo_pago = nuevoMetodo;
+
+            cerrarModalEdicion();
+            renderizar();
+            await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
+        }
+
+        inicializar();
+        setInterval(() => {
+            const pin = obtenerPinSesion();
+            if (pin && document.getElementById('modalEdicion').classList.contains('hidden') && document.getElementById('modalManual').classList.contains('hidden')) {
+                verificarPin(pin);
+            }
+        }, 45000);
+    </script>
+</body>
+</html>
