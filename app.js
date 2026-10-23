@@ -3,8 +3,8 @@
 // Conexión Frontend -> Google Apps Script
 // ==========================================
 
-// URL oficial de tu Web App en Google Apps Script
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyC0c8e00F3i3_q6jJ7uS00t19-gQd7v-O6dF23E1bL3yD12sE/exec";
+// Pega aquí la URL exacta de tu Web App que termina en /exec
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzDXRDZUXn4mYl1pSTOdW05sT50foV94CrK9L1U026nDzbAxHIR3n0o9FOr2ayU-de8/exec";
 
 // ==========================================
 // 1. OBTENCIÓN DE DATOS DEL PANEL (GET protegido)
