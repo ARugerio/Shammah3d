@@ -121,7 +121,7 @@
                     <div>
                         <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2 uppercase tracking-wider">Punto de Entrega</label>
                         <select id="puntoEntrega" class="w-full glass-input rounded-2xl px-4 py-3.5 text-base font-bold text-slate-100">
-                            <option value="🏢 Oficina" selected>🏢 Oficina (Alberto lleva)</option>
+                            <option value="🏢 Oficina" selected>🏢 Oficina (Alberto lleva en mochila)</option>
                             <option value="🏠 Casa">🏠 Casa (Entrega Abigail)</option>
                         </select>
                     </div>
@@ -527,7 +527,7 @@
             return `${m}m`;
         }
 
-        // MOTOR DE COTIZACIÓN (CON FALLBACK LOCAL)
+        // MOTOR DE COTIZACIÓN 100% PRIVADO (Sin datos de costo ni márgenes en el cliente)
         async function solicitarCotizacionSegura(params) {
             try {
                 if (typeof WEB_APP_URL !== 'undefined') {
@@ -540,26 +540,15 @@
                     if (d.exito) return d;
                 }
             } catch (e) {
-                console.warn("Cotizando en modo local resiliente:", e);
+                console.error("Error conectando con el motor privado de cotización:", e);
             }
 
-            // Cálculo local garantizado si hay retraso de red
-            let g = params.gramos || 0;
-            let h = params.horas || 0;
-            let cant = params.cantidad || 1;
-            let costoDir = (g * 0.50) + (h * 9.00) + (params.tipoNegocio === 'clicker' ? 2.63 : 0);
-            let puBase = costoDir * 3.0;
-            if (puBase < 35.00 && cant === 1) puBase = 35.00;
-            let esMayoreo = cant >= 12;
-            let factor = esMayoreo ? 0.875 : 1.0;
-            let puFinal = puBase * factor;
-
             return {
-                exito: true,
-                precioUnitario: puFinal,
-                totalMonto: puFinal * cant,
-                esMayoreo: esMayoreo,
-                tipoMayoreo: esMayoreo ? "12+ pz (12.5% OFF)" : "ninguno"
+                exito: false,
+                precioUnitario: 0,
+                totalMonto: 0,
+                esMayoreo: false,
+                tipoMayoreo: "ninguno"
             };
         }
 
@@ -711,6 +700,9 @@
                 if (carritoPartidas.length === 0) {
                     actualizarMetricasVisuales();
                 }
+            } else {
+                document.getElementById('lblPrecioUnitarioLive').innerText = "Cotizando...";
+                document.getElementById('lblSubtotalLive').innerText = "Cotizando...";
             }
         }
 
