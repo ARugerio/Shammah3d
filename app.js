@@ -1,107 +1,247 @@
 // ==========================================
-// CONFIGURACIÓN PÚBLICA (CLIENTE)
+// SHAMMAH CREA 3D — LÓGICA DE MOSTRADOR (app.js)
+// Conexión Frontend -> Google Apps Script
 // ==========================================
-const CONFIG_SHAMMAH = {
-    URL_API_GOOGLE: "https://script.google.com/macros/s/AKfycbzDXRDZUXn4mYl1pSTOdW05sT50foV94CrK9L1U026nDzbAxHIR3n0o9FOr2ayU-de8/exec",
-    NUM_WHATSAPP: "5215559650025"
+
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyC0c8e00F3i3_q6jJ7uS00t19-gQd7v-O6dF23E1bL3yD12sE/exec"; // Reemplaza esto con tu URL correcta si cambió
+
+// Variables globales del cotizador
+let calculoActual = {
+    gramos: 0,
+    minutos: 0,
+    cantidad: 1,
+    costoMateriaPrima: 0,
+    costoTiempo: 0,
+    tipoNegocio: 'venta_directa'
 };
 
-// ==========================================
-// UTILIDADES DE FORMATO Y TIEMPO
-// ==========================================
-function parseTiempo(val) {
-    let str = (val || '').toString().trim().toLowerCase();
-    if (!str) return 0;
-    if (str.includes(':')) {
-        let p = str.split(':');
-        return (parseFloat(p[0]) || 0) + ((parseFloat(p[1]) || 0) / 60);
-    }
-    if (str.includes('h') || str.includes('m')) {
-        let hMatch = str.match(/(\d+)\s*h/);
-        let mMatch = str.match(/(\d+)\s*m/);
-        let h = hMatch ? parseFloat(hMatch[1]) : 0;
-        let m = mMatch ? parseFloat(mMatch[2] || mMatch[1]) : 0;
-        return h + (m / 60);
-    }
-    return parseFloat(str) || 0;
-}
-
-function formatTiempoVisual(horasDec) {
-    let totalMin = Math.round(horasDec * 60);
-    if (totalMin < 60) return `${totalMin}m`;
-    let h = Math.floor(totalMin / 60);
-    let m = totalMin % 60;
-    return m > 0 ? `${h}h ${m}m` : `${h}h`;
-}
+let partidaActualCotizada = null;
 
 // ==========================================
-// CONECTORES API SEGUROS (SOLO MÉTODO POST)
+// 1. OBTENCIÓN DE DATOS DEL PANEL (GET protegido)
 // ==========================================
-async function solicitarCotizacionSegura(datosProducto) {
-    try {
-        const respuesta = await fetch(CONFIG_SHAMMAH.URL_API_GOOGLE, {
-            method: "POST",
-            body: JSON.stringify({
-                accion: "cotizar",
-                gramos: datosProducto.gramos,
-                horas: datosProducto.horas,
-                cantidad: datosProducto.cantidad,
-                tipoNegocio: datosProducto.tipoNegocio
-            })
-        });
-        return await respuesta.json();
-    } catch (e) {
-        console.error("Error al cotizar:", e);
-        return { exito: false };
-    }
-}
-
 async function obtenerDatosSheets(pin) {
     try {
-        const res = await fetch(CONFIG_SHAMMAH.URL_API_GOOGLE, {
-            method: "POST",
-            body: JSON.stringify({
-                accion: "obtenerDatos",
-                pin: pin
-            })
+        const respuesta = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            body: JSON.stringify({ accion: 'obtenerDatos', pin: pin }),
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
         });
-        return await res.json();
+        const data = await respuesta.json();
+        return data;
     } catch (e) {
-        console.error("Error al obtener datos:", e);
-        return { autorizado: false, error: e.toString() };
+        console.error("Error obteniendo base de datos:", e);
+        return null;
     }
 }
 
-async function sincronizarGoogleSheets(dataArray, pin) {
+// ==========================================
+// 2. SINCRONIZACIÓN GERENCIAL (Panel -> DB)
+// ==========================================
+async function sincronizarGoogleSheets(datosLocales, pin) {
     try {
-        const res = await fetch(CONFIG_SHAMMAH.URL_API_GOOGLE, {
-            method: "POST",
-            body: JSON.stringify({
-                accion: "sincronizarDatos",
-                pin: pin,
-                data: dataArray
-            })
+        const payload = {
+            accion: 'sincronizarDatos',
+            pin: pin,
+            data: datosLocales
+        };
+        const respuesta = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
         });
-        return await res.json();
-    } catch (e) {
-        console.error("Error al sincronizar:", e);
+        const resultado = await respuesta.json();
+        return resultado.status === 'success';
+    } catch (error) {
+        console.error("Error sincronizando base de datos:", error);
         return false;
     }
 }
 
-async function enviarCotizacionDesdeMostrador(datosCotizacion) {
-    try {
-        await fetch(CONFIG_SHAMMAH.URL_API_GOOGLE, {
-            method: "POST",
-            mode: "no-cors",
-            body: JSON.stringify({
-                tipo: "NUEVA_COTIZACION",
-                datos: datosCotizacion
-            })
-        });
-        return true;
-    } catch (e) {
-        console.error("Error al registrar cotización:", e);
-        return false;
+// ==========================================
+// 3. FLUJO DEL COTIZADOR DE MOSTRADOR (index.html)
+// ==========================================
+
+function seleccionarTipoNegocio(tipo) {
+    calculoActual.tipoNegocio = tipo;
+    
+    document.getElementById('btnTipoVenta').classList.remove('ring-4', 'ring-pink-500', 'bg-slate-800');
+    document.getElementById('btnTipoClicker').classList.remove('ring-4', 'ring-pink-500', 'bg-slate-800');
+    
+    if (tipo === 'venta_directa') {
+        document.getElementById('btnTipoVenta').classList.add('ring-4', 'ring-pink-500', 'bg-slate-800');
+        document.getElementById('configClickers').classList.add('hidden');
+    } else {
+        document.getElementById('btnTipoClicker').classList.add('ring-4', 'ring-pink-500', 'bg-slate-800');
+        document.getElementById('configClickers').classList.remove('hidden');
     }
+    
+    if (document.getElementById('pesoGramos').value !== "") {
+        cotizarEnServidor();
+    }
+}
+
+async function cotizarEnServidor() {
+    const gramos = parseFloat(document.getElementById('pesoGramos').value);
+    const horasInput = document.getElementById('tiempoHoras').value;
+    const minutosInput = document.getElementById('tiempoMinutos').value;
+    const cantidad = parseInt(document.getElementById('cantidadPiezas').value) || 1;
+    const boton = document.getElementById('btnCotizar');
+    const areaResultados = document.getElementById('areaResultados');
+    
+    const h = parseFloat(horasInput) || 0;
+    const m = parseFloat(minutosInput) || 0;
+    const totalHoras = h + (m / 60);
+
+    if (isNaN(gramos) || gramos <= 0 || (h === 0 && m === 0)) {
+        alert('Por favor ingresa un peso válido y al menos 1 minuto de impresión.');
+        return;
+    }
+
+    calculoActual.gramos = gramos;
+    calculoActual.minutos = (h * 60) + m;
+    calculoActual.cantidad = cantidad;
+
+    boton.disabled = true;
+    boton.innerText = "Calculando tarifa...";
+    
+    try {
+        const respuesta = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                accion: 'cotizar',
+                gramos: gramos,
+                horas: totalHoras,
+                cantidad: cantidad,
+                tipoNegocio: calculoActual.tipoNegocio
+            }),
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+        });
+        
+        const data = await respuesta.json();
+        
+        if (data.exito) {
+            document.getElementById('resPrecioUnitario').innerText = `$${data.precioUnitario.toFixed(2)}`;
+            document.getElementById('resPrecioTotal').innerText = `$${data.totalMonto.toFixed(2)}`;
+            
+            const badgeMayoreo = document.getElementById('badgeMayoreo');
+            if (data.esMayoreo) {
+                badgeMayoreo.innerText = `🟢 MAYOREO (${data.tipoMayoreo})`;
+                badgeMayoreo.classList.remove('hidden');
+            } else {
+                badgeMayoreo.classList.add('hidden');
+            }
+
+            // Respalda la cotización para cuando se quiera enviar al panel
+            partidaActualCotizada = {
+                unitario: data.precioUnitario,
+                total: data.totalMonto,
+                Q: cantidad,
+                gramosTotales: gramos * cantidad,
+                minutosTotales: ((h * 60) + m) * cantidad
+            };
+
+            areaResultados.classList.remove('hidden');
+        }
+    } catch (e) {
+        alert('Ocurrió un error conectando con el servidor. Intenta de nuevo.');
+        console.error(e);
+    } finally {
+        boton.disabled = false;
+        boton.innerText = "Calcular Precio Exacto";
+    }
+}
+
+function generarFolio() {
+    return 'SHM-' + Math.floor(1000 + Math.random() * 9000);
+}
+
+// Envía la cotización aprobada desde el mostrador directo a la hoja "DB_github"
+async function enviarCotizacionAprobada() {
+    if (!partidaActualCotizada) {
+        alert("Primero debes calcular el precio.");
+        return;
+    }
+
+    const cliente = document.getElementById('clienteNombre').value.trim();
+    const nombrePieza = document.getElementById('nombreProyecto').value.trim();
+    const placaSelec = document.getElementById('selPlaca') ? document.getElementById('selPlaca').value : "PEI Texturizada";
+    const colorSelec = document.getElementById('selColor') ? document.getElementById('selColor').value : "PLA Estándar";
+    
+    // El punto de entrega (Oficina o Casa) y método de pago, si ya se seleccionan en index
+    const puntoEntrega = document.getElementById('selEntrega') ? document.getElementById('selEntrega').value : "🏢 Oficina";
+    const metodoPago = document.getElementById('selMetodoPago') ? document.getElementById('selMetodoPago').value : "Pendiente";
+    const estatusPago = metodoPago !== "Pendiente" ? "🟢 Pagado" : "🔴 Pendiente";
+
+    if (!cliente || !nombrePieza) {
+        alert("Por favor escribe el nombre del cliente y de la pieza.");
+        return;
+    }
+
+    const btn = document.getElementById('btnAprobar');
+    btn.disabled = true;
+    btn.innerText = "Registrando y Notificando...";
+
+    const ahora = new Date();
+    const mes = `${ahora.getFullYear()}-${String(ahora.getMonth()+1).padStart(2,'0')}`;
+    const fechaTimestamp = `${mes}-${String(ahora.getDate()).padStart(2,'0')} ${String(ahora.getHours()).padStart(2,'0')}:${String(ahora.getMinutes()).padStart(2,'0')}`;
+    const nuevoFolio = generarFolio();
+    
+    // Ensamble del nombre descriptivo
+    const productoDetalle = `[${partidaActualCotizada.Q}x ${nombrePieza} (${placaSelec}) · ${colorSelec}]`;
+
+    const payload = {
+        tipo: 'NUEVA_COTIZACION',
+        datos: {
+            id: nuevoFolio,
+            mes: mes,
+            fecha: fechaTimestamp,
+            cliente: cliente,
+            contacto: puntoEntrega, 
+            producto: productoDetalle,
+            Q: partidaActualCotizada.Q,
+            gramos: partidaActualCotizada.gramosTotales,
+            minutos: partidaActualCotizada.minutosTotales,
+            total: partidaActualCotizada.total,
+            tipoNegocio: calculoActual.tipoNegocio,
+            estatus_pago: estatusPago,
+            metodo_pago: metodoPago
+        }
+    };
+
+    try {
+        const respuesta = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+        });
+        
+        const data = await respuesta.json();
+        
+        if (data.status === 'success') {
+            alert(`¡Pedido ${nuevoFolio} registrado!\n\nSe acaba de enviar la alerta a Telegram para su producción.`);
+            limpiarFormularioCotizador();
+        } else {
+            alert("Error del servidor: " + (data.mensaje || data.error));
+        }
+    } catch (e) {
+        alert("Error de conexión al enviar el registro a Sheets/Telegram.");
+        console.error(e);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "✅ Aprobar Cotización y Enviar a Taller";
+    }
+}
+
+function limpiarFormularioCotizador() {
+    document.getElementById('pesoGramos').value = "";
+    document.getElementById('tiempoHoras').value = "";
+    document.getElementById('tiempoMinutos').value = "";
+    document.getElementById('cantidadPiezas').value = "1";
+    document.getElementById('clienteNombre').value = "";
+    document.getElementById('nombreProyecto').value = "";
+    
+    document.getElementById('areaResultados').classList.add('hidden');
+    partidaActualCotizada = null;
+    seleccionarTipoNegocio('venta_directa');
 }
