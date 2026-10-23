@@ -129,22 +129,23 @@
                     <input type="text" id="nombreCliente" placeholder="Ej. Cliente Mostrador, Juan..." value="Cliente Mostrador" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white placeholder-slate-500">
                 </div>
 
+                <!-- SELECTOR OFICIAL DE TIPO DE PROYECTO (SIN REDUNDANCIAS) -->
                 <section class="space-y-3">
-                    <label class="block text-sm sm:text-base font-extrabold text-slate-200 uppercase tracking-wider">Acceso Rápido / Catálogo Taller</label>
+                    <label class="block text-sm sm:text-base font-extrabold text-slate-200 uppercase tracking-wider">Tipo de Proyecto / Catálogo</label>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <button type="button" onclick="seleccionarPresets('b2c', '1h 20m', 35)" class="p-4 glass-card rounded-2xl hover:border-pink-500/60 hover:bg-slate-800 transition-all text-left group flex items-center gap-3">
-                            <span class="text-2xl p-2.5 bg-pink-500/20 rounded-xl">🎨</span>
+                        <button type="button" id="btnCatB2c" onclick="seleccionarPresets('b2c', '1h 20m', 35, this)" class="cat-btn active p-4 glass-card rounded-2xl border-2 border-pink-500 bg-pink-500/20 text-left transition-all flex items-center gap-3 shadow-lg">
+                            <span class="text-2xl p-2.5 bg-pink-500/30 rounded-xl">🎨</span>
                             <div>
-                                <div class="text-sm font-black text-white group-hover:text-pink-400 transition-colors">Línea B2C</div>
-                                <div class="text-[11px] text-slate-400 font-medium">Aretes, Figuras</div>
+                                <div class="text-sm font-black text-white">Línea B2C</div>
+                                <div class="text-[11px] text-slate-300 font-medium">Aretes, Figuras, Deco</div>
                             </div>
                         </button>
 
-                        <button type="button" onclick="seleccionarPresets('clicker', '59m', 14)" class="p-4 glass-card rounded-2xl hover:border-pink-500/60 hover:bg-slate-800 transition-all text-left group flex items-center gap-3">
+                        <button type="button" id="btnCatClicker" onclick="seleccionarPresets('clicker', '59m', 14, this)" class="cat-btn p-4 glass-card rounded-2xl border border-slate-700 hover:border-pink-500/50 hover:bg-slate-800 text-left transition-all flex items-center gap-3">
                             <span class="text-2xl p-2.5 bg-emerald-500/20 rounded-xl">⚙️</span>
                             <div>
-                                <div class="text-sm font-black text-white group-hover:text-pink-400 transition-colors">Clickers</div>
-                                <div class="text-[11px] text-slate-400 font-medium">Fidgets, Teclas</div>
+                                <div class="text-sm font-black text-white">Clickers</div>
+                                <div class="text-[11px] text-slate-400 font-medium">Fidgets Mecánicos MX</div>
                             </div>
                         </button>
 
@@ -158,18 +159,11 @@
                     </div>
                 </section>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5 uppercase tracking-wider">Nombre de esta Pieza</label>
-                        <input type="text" id="nombreProducto" placeholder="Ej. Llavero Batman, Figura 3D..." value="Pieza Personalizada 3D" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white placeholder-slate-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5 uppercase tracking-wider">Tipo de Proyecto / Insumo</label>
-                        <select id="lineaNegocio" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-slate-100 focus:ring-2 focus:ring-pink-500 transition-all">
-                            <option value="3.0" selected>🎨 Línea B2C (Aretes, Figuras, Decoración)</option>
-                            <option value="clicker">🎛️ Clicker Mecánico (Switch + Tapa)</option>
-                        </select>
-                    </div>
+                <!-- NOMBRE DE LA PIEZA A ANCHO COMPLETO -->
+                <div>
+                    <input type="hidden" id="lineaNegocio" value="3.0">
+                    <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5 uppercase tracking-wider">Nombre de esta Pieza</label>
+                    <input type="text" id="nombreProducto" placeholder="Ej. Llavero Batman, Figura 3D..." value="Línea Decorativa / B2C" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white placeholder-slate-500">
                 </div>
 
                 <!-- SELECTOR DE PLACAS -->
@@ -244,12 +238,12 @@
                         <input type="number" id="cantidad" value="1" min="1" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white">
                     </div>
                     <div>
-                        <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5">Tiempo 1 Pz (ej. 59m)</label>
-                        <input type="text" id="tiempoHoras" value="59m" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white">
+                        <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5">Tiempo 1 Pz (ej. 32m)</label>
+                        <input type="text" id="tiempoHoras" value="32m" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white">
                     </div>
                     <div>
-                        <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5">Peso 1 Pz (Gramos)</label>
-                        <input type="number" id="pesoTotal" value="14" min="0.1" step="0.5" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white">
+                        <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5">Peso 1 Pz (Gramos Totales)</label>
+                        <input type="number" id="pesoTotal" value="5.2" min="0.1" step="0.1" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white">
                     </div>
                 </div>
 
@@ -266,16 +260,16 @@
                         <div>
                             <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5">
                                 Tiempo Cama Total
-                                <span class="text-xs text-pink-400 font-normal block">Bambu Studio (ej. 3h 30m)</span>
+                                <span class="text-xs text-pink-400 font-normal block">Bambu Studio (ej. 2h 15m)</span>
                             </label>
-                            <input type="text" id="camaTiempo" value="3h 30m" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white">
+                            <input type="text" id="camaTiempo" value="2h 15m" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white">
                         </div>
                         <div>
                             <label class="block text-sm sm:text-base font-extrabold text-slate-200 mb-2.5">
                                 Gramos Cama Total
                                 <span class="text-xs text-pink-400 font-normal block">Incluye torre y purgas</span>
                             </label>
-                            <input type="number" id="camaGramos" value="90" min="1" step="0.5" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white">
+                            <input type="number" id="camaGramos" value="31.3" min="0.1" step="0.1" class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold text-white">
                         </div>
                     </div>
                     
@@ -379,11 +373,11 @@
                         </div>
                         <div class="p-2 bg-slate-800/60 rounded-xl">
                             <span class="block text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Filamento</span>
-                            <strong id="lblPesoTotal" class="text-white text-base font-black">14g</strong>
+                            <strong id="lblPesoTotal" class="text-white text-base font-black">5g</strong>
                         </div>
                         <div class="p-2 bg-slate-800/60 rounded-xl">
                             <span class="block text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Tiempo Taller</span>
-                            <strong id="lblTiempoTotal" class="text-white text-base font-black">59m</strong>
+                            <strong id="lblTiempoTotal" class="text-white text-base font-black">32m</strong>
                         </div>
                     </div>
 
@@ -526,7 +520,17 @@
             programarCalculoPiezaActual();
         }
 
-        function seleccionarPresets(tipo, tiempoDef, pesoDef) {
+        function seleccionarPresets(tipo, tiempoDef, pesoDef, btnEl) {
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.classList.remove('active', 'border-2', 'border-pink-500', 'bg-pink-500/20', 'shadow-lg');
+                btn.classList.add('border-slate-700');
+            });
+
+            if (btnEl) {
+                btnEl.classList.remove('border-slate-700');
+                btnEl.classList.add('active', 'border-2', 'border-pink-500', 'bg-pink-500/20', 'shadow-lg');
+            }
+
             if(tipo === 'b2c') {
                 document.getElementById('lineaNegocio').value = "3.0";
                 document.getElementById('nombreProducto').value = "Línea Decorativa / B2C";
@@ -559,7 +563,7 @@
                 pesoCamaTotal = parseFloat(document.getElementById('camaGramos').value) || 0;
                 tiempoCamaTotal = parseTiempo(document.getElementById('camaTiempo').value);
 
-                // Deducción matemática unitaria a partir de la cama:
+                // Deducción matemática unitaria a partir de los totales de la cama:
                 gramosU = pesoCamaTotal / piezasCama;
                 tiempoDecU = tiempoCamaTotal / piezasCama;
 
@@ -838,7 +842,6 @@
         }
 
         document.getElementById('cotizadorForm').addEventListener('input', programarCalculoPiezaActual);
-        document.getElementById('lineaNegocio').addEventListener('change', programarCalculoPiezaActual);
 
         document.getElementById('btnCopiar').addEventListener('click', async (e) => {
             const btn = e.currentTarget;
