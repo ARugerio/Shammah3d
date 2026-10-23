@@ -103,7 +103,7 @@
                         <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-white">SHAMMAH <span class="text-pink-500">CREA</span></h1>
                         <span class="bg-pink-500/20 border border-pink-500/40 text-pink-300 text-xs font-black px-3.5 py-1.5 rounded-full uppercase tracking-wider">3D Studio</span>
                     </div>
-                    <p class="text-base sm:text-lg font-medium text-slate-300 mt-2">Cotizador Oficial de Taller · Datos Totales de Laminación y Costo por Pieza</p>
+                    <p class="text-base sm:text-lg font-medium text-slate-300 mt-2">Cotizador Oficial de Taller · Totales de Laminación y Costo por Pieza</p>
                 </div>
             </div>
         </header>
@@ -183,12 +183,12 @@
                     </div>
                 </div>
 
-                <!-- SECCIÓN UNIFICADA: TOTALES DE BAMBU STUDIO -->
+                <!-- TOTALES DE BAMBU STUDIO -->
                 <div class="p-5 bg-slate-900/90 rounded-3xl border border-slate-700/80 space-y-4 shadow-xl">
                     <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                         <div>
                             <span class="text-xs sm:text-sm font-black uppercase tracking-wider text-pink-400 block">📊 Datos de Bambu Studio</span>
-                            <span class="text-[11px] text-slate-400">Ingresa los totales de la cama o de las camas a cotizar</span>
+                            <span class="text-[11px] text-slate-400">Ingresa los totales de la cama o lote a cotizar</span>
                         </div>
                     </div>
 
@@ -237,7 +237,7 @@
                                     <button type="button" onclick="setPiezas(2)" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs font-bold text-slate-300">2 pz</button>
                                     <button type="button" onclick="setPiezas(4)" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs font-bold text-slate-300">4 pz</button>
                                     <button type="button" onclick="setPiezas(6)" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs font-bold text-slate-300">6 pz</button>
-                                    <button type="button" onclick="setPiezas(10)" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs font-bold text-slate-300">10 pz</button>
+                                    <button type="button" onclick="setPiezas(12)" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs font-bold text-pink-400 font-extrabold">12 pz</button>
                                 </div>
                             </div>
                         </div>
@@ -311,8 +311,9 @@
                         </div>
                     </div>
 
+                    <!-- AVISO DE MAYOREO EXCLUSIVO PARA 12+ PIEZAS (12.5% OFF) -->
                     <div id="badgeMayoreo" class="hidden w-full bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-xs sm:text-sm font-extrabold py-3 px-4 rounded-2xl text-center shadow-lg backdrop-blur-sm">
-                        🎉 ¡Descuento de Mayoreo Aplicado!
+                        🎉 ¡Descuento de Mayoreo Aplicado (12+ pz · 12.5% OFF)!
                     </div>
 
                     <!-- MÉTRICAS ACUMULADAS -->
@@ -510,7 +511,6 @@
             document.getElementById('tiempoTotalInput').value = tiempoDef;
             document.getElementById('gramosTotalInput').value = pesoDef;
             
-            // Al presionar un preset estándar, se cotiza como 1 trabajo por defecto
             desglosePiezasActivo = false;
             document.getElementById('cantidadPiezasInput').value = 1;
             actualizarEstadoBotonDesglose();
@@ -525,7 +525,6 @@
 
             const numPiezas = desglosePiezasActivo ? (parseInt(document.getElementById('cantidadPiezasInput').value) || 1) : 1;
 
-            // Deducción de consumo unitario a partir de los totales de Bambu Studio:
             const gramosU = gramosTotales / numPiezas;
             const tiempoDecU = tiempoDecTotal / numPiezas;
 
@@ -560,7 +559,6 @@
                 piezaActualPreview.esMayoreo = res.esMayoreo;
                 piezaActualPreview.tipoMayoreo = res.tipoMayoreo;
 
-                // Actualizar etiquetas en vivo
                 document.getElementById('lblTituloUnitario').innerText = datos.cantidad > 1 ? "Precio por Pieza" : "Precio de la Pieza";
                 document.getElementById('lblPrecioUnitarioLive').innerText = `$${res.precioUnitario.toFixed(2)}`;
                 document.getElementById('lblSubtotalLive').innerText = `$${res.totalMonto.toFixed(2)}`;
@@ -675,10 +673,11 @@
             document.getElementById('lblTiempoTotal').innerText = formatTiempoVisual(totalMinutos / 60);
             document.getElementById('lblPrecioTotal').innerHTML = `$${totalMonto.toFixed(2)} <span class="text-xs font-bold text-slate-400">MXN</span>`;
 
+            // DESCUENTO EXCLUSIVO A PARTIR DE 12 PIEZAS (12.5% OFF)
             const badge = document.getElementById('badgeMayoreo');
-            if (totalQ >= 6) {
+            if (totalQ >= 12) {
                 badge.classList.remove('hidden');
-                badge.innerText = totalQ >= 12 ? "🎉 ¡Descuento de Mayoreo Mayor (12+ pz) en Orden!" : "🔥 ¡Descuento de Mayoreo (6+ pz) en Orden!";
+                badge.innerText = "🎉 ¡Descuento de Mayoreo Aplicado (12+ pz · 12.5% OFF)!";
             } else {
                 badge.classList.add('hidden');
             }
