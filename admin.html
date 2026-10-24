@@ -98,7 +98,10 @@
                         📋 Cotizaciones / Pendientes
                     </button>
                     <button onclick="cambiarVista('oficina')" id="tabOficina" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2 rounded-xl text-sm transition-all">
-                        🏢 Entregas Oficina
+                        🏢 Entregas Oficina (Alberto)
+                    </button>
+                    <button onclick="cambiarVista('casa')" id="tabCasa" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2 rounded-xl text-sm transition-all">
+                        🏠 Entregas Casa (Abigail)
                     </button>
                     <button onclick="cambiarVista('todos')" id="tabTodos" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2 rounded-xl text-sm transition-all">
                         📥 Ver Todo
@@ -146,7 +149,7 @@
                         <tr>
                             <th class="p-3.5">Folio / Fecha</th>
                             <th class="p-3.5">Cliente & Destino</th>
-                            <th class="p-3.5">Detalle / Placa / Filamento</th>
+                            <th class="p-3.5">Detalle / Placa / Filamento / Extras</th>
                             <th class="p-3.5 text-center">Cant</th>
                             <th class="p-3.5 text-right">Total ($)</th>
                             <th class="p-3.5 text-right hidden lg:table-cell">Redes (5%)</th>
@@ -164,7 +167,7 @@
         </main>
     </div>
 
-    <!-- 3. MODAL DE CAPTURA MANUAL CON CATÁLOGO DE MATERIALES -->
+    <!-- 3. MODAL DE CAPTURA MANUAL CON CAMPO DE NOTAS EXTRAS -->
     <div id="modalManual" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
         <div class="glass-card w-full max-w-2xl p-6 sm:p-8 rounded-3xl space-y-5 shadow-2xl border border-slate-700 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-slate-700 pb-4">
@@ -240,6 +243,12 @@
                     </div>
                 </div>
 
+                <!-- CAMPO DE NOTAS / GRABADO EXTRA -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">📝 Personalización / Grabado / Notas Extras (Opcional)</label>
+                    <input type="text" id="mNotas" placeholder="Ej. Grabar iniciales 'AR', empaque para regalo..." class="w-full glass-input p-3 rounded-xl text-xs sm:text-sm font-bold text-pink-300">
+                </div>
+
                 <!-- PARTIDAS DEL PEDIDO -->
                 <div class="space-y-3 pt-2">
                     <div class="flex justify-between items-center">
@@ -286,7 +295,6 @@
                     </div>
                 </div>
 
-                <!-- RESUMEN AUTOMÁTICO EN EL MODAL -->
                 <div class="p-4 bg-slate-900/70 rounded-2xl border border-slate-800 flex justify-between items-center text-sm">
                     <div>
                         <span class="text-xs text-slate-400 block font-bold uppercase">Piezas Totales:</span>
@@ -306,9 +314,9 @@
         </div>
     </div>
 
-    <!-- 4. MODAL DE EDICIÓN COMPLETA -->
+    <!-- 4. MODAL DE EDICIÓN CON NOTAS EXTRAS Y NOTIFICACIÓN A TELEGRAM -->
     <div id="modalEdicion" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
-        <div class="glass-card w-full max-w-lg p-6 sm:p-8 rounded-3xl space-y-5 shadow-2xl border border-slate-700">
+        <div class="glass-card w-full max-w-lg p-6 sm:p-8 rounded-3xl space-y-5 shadow-2xl border border-slate-700 max-h-[92vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-slate-700 pb-4">
                 <div>
                     <h3 class="text-xl font-black text-white flex items-center gap-2">✏️ Editar Pedido</h3>
@@ -328,8 +336,8 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Destino</label>
                         <select id="editDestino" class="w-full glass-input p-3 rounded-xl text-sm font-bold">
-                            <option value="🏢 Oficina">🏢 Oficina</option>
-                            <option value="🏠 Casa">🏠 Casa</option>
+                            <option value="🏢 Oficina">🏢 Oficina (Alberto)</option>
+                            <option value="🏠 Casa">🏠 Casa (Abigail)</option>
                         </select>
                     </div>
                 </div>
@@ -337,6 +345,12 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Detalle del Producto</label>
                     <textarea id="editProducto" rows="2" required class="w-full glass-input p-3 rounded-xl text-xs sm:text-sm font-bold"></textarea>
+                </div>
+
+                <!-- CAMPO DEDICADO DE PERSONALIZACIÓN / NOTAS EXTRAS EN EDICIÓN -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">📝 Personalización / Grabado / Extras</label>
+                    <input type="text" id="editNotas" placeholder="Ej. Grabar iniciales 'AR', empaque especial..." class="w-full glass-input p-3 rounded-xl text-sm font-bold text-pink-300">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
@@ -369,9 +383,15 @@
                     </div>
                 </div>
 
-                <div class="pt-3 flex justify-end gap-3">
-                    <button type="button" onclick="cerrarModalEdicion()" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-bold">Cancelar</button>
-                    <button type="submit" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black rounded-xl text-sm shadow-lg">Actualizar Cambios</button>
+                <div class="pt-3 flex justify-between items-center border-t border-slate-800">
+                    <button type="button" onclick="descartarDesdeModal()" class="px-4 py-2.5 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/50 text-rose-300 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5">
+                        <span>🗑️ Desechar Orden</span>
+                    </button>
+
+                    <div class="flex gap-2">
+                        <button type="button" onclick="cerrarModalEdicion()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold">Cancelar</button>
+                        <button type="submit" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black rounded-xl text-xs shadow-lg">Guardar & Notificar</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -406,6 +426,24 @@
             document.getElementById('inputPin').value = "";
             document.getElementById('errorPin').classList.add('hidden');
             window.location.href = "index.html";
+        }
+
+        async function notificarTelegramDesdeAdmin(datos, titulo) {
+            try {
+                if (typeof WEB_APP_URL !== 'undefined') {
+                    await fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            accion: 'notificarTelegram',
+                            datos: datos,
+                            titulo: titulo
+                        }),
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                    });
+                }
+            } catch(e) {
+                console.error("Error al notificar Telegram desde admin:", e);
+            }
         }
 
         async function verificarPin(pin) {
@@ -469,7 +507,8 @@
             if(vista === 'pagados') document.getElementById('tabPagados').className = "bg-emerald-500 text-slate-950 font-black px-4 py-2 rounded-xl text-sm transition-all shadow-lg";
             if(vista === 'pendientes') document.getElementById('tabPendientes').className = "bg-yellow-500 text-slate-950 font-black px-4 py-2 rounded-xl text-sm transition-all shadow-lg";
             if(vista === 'oficina') document.getElementById('tabOficina').className = "bg-indigo-500 text-white font-black px-4 py-2 rounded-xl text-sm transition-all shadow-lg";
-            if(vista === 'todos') document.getElementById('tabTodos').className = "bg-pink-500 text-white font-black px-4 py-2 rounded-xl text-sm transition-all shadow-lg";
+            if(vista === 'casa') document.getElementById('tabCasa').className = "bg-pink-600 text-white font-black px-4 py-2 rounded-xl text-sm transition-all shadow-lg";
+            if(vista === 'todos') document.getElementById('tabTodos').className = "bg-slate-200 text-slate-950 font-black px-4 py-2 rounded-xl text-sm transition-all shadow-lg";
             renderizar();
         }
 
@@ -498,10 +537,10 @@
                     kpiU += (parseFloat(item.utilidad) || 0) * 0.5;
                 }
 
-                // Filtrado por vista
                 if (vistaActual === 'pagados' && (!esPagado && !esAnticipo)) return;
                 if (vistaActual === 'pendientes' && (esPagado || esAnticipo)) return;
                 if (vistaActual === 'oficina' && !destino.includes('Oficina')) return;
+                if (vistaActual === 'casa' && !destino.includes('Casa')) return;
 
                 filasVisibles++;
                 const metodo = (item.metodo_pago || 'Pendiente').toString();
@@ -549,11 +588,16 @@
                     </td>
 
                     <td class="p-3.5 text-center">
-                        <div class="flex items-center justify-center gap-2">
+                        <div class="flex items-center justify-center gap-1.5">
                             <button onclick="abrirModalEdicion(${index})" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-xs px-2.5 py-1.5 rounded-xl transition-all" title="Editar orden">
                                 ✏️
                             </button>
-                            ${(!esPagado && !esAnticipo) ? `<button onclick="concretarVentaRapida(${index})" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs px-2.5 py-1.5 rounded-xl transition-all shadow-md">⚡ Cobrar</button>` : '✨'}
+                            
+                            <button onclick="descartarCotizacion(${index})" class="bg-rose-500/10 hover:bg-rose-500/30 border border-rose-500/30 text-rose-300 text-xs px-2.5 py-1.5 rounded-xl transition-all" title="Desechar cotización">
+                                🗑️
+                            </button>
+
+                            ${(!esPagado && !esAnticipo) ? `<button onclick="concretarVentaRapida(${index})" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs px-2.5 py-1.5 rounded-xl transition-all shadow-md">⚡ Cobrar</button>` : ''}
                         </div>
                     </td>
                 `;
@@ -565,6 +609,23 @@
             document.getElementById('kpiRedes').innerText = `$${kpiR.toFixed(2)} MXN`;
             document.getElementById('kpiResico').innerText = `$${kpiRes.toFixed(2)} MXN`;
             document.getElementById('kpiUtilidad').innerText = `$${kpiU.toFixed(2)} MXN`;
+        }
+
+        async function descartarCotizacion(index) {
+            const item = DB_GITHUB[index];
+            const confirmacion = confirm(`¿Estás seguro de desechar la orden ${item.id} de "${item.cliente}"?\n\nEsta acción eliminará el registro de la hoja de cálculo.`);
+            
+            if (confirmacion) {
+                DB_GITHUB.splice(index, 1);
+                renderizar();
+                await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
+            }
+        }
+
+        async function descartarDesdeModal() {
+            const index = parseInt(document.getElementById('editIndex').value);
+            cerrarModalEdicion();
+            await descartarCotizacion(index);
         }
 
         async function cambiarEstatusDirecto(index, nuevoEstatus) {
@@ -591,9 +652,6 @@
             await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
         }
 
-        // ==========================================
-        // CAPTURA MANUAL CON PLACAS Y COLORES
-        // ==========================================
         function abrirModalManual() { 
             document.getElementById('modalManual').classList.remove('hidden'); 
             calcularTotalesModalManual();
@@ -656,6 +714,7 @@
             const destino = document.getElementById('mDestino').value;
             const placa = document.getElementById('mPlaca').value;
             const color = document.getElementById('mColor').value;
+            const notas = document.getElementById('mNotas').value.trim();
             const metodoPago = document.getElementById('mMetodoPago').value;
             const estatusPago = document.getElementById('mEstatusPago').value;
 
@@ -673,7 +732,8 @@
                 totalMonto += sub;
             });
 
-            const productoCadena = `[${partes.join(" + ")} (${placa}) · ${color}]`;
+            const tagNota = notas ? ` [📝 ${notas}]` : '';
+            const productoCadena = `[${partes.join(" + ")} (${placa}) · ${color}${tagNota}]`;
             const costoDir = totalMonto * 0.25; 
             const f_redes = totalMonto * 0.05;
             const f_resico = totalMonto * 0.01;
@@ -690,6 +750,7 @@
                 cliente: cliente,
                 contacto: destino,
                 producto: productoCadena,
+                notas: notas,
                 Q: totalQ,
                 gramos: 0,
                 minutos: 0,
@@ -706,18 +767,26 @@
             cerrarModalManual();
             renderizar();
             await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
+            await notificarTelegramDesdeAdmin(nuevoRegistro, "➕ <b>¡VENTA DIRECTA CAPTURADA EN PANEL!</b> 🖨️✨");
         }
 
-        // ==========================================
-        // EDICIÓN DE PEDIDOS EXISTENTES
-        // ==========================================
         function abrirModalEdicion(index) {
             const item = DB_GITHUB[index];
             document.getElementById('editIndex').value = index;
             document.getElementById('editFolioBadge').innerText = item.id;
             document.getElementById('editCliente').value = item.cliente;
             document.getElementById('editDestino').value = (item.contacto && item.contacto.includes('Casa')) ? '🏠 Casa' : '🏢 Oficina';
-            document.getElementById('editProducto').value = item.producto;
+            
+            // Si el producto tiene una nota [📝 ...], la extraemos para el campo de notas
+            let prodTexto = item.producto || '';
+            let notaExtraida = item.notas || '';
+            if (!notaExtraida && prodTexto.includes('[📝')) {
+                const match = prodTexto.match(/\[📝\s*(.*?)\]/);
+                if (match && match[1]) notaExtraida = match[1];
+            }
+
+            document.getElementById('editProducto').value = prodTexto;
+            document.getElementById('editNotas').value = notaExtraida;
             document.getElementById('editQ').value = item.Q;
             document.getElementById('editTotal').value = (parseFloat(item.total) || 0).toFixed(2);
             
@@ -745,11 +814,17 @@
 
             const nuevoCliente = document.getElementById('editCliente').value.trim();
             const nuevoDestino = document.getElementById('editDestino').value;
-            const nuevoProducto = document.getElementById('editProducto').value.trim();
+            let nuevoProducto = document.getElementById('editProducto').value.trim();
+            const nuevoNotas = document.getElementById('editNotas').value.trim();
             const nuevoQ = parseInt(document.getElementById('editQ').value) || 1;
             const nuevoTotal = parseFloat(document.getElementById('editTotal').value) || 0;
             const nuevoEstatus = document.getElementById('editEstatus').value;
             const nuevoMetodo = document.getElementById('editMetodo').value;
+
+            // Integrar o actualizar la nota dentro del producto si no está presente
+            if (nuevoNotas && !nuevoProducto.includes(nuevoNotas)) {
+                nuevoProducto += ` [📝 ${nuevoNotas}]`;
+            }
 
             const costoDir = parseFloat(item.costo_dir) || (nuevoTotal * 0.25);
             const f_redes = nuevoTotal * 0.05;
@@ -759,6 +834,7 @@
             item.cliente = nuevoCliente;
             item.contacto = nuevoDestino;
             item.producto = nuevoProducto;
+            item.notas = nuevoNotas;
             item.Q = nuevoQ;
             item.total = nuevoTotal;
             item.f_redes = f_redes;
@@ -770,6 +846,9 @@
             cerrarModalEdicion();
             renderizar();
             await sincronizarGoogleSheets(DB_GITHUB, obtenerPinSesion());
+            
+            // Notificación inmediata al supergrupo de Telegram sobre la orden editada
+            await notificarTelegramDesdeAdmin(item, "✏️ <b>¡PEDIDO ACTUALIZADO EN PANEL!</b> 📋✨");
         }
 
         inicializar();
