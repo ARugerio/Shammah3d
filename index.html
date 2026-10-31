@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://script.google.com https://*.googleusercontent.com; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<script>if(window.top!==window.self){document.documentElement.style.display='none'}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cotizador | SHAMMAH CREA 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="app.js"></script>
+<style>
+:root{
+  --paper:#F2F0F5;
+  --field:#FFFFFF;
+  --ink:#17131F;
+  --ink-2:#3A3347;
+  --muted:#6C6579;
+  --line:#D9D3E0;
+  --pink:#D12C6B;
+  --pink-soft:#FF7BA9;
+  --on-ink:#F6F3F8;
+  --on-ink-muted:#A59DB3;
+  --error:#B3261E;
+  --radius:10px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.5 'Schibsted Grotesk',system-ui,sans-serif}
+h1,h2,p{margin:0}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+
+.wrap{max-width:1920px;margin:0 auto;padding:28px 20px 140px}
+@media(min-width:1100px){.wrap{padding:36px 56px 80px}}
+@media(min-width:1100px){.top{margin-bottom:24px}.lede{margin-top:8px}.tk-body{padding:20px 0 18px}}
+@media(min-width:2200px){html{zoom:1.2}}
+.top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:40px}
+.brand{font:800 26px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+.brand span{color:var(--pink)}
+.top small{color:var(--muted);font-size:14px}
+
+.layout{display:grid;gap:36px;grid-template-columns:minmax(0,1fr)}
+.form{display:contents}
+.head{grid-column:1/-1}
+@media(max-width:1099px){.layout>*{min-width:0}.form{display:grid;gap:36px}}
+@media(min-width:1100px){
+  .layout{grid-template-columns:minmax(0,1fr) clamp(360px,28vw,440px);column-gap:clamp(40px,3.5vw,72px);row-gap:28px;align-items:start;
+    grid-template-areas:"head ticket" "pieza ticket" "datos ticket" "color ticket";grid-template-rows:auto auto auto 1fr}
+  .head{grid-area:head}.z-pieza{grid-area:pieza}.z-datos{grid-area:datos}.z-color{grid-area:color}
+  .ticket{grid-area:ticket;position:sticky;top:24px}
+  .bar{display:none!important}
+}
+@media(min-width:1600px){
+  .layout{grid-template-columns:minmax(380px,.75fr) minmax(0,1.25fr) clamp(380px,22vw,460px);
+    grid-template-areas:"head head ticket" "pieza color ticket" "datos color ticket";grid-template-rows:auto auto 1fr}
+}
+
+h1{font:800 clamp(30px,4.4vw,44px)/1.05 'Bricolage Grotesque',sans-serif;letter-spacing:-.025em}
+.lede{color:var(--ink-2);margin-top:12px;max-width:44ch}
+
+fieldset{border:0;padding:0;margin:0;min-width:0}
+legend{padding:0;font:700 19px/1.2 'Schibsted Grotesk',sans-serif;margin-bottom:14px}
+.row{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:560px){.row.two{grid-template-columns:1fr 1fr}}
+@media(min-width:560px){.row.three{grid-template-columns:1fr 1fr}.row.three>.f:last-child{grid-column:1/-1}}
+label.f{display:block;font-weight:600;font-size:15px}
+.f input[type=text],.f input[type=number]{
+  display:block;width:100%;margin-top:6px;height:50px;padding:0 14px;
+  background:var(--field);border:1.5px solid var(--line);border-radius:var(--radius);
+  font-size:17px;font-weight:500;transition:border-color .15s}
+.f input:hover{border-color:#bdb5c8}
+.f input:focus{border-color:var(--pink);outline:none}
+.f input:focus-visible{outline:3px solid rgba(209,44,107,.28);outline-offset:0}
+.f input::placeholder{color:#9a93a6;font-weight:400}
+.hint{display:block;margin-top:6px;font-size:14px;color:var(--muted);min-height:21px}
+.hint.bad{color:var(--error)}
+
+.seg{display:inline-grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--line);border-radius:var(--radius);background:var(--field);padding:3px;margin-top:14px;max-width:100%}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label{padding:9px 16px;border-radius:7px;cursor:pointer;font-weight:600;font-size:15px;text-align:center;color:var(--ink-2)}
+.seg input:checked+label{background:var(--ink);color:var(--on-ink)}
+.seg input:focus-visible+label{outline:3px solid var(--pink);outline-offset:2px}
+
+.groups{display:grid;gap:18px 32px}
+@media(min-width:1100px){.groups{grid-template-columns:1fr 1fr;align-items:start}}
+.group h2{font:600 14px/1.3 'Schibsted Grotesk',sans-serif;color:var(--muted);margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:9px;padding:8px 13px 8px 9px;background:var(--field);border:1.5px solid var(--line);border-radius:999px;cursor:pointer;font-size:15px;font-weight:500;transition:border-color .15s,background .15s}
+.chip:hover{border-color:#bdb5c8}
+.chip i{width:22px;height:22px;border-radius:50%;background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.18),inset 0 -5px 0 rgba(0,0,0,.08)}
+.chip[aria-checked=true]{border-color:var(--ink);background:var(--ink);color:var(--on-ink)}
+.chip[aria-checked=true] i{box-shadow:0 0 0 2px var(--ink),0 0 0 4px var(--pink-soft)}
+.matnote{margin-top:12px;font-size:14px;color:var(--ink-2);border-left:3px solid var(--pink);padding:2px 0 2px 12px}
+
+.stepper{display:flex;margin-top:6px;width:max-content;max-width:100%}
+.stepper button{width:50px;height:50px;border:1.5px solid var(--line);background:var(--field);font-size:22px;font-weight:600;cursor:pointer;line-height:1}
+.stepper button:first-child{border-radius:var(--radius) 0 0 var(--radius)}
+.stepper button:last-child{border-radius:0 var(--radius) var(--radius) 0}
+.stepper button:hover{border-color:#bdb5c8}
+.stepper input{width:72px;height:50px;margin:0!important;border-radius:0!important;border-left:0!important;border-right:0!important;text-align:center;padding:0 4px!important}
+.stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.stepper input{-moz-appearance:textfield}
+
+.ticket{background:var(--ink);color:var(--on-ink);border-radius:18px;padding:26px 26px 22px;position:relative}
+.tk-head{display:flex;align-items:center;gap:10px;min-height:28px}
+.tk-spool{width:26px;height:26px;border-radius:50%;background:var(--c,#888);flex:none;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.45),inset 0 -6px 0 rgba(0,0,0,.12)}
+.tk-title{font-weight:600;line-height:1.2;overflow-wrap:anywhere}
+.tk-sub{color:var(--on-ink-muted);font-size:14px}
+.tk-body{padding:26px 0 24px;min-height:150px}
+.tk-label{color:var(--on-ink-muted);font-size:15px}
+.tk-price{font:800 clamp(60px,9vw,92px)/.95 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin-top:4px;display:flex;align-items:baseline;gap:10px;transition:opacity .18s}
+.tk-price.stale{opacity:.35}
+.tk-price{white-space:nowrap;min-width:0}
+.tk-cur{font:700 20px/1 'Schibsted Grotesk',sans-serif;color:var(--pink-soft);letter-spacing:0}
+.tk-empty{color:var(--on-ink-muted);font-size:17px;max-width:26ch}
+.tk-empty strong{color:var(--on-ink);font-weight:600;display:block;margin-bottom:4px;font-size:19px}
+.tk-error strong{color:#FFB4AB}
+.tk-retry{margin-top:14px;background:transparent;border:1.5px solid var(--on-ink-muted);color:var(--on-ink);border-radius:var(--radius);padding:9px 16px;font-weight:600;cursor:pointer}
+.tk-retry:hover{border-color:var(--on-ink)}
+
+.cut{position:relative;border-top:2px dashed rgba(246,243,248,.28);margin:0 -26px}
+.cut::before,.cut::after{content:"";position:absolute;top:-13px;width:24px;height:24px;border-radius:50%;background:var(--paper)}
+.cut::before{left:-12px}.cut::after{right:-12px}
+
+dl.tk-rows{margin:22px 0 0;display:grid;gap:10px}
+.tk-rows div{display:flex;justify-content:space-between;gap:16px;font-size:16px}
+.tk-rows dt{color:var(--on-ink-muted)}
+.tk-rows dd{margin:0;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.tk-flag{margin-top:14px;font-size:14px;color:var(--pink-soft)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:22px;height:52px;border:0;border-radius:var(--radius);background:var(--pink);color:#fff;font-weight:700;font-size:17px;cursor:pointer;transition:background .15s}
+.btn:hover:not(:disabled){background:#E23A7B}
+.btn:disabled{background:#3A3347;color:var(--on-ink-muted);cursor:not-allowed}
+
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--ink);color:var(--on-ink);padding:12px 20px calc(12px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:16px;z-index:5}
+.bar b{font:800 28px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.bar small{display:block;color:var(--on-ink-muted);font-size:13px;margin-bottom:2px}
+.bar button{height:46px;padding:0 20px;border:0;border-radius:var(--radius);background:var(--pink);color:#fff;font-weight:700;cursor:pointer}
+.bar button:disabled{background:#3A3347;color:var(--on-ink-muted)}
+
+.toast{position:fixed;left:50%;bottom:92px;transform:translate(-50%,16px);background:var(--ink);color:var(--on-ink);padding:11px 18px;border-radius:999px;font-weight:600;font-size:15px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:10;box-shadow:0 6px 24px rgba(23,19,31,.3)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media(min-width:900px){.toast{bottom:32px}}
+
+.ver{margin-top:56px;color:var(--muted);font-size:13px;text-align:center}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+textarea#detalles{display:block;width:100%;margin-top:6px;min-height:84px;padding:12px 14px;background:var(--field);border:1.5px solid var(--line);border-radius:var(--radius);font:500 16px/1.45 'Schibsted Grotesk',sans-serif;resize:vertical;transition:border-color .15s}
+textarea#detalles:hover{border-color:#bdb5c8}
+textarea#detalles:focus{border-color:var(--pink);outline:none}
+textarea#detalles:focus-visible{outline:3px solid rgba(209,44,107,.28);outline-offset:0}
+textarea#detalles::placeholder{color:#9a93a6;font-weight:400}
+.btn.ghost{background:transparent;border:1.5px solid rgba(246,243,248,.35);color:var(--on-ink);margin-top:10px;height:46px;font-size:16px}
+.btn.ghost:hover:not(:disabled){background:rgba(246,243,248,.08)}
+.btn.ghost:disabled{background:transparent;border-color:rgba(246,243,248,.15);color:rgba(165,157,179,.6)}
+
+#hoja{display:none}
+@media print{
+  @page{size:letter;margin:0}
+  html{zoom:1!important}
+  html,body{background:#fff!important}
+  .wrap,.bar,.toast{display:none!important}
+  #hoja{display:flex!important}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+#hoja{width:8.5in;min-height:11in;padding:.6in .65in .5in;box-sizing:border-box;flex-direction:column;background:#fff;color:#111827;font-family:'Schibsted Grotesk',sans-serif;font-size:11.5px;line-height:1.4}
+#hoja .h-head{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;border-bottom:3px solid #E63384}
+#hoja .h-brand{font:800 34px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+#hoja .h-brand span{color:#E63384}
+#hoja .h-tag{margin-top:8px;font-weight:700;font-size:12px;color:#374151}
+#hoja .h-sub{margin-top:4px;color:#6b7280;font-size:11px;line-height:1.55}
+#hoja .h-meta{text-align:right;font-size:12px;line-height:1.7;color:#4b5563}
+#hoja .h-meta b{color:#111827}
+#hoja .h-pill{display:inline-block;border:1.5px solid #E63384;color:#E63384;background:#fff5fa;border-radius:999px;padding:3px 14px;font-weight:700;font-size:11px;margin-bottom:8px}
+#hoja .h-folio b{color:#E63384;font-size:14px}
+#hoja .h-box{margin-top:20px;background:#f6f7fb;border:1px solid #e5e7eb;border-radius:12px;padding:14px 18px}
+#hoja .h-box small{display:block;color:#6b7280;font-size:10.5px;font-weight:600}
+#hoja .h-box strong{display:block;margin-top:3px;font-size:18px}
+#hoja table{width:100%;border-collapse:collapse;margin-top:22px}
+#hoja thead th{background:#0f172a;color:#fff;font-size:10.5px;font-weight:700;padding:11px 12px;text-align:left}
+#hoja thead th:first-child{border-radius:10px 0 0 10px;text-align:center;width:64px}
+#hoja thead th:last-child{border-radius:0 10px 10px 0;text-align:right}
+#hoja thead th.r{text-align:right}
+#hoja td{padding:14px 12px;border-bottom:1px solid #e5e7eb;vertical-align:top}
+#hoja td.c{text-align:center;font-weight:600}
+#hoja td.r{text-align:right}
+#hoja td.imp{font-weight:700}
+#hoja .h-it{font-weight:700;font-size:14px}
+#hoja .h-it2{margin-top:3px;color:#4b5563}
+#hoja .h-it3{margin-top:3px;color:#6b7280;font-size:10.5px}
+#hoja .h-mid{display:flex;justify-content:space-between;gap:28px;margin-top:22px;align-items:flex-start}
+#hoja .h-cond{flex:1;color:#4b5563;line-height:1.7}
+#hoja .h-cond b{color:#111827}
+#hoja .h-cond strong{display:block;color:#111827;margin-bottom:4px;font-size:12px}
+#hoja .h-total{width:3.1in;border:1.5px solid #f4b6d2;background:#fdf2f8;border-radius:14px;padding:16px 20px;text-align:right}
+#hoja .h-total small{display:block;color:#E63384;font-weight:700;font-size:10.5px}
+#hoja .h-total b{display:block;font:800 30px/1.15 'Bricolage Grotesque',sans-serif;margin-top:4px;white-space:nowrap}
+#hoja .h-total em{display:block;font-style:normal;color:#9ca3af;font-size:10px;margin-top:4px}
+#hoja .h-push{flex:1}
+#hoja .h-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;border-top:1px solid #e5e7eb;padding-top:14px}
+#hoja .h-reco{flex:1;font-size:10.5px;color:#6b7280;line-height:1.55}
+#hoja .h-reco strong{display:block;color:#dc2626;font-size:11px;margin-bottom:3px}
+#hoja .h-gen{margin-top:10px;color:#9ca3af;font-size:10px}
+#hoja .h-qr{text-align:center;font-size:9.5px;color:#6b7280}
+#hoja .h-qr img{display:block;width:1.05in;height:1.05in;margin-bottom:4px}
+
+.btn.alt{background:var(--on-ink);color:var(--ink)}
+.btn.alt:hover:not(:disabled){background:#fff}
+.btn.alt:disabled{background:#3A3347;color:var(--on-ink-muted)}
+.tk-meta{margin-top:10px;color:var(--on-ink-muted);font-size:14px}
+.tk-line{display:flex;justify-content:space-between;gap:12px;margin-top:12px;font-size:16px}
+.tk-line span{color:var(--on-ink-muted)}
+.tk-line b{font-variant-numeric:tabular-nums}
+.tk-list{margin-top:20px}
+.tk-list-h{display:flex;justify-content:space-between;font-weight:600;font-size:15px;margin-bottom:4px}
+.tk-list-h span:last-child{color:var(--on-ink-muted);font-weight:500}
+.tk-none{color:var(--on-ink-muted);font-size:14px;max-width:32ch}
+#lineas{list-style:none;margin:0;padding:0;max-height:26vh;overflow:auto}
+#lineas li{display:grid;grid-template-columns:14px minmax(0,1fr) auto 28px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid rgba(246,243,248,.12)}
+.ln-sw{width:14px;height:14px;border-radius:50%;background:var(--c);box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+.ln-t b{display:block;font-weight:600;font-size:15px;line-height:1.25;overflow-wrap:anywhere}
+.ln-t small{color:var(--on-ink-muted);font-size:13px}
+.ln-m{font-weight:600;font-variant-numeric:tabular-nums;font-size:15px}
+.ln-x{width:28px;height:28px;border-radius:50%;border:0;background:transparent;color:var(--on-ink-muted);font-size:20px;line-height:1;cursor:pointer}
+.ln-x:hover{background:rgba(246,243,248,.12);color:var(--on-ink)}
+.tk-sum{display:flex;justify-content:space-between;align-items:baseline;margin-top:12px}
+.tk-sum span{color:var(--on-ink-muted)}
+.tk-sum b{font:800 26px/1 'Bricolage Grotesque',sans-serif;font-variant-numeric:tabular-nums}
+#hoja.dense td{padding:8px 12px}
+#hoja tr{break-inside:avoid}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.btn-row .btn{margin-top:0;font-size:15px;height:46px}
+
+body:not([data-v="cot"]) .bar{display:none!important}
+.top{flex-wrap:wrap;gap:12px 24px}
+.nav{display:flex;flex-wrap:wrap;gap:6px 22px}
+.nav button{white-space:nowrap}
+.nav button{background:none;border:0;padding:6px 0;font:600 16px 'Schibsted Grotesk',sans-serif;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+.nav button:hover{color:var(--ink)}
+.nav button[aria-selected=true]{color:var(--ink);border-color:var(--pink)}
+
+.dir{max-width:560px}
+.dir-form{display:grid;gap:18px;margin-top:28px}
+.chk{display:flex;gap:10px;align-items:center;font-weight:600;font-size:16px;cursor:pointer}
+.chk input{width:22px;height:22px;accent-color:var(--pink)}
+.btn-main{height:52px;border:0;border-radius:var(--radius);background:var(--pink);color:#fff;font-weight:700;font-size:17px;cursor:pointer;width:100%}
+.btn-main:hover:not(:disabled){background:#E23A7B}
+.btn-main:disabled{background:#c9c2d1;cursor:not-allowed}
+
+.tb-top{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.tb-tools{color:var(--muted);font-size:14px;display:flex;gap:14px;align-items:center}
+.link{background:none;border:0;padding:0;color:var(--pink);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-size:14px}
+.tb-sum{display:flex;flex-wrap:wrap;gap:14px 56px;margin:22px 0 26px;padding:0}
+.tb-sum dt{color:var(--muted);font-size:14px}
+.tb-sum dd{margin:2px 0 0;font:800 30px/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.tb-sum small{font:500 14px 'Schibsted Grotesk',sans-serif;color:var(--muted);letter-spacing:0}
+.tb-msg{color:var(--muted);min-height:24px;margin:0 0 8px}
+.tb-lanes{display:grid;gap:30px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:760px){.tb-lanes{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1200px){.tb-lanes{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.lane h2,.tb-cots h2{font:700 17px/1.2 'Schibsted Grotesk',sans-serif;margin:0 0 4px;padding-bottom:8px;border-bottom:2px solid var(--ink);display:flex;justify-content:space-between}
+.lane h2 span{color:var(--muted);font-weight:600}
+.lane ul,.tb-cots ul{list-style:none;margin:0;padding:0}
+.lane li,.tb-cots li{padding:14px 0;border-bottom:1px solid var(--line)}
+.it-top{display:flex;justify-content:space-between;gap:12px}
+.it-top b{overflow-wrap:anywhere}
+.it-m{font-weight:700;font-variant-numeric:tabular-nums}
+.it-det{white-space:pre-line;color:var(--ink-2);font-size:14px;margin-top:4px;max-height:5.6em;overflow:hidden}
+.it-meta{color:var(--muted);font-size:13px;margin-top:4px}
+.chip2{display:inline-block;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:600;margin-top:8px}
+.chip2.ok{background:#E3F4EA;color:#14673A}
+.chip2.warn{background:#FCE8EF;color:#A81D53}
+.it-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center}
+.it-act .lbl{font-size:13px;color:var(--muted)}
+.sm{height:34px;padding:0 12px;border-radius:8px;border:1.5px solid var(--line);background:var(--field);font-weight:600;font-size:13px;cursor:pointer}
+.sm:hover{border-color:var(--ink)}
+.sm.main{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.sm.danger{border:0;background:none;color:var(--muted);text-decoration:underline;padding:0 4px}
+.sm.danger:hover{color:var(--error)}
+.sm:disabled{opacity:.5;cursor:not-allowed}
+.empty{color:var(--muted);font-size:14px;padding:12px 0}
+.tb-cots{margin-top:44px;max-width:780px}
+
+:root{--c-costos:#2A78D6;--c-imp:#EDA100;--c-crec:#1BAF7A;--c-recu:#6250D6;--c-libre:#D12C6B;--gris:#C9C2D1;--pink-pista:#F3D3E1}
+.pn-top{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.pn-hero{margin:26px 0 8px;max-width:760px}
+.pn-hero .big{font:800 clamp(52px,7vw,76px)/1 'Schibsted Grotesk',sans-serif;letter-spacing:-.03em}
+.pn-hero .big span{display:block;font-size:20px;font-weight:600;color:var(--muted);letter-spacing:0;margin:8px 0 0}
+.meter{height:14px;border-radius:7px;background:var(--pink-pista);margin:14px 0 8px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--c-libre);border-radius:7px;min-width:0}
+.pn-hero p{color:var(--ink-2);margin:0}
+.pn-kpis{display:flex;flex-wrap:wrap;gap:16px 56px;margin:30px 0 36px;padding:0}
+.pn-kpis dt{color:var(--muted);font-size:14px}
+.pn-kpis dd{margin:2px 0 0;font:700 28px/1.15 'Schibsted Grotesk',sans-serif;letter-spacing:-.02em}
+.delta{display:block;font:600 13px 'Schibsted Grotesk',sans-serif;letter-spacing:0;margin-top:2px}
+.delta.up{color:#006300}.delta.down{color:var(--error)}.delta.eq{color:var(--muted)}
+.pn-grid{display:grid;gap:44px 56px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:1100px){.pn-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}}
+.pn-grid h2{font:700 18px/1.2 'Schibsted Grotesk',sans-serif;margin:0 0 4px}
+.pn-grid .sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+.vtab{display:none}
+body.tabla .viz{display:none}
+body.tabla .vtab{display:block}
+.vtab table{width:100%;border-collapse:collapse;font-size:15px}
+.vtab th{text-align:left;color:var(--muted);font-weight:600;padding:6px 8px 6px 0;border-bottom:1px solid var(--line)}
+.vtab td{padding:8px 8px 8px 0;border-bottom:1px solid var(--line)}
+.vtab td.n,.vtab th.n{text-align:right;font-variant-numeric:tabular-nums}
+.col svg{display:block;width:100%;height:auto;overflow:visible}
+.col text{font:500 12px 'Schibsted Grotesk',sans-serif;fill:var(--muted)}
+.col text.v{fill:var(--ink-2);font-weight:700;font-size:13px}
+.col .hit{fill:transparent;cursor:default;outline:none}
+.col .hit:hover,.col .hit:focus-visible{fill:rgba(23,19,31,.05)}
+.stack{display:flex;gap:2px;height:36px;margin:6px 0 16px}
+.stack b{display:flex;align-items:center;justify-content:center;font:600 13px 'Schibsted Grotesk',sans-serif;border-radius:0;min-width:3px;overflow:visible;white-space:nowrap}
+.stack b:first-child{border-radius:4px 0 0 4px}
+.stack b:last-child{border-radius:0 4px 4px 0}
+.leg{list-style:none;margin:0;padding:0}
+.leg li{display:grid;grid-template-columns:14px minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:15px}
+.leg i{width:12px;height:12px;border-radius:3px}
+.leg .m{font-weight:600;font-variant-numeric:tabular-nums}
+.leg .p{color:var(--muted);width:44px;text-align:right;font-variant-numeric:tabular-nums}
+.hbars{display:grid;gap:12px}
+.hrow{display:grid;grid-template-columns:minmax(90px,150px) minmax(0,1fr);gap:14px;align-items:center;font-size:15px}
+.hrow .l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb{display:flex;align-items:center;gap:10px;min-width:0;outline:none}
+.hb i{display:block;height:16px;border-radius:0 4px 4px 0;background:var(--gris);min-width:3px}
+.hb.hi i{background:var(--c-libre)}
+.hb span{font-weight:600;font-variant-numeric:tabular-nums;font-size:14px;white-space:nowrap}
+.hb:hover i,.hb:focus-visible i{filter:brightness(.92)}
+.hb:focus-visible{outline:3px solid var(--pink);outline-offset:3px;border-radius:4px}
+#tip{position:fixed;z-index:20;background:var(--ink);color:var(--on-ink);padding:8px 12px;border-radius:8px;font-size:13px;line-height:1.4;pointer-events:none;opacity:0;transition:opacity .1s;max-width:240px;box-shadow:0 6px 20px rgba(23,19,31,.25)}
+#tip.on{opacity:1}
+#tip b{display:block;font-size:14px}
+.top-r{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+body:not([data-auth="1"]) .adm,body:not([data-auth="1"]) #vCot,body:not([data-auth="1"]) .bar{display:none!important}
+body[data-auth="1"] #vLogin{display:none}
+#vLogin{max-width:440px;margin-top:8vh}
+.btn-row{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
+#authBtn{color:var(--muted);font-weight:500}
+.modos{margin:0 0 14px}
+.slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 18px}
+@media(max-width:559px){.slots{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.slot{display:flex;align-items:center;gap:8px;min-height:46px;padding:6px 10px;border:1.5px dashed var(--line);border-radius:10px;background:transparent;font:500 14px 'Schibsted Grotesk',sans-serif;color:var(--muted);text-align:left}
+.slot b{font-weight:700;color:var(--ink-2);font-size:13px}
+.slot i{width:20px;height:20px;border-radius:50%;background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.18);flex:none}
+.slot span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slot.on{border-style:solid;border-color:var(--ink);background:var(--field);color:var(--ink);cursor:pointer}
+.slot.on:hover{border-color:var(--pink)}
+.slot:disabled:not(.on){cursor:default}
+.chip:disabled{opacity:.45;cursor:not-allowed}
+.sal-lista{list-style:none;margin:0;padding:0}
+.sal-lista li{padding:12px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;align-items:start}
+.sal-lista .c{overflow-wrap:anywhere;font-weight:600}
+.sal-lista .m{font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.sal-lista .meta{color:var(--muted);font-size:13px}
+.sal-lista .sm{justify-self:end}
+.dir h2{font:700 18px/1.2 'Schibsted Grotesk',sans-serif;margin:40px 0 4px}
+.seg.dos{grid-template-columns:repeat(2,minmax(0,1fr))}
+.leg li{grid-template-columns:14px minmax(0,1fr) 76px 76px 86px}
+.leg li.h{color:var(--muted);font-size:13px;border-bottom:1px solid var(--ink);padding:4px 0}
+.leg .n{text-align:right;font-variant-numeric:tabular-nums}
+.leg .n.q{font-weight:700}
+.leg .n.s{color:var(--ink-2)}
+@media(max-width:559px){.leg li{grid-template-columns:14px minmax(0,1fr) 58px 58px 66px;gap:8px;font-size:13px}}
+</style>
+</head>
+<body data-v="cot" data-auth="0">
+<div class="wrap">
+  <div class="top">
+    <div class="brand">SHAMMAH <span>CREA 3D</span></div>
+    <div class="top-r">
+        <nav class="nav" role="tablist" aria-label="Secciones">
+      <button type="button" class="adm" role="tab" data-v="cot" aria-selected="true">Cotizador</button>
+      <button type="button" class="adm" role="tab" data-v="dir" aria-selected="false">Venta directa</button>
+      <button type="button" class="adm" role="tab" data-v="sal" aria-selected="false">Salidas</button>
+      <button type="button" class="adm" role="tab" data-v="tab" aria-selected="false">Tablero</button>
+      <button type="button" class="adm" role="tab" data-v="pan" aria-selected="false">Panel</button>
+    </nav>
+    <button type="button" class="link" id="authBtn">Entrar</button>
+    </div>
+  </div>
+
+  <section id="vLogin">
+    <h1>Acceso privado</h1>
+    <p class="lede">Escribe tu clave para entrar.</p>
+    <button type="button" class="btn-main" id="loginBtn" style="margin-top:24px">Entrar</button>
+  </section>
+
+  <div id="vCot">
+  <div class="layout">
+    <div class="head">
+      <h1>Cotiza una pieza</h1>
+      <p class="lede">Captura los totales de Bambu Studio y el precio aparece solo.</p>
+    </div>
+
+    <form class="form" id="form" onsubmit="return false" autocomplete="off">
+        <fieldset class="z-pieza">
+          <legend>Pieza</legend>
+          <div class="row two">
+            <label class="f">Nombre del cliente
+              <input type="text" id="cliente" placeholder="Cliente mostrador">
+            </label>
+            <label class="f">Qué se va a imprimir
+              <input type="text" id="pieza" placeholder="Llavero Batman">
+            </label>
+          </div>
+          <label class="f" style="margin-top:14px">Detalles de la pieza
+            <textarea id="detalles" rows="3" placeholder="Medidas, acabado, grabado, lo que pidió el cliente"></textarea>
+          </label>
+          <div class="seg" role="radiogroup" aria-label="Tipo de pieza">
+            <input type="radio" name="linea" id="lineaB2c" value="b2c" checked>
+            <label for="lineaB2c">Figuras y decoración</label>
+            <input type="radio" name="linea" id="lineaClicker" value="clicker">
+            <label for="lineaClicker">Clickers</label>
+          </div>
+        </fieldset>
+
+        <fieldset class="z-datos">
+          <legend>Datos de Bambu Studio</legend>
+          <div class="row three">
+            <label class="f">Tiempo total
+              <input type="text" id="tiempo" inputmode="text" placeholder="1h 20m">
+              <span class="hint" id="tiempoHint">Con cambios de filamento incluidos.</span>
+            </label>
+            <label class="f">Filamento total, en gramos
+              <input type="number" id="gramos" inputmode="decimal" min="0" step="0.1" placeholder="5.2">
+              <span class="hint">Con torre de purga y soportes.</span>
+            </label>
+            <div class="f">
+              <label for="cantidad" style="font-weight:600;font-size:15px">Piezas iguales en la placa</label>
+              <div class="stepper">
+                <button type="button" id="menos" aria-label="Una pieza menos">−</button>
+                <input type="number" id="cantidad" inputmode="numeric" min="1" step="1" value="1">
+                <button type="button" id="mas" aria-label="Una pieza más">+</button>
+              </div>
+              <span class="hint">Si salen varias, el precio es por pieza.</span>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="z-color">
+          <legend>Color del filamento</legend>
+          <div class="seg modos" role="radiogroup" aria-label="Cuántos colores lleva">
+            <input type="radio" name="modoColor" id="modoUno" value="uno" checked>
+            <label for="modoUno">Un solo color</label>
+            <input type="radio" name="modoColor" id="modoMulti" value="multi">
+            <label for="modoMulti">Multicolor, hasta 4</label>
+          </div>
+          <div class="slots" id="slots" hidden aria-label="Carretes del AMS"></div>
+          <div class="groups" id="groups" role="radiogroup" aria-label="Filamento"></div>
+          <p class="matnote" id="matnote" hidden></p>
+        </fieldset>
+    </form>
+
+    <aside class="ticket" aria-live="polite" aria-label="Cotización">
+      <div class="tk-head">
+        <span class="tk-spool" id="tkSpool"></span>
+        <div>
+          <div class="tk-title" id="tkTitle">Tu pieza</div>
+          <div class="tk-sub" id="tkSub"></div>
+        </div>
+      </div>
+
+      <div class="tk-body">
+        <div id="tkEmpty" class="tk-empty"><strong>Falta información</strong><span id="tkEmptyMsg">Escribe el tiempo total y los gramos para ver el precio.</span></div>
+        <div id="tkLoading" class="tk-empty" hidden><strong>Calculando…</strong>Un momento.</div>
+        <div id="tkError" class="tk-empty tk-error" hidden>
+          <strong>No se pudo calcular</strong>
+          <span id="tkErrorMsg">Revisa tu conexión e inténtalo de nuevo.</span>
+          <div><button type="button" class="tk-retry" id="retry">Volver a calcular</button></div>
+        </div>
+        <div id="tkResult" hidden>
+          <div class="tk-label" id="tkUnitLabel">Precio por pieza</div>
+          <div class="tk-price" id="tkPrice"><span id="tkPriceVal">$0.00</span><span class="tk-cur">MXN</span></div>
+          <div class="tk-meta" id="tkMeta"></div>
+          <div class="tk-line"><span>Total de la partida</span><b id="rTotal">—</b></div>
+          <p class="tk-flag" id="tkFlag" hidden>Precio de mayoreo aplicado.</p>
+        </div>
+      </div>
+
+      <button type="button" class="btn" id="agregar" disabled>Agregar a la cotización</button>
+
+      <div class="cut" style="margin-top:22px"></div>
+
+      <section class="tk-list" aria-label="Partidas de la cotización">
+        <div class="tk-list-h"><span>En esta cotización</span><span id="lCount"></span></div>
+        <p class="tk-none" id="lNone">Todavía no hay partidas. Agrega la primera cuando el precio esté listo.</p>
+        <ul id="lineas"></ul>
+        <div class="tk-sum" id="sumRow" hidden><span>Total de la cotización</span><b id="sumTotal">—</b></div>
+      </section>
+
+      <button type="button" class="btn alt" id="hacer" disabled>Hacer cotización</button>
+      <div class="btn-row">
+        <button type="button" class="btn ghost" id="copiar" disabled>Copiar texto</button>
+        <button type="button" class="btn ghost adm" id="pedido" disabled>Hacer pedido</button>
+      </div>
+    </aside>
+  </div>
+  </div>
+
+  <section id="vDir" hidden>
+    <div class="dir">
+      <h1>Registra una venta directa</h1>
+      <p class="lede">Para lo que vendiste sin cotizar, como una impresión suelta.</p>
+      <form class="dir-form" onsubmit="return false" autocomplete="off">
+        <label class="f">Cliente
+          <input type="text" id="dCliente" placeholder="Cliente mostrador">
+        </label>
+        <label class="f">Qué se vendió
+          <input type="text" id="dDesc" placeholder="Llavero impreso en PLA negro">
+        </label>
+        <div class="row two">
+          <label class="f">Piezas
+            <input type="number" id="dPiezas" inputmode="numeric" min="1" step="1" value="1">
+          </label>
+          <label class="f">Monto cobrado, en pesos
+            <input type="number" id="dMonto" inputmode="decimal" min="0" step="0.01" placeholder="60.00">
+          </label>
+        </div>
+        <label class="f">Gramos usados, si los sabes
+          <input type="number" id="dGramos" inputmode="decimal" min="0" step="0.1" placeholder="12">
+          <span class="hint">Si lo dejas vacío, el filamento se estima.</span>
+        </label>
+        <div>
+          <div style="font-weight:600;font-size:15px">Forma de pago</div>
+          <div class="seg" role="radiogroup" aria-label="Forma de pago">
+            <input type="radio" name="dMetodo" id="dEfectivo" value="Efectivo" checked>
+            <label for="dEfectivo">Efectivo</label>
+            <input type="radio" name="dMetodo" id="dTransf" value="Transferencia">
+            <label for="dTransf">Transferencia</label>
+          </div>
+        </div>
+        <label class="chk"><input type="checkbox" id="dPagado" checked> Ya pagó</label>
+        <label class="chk"><input type="checkbox" id="dEntregado" checked> Ya se entregó</label>
+        <button type="button" class="btn-main" id="dGuardar">Registrar venta</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="vSal" hidden>
+    <div class="dir">
+      <h1>Registra una salida</h1>
+      <p class="lede">Cuando saques dinero para pagar algo, apúntalo aquí y se descuenta de su apartado.</p>
+      <form class="dir-form" onsubmit="return false" autocomplete="off">
+        <label class="f">Qué se pagó
+          <input type="text" id="sConcepto" placeholder="Filamento PLA negro, 1 kg">
+        </label>
+        <label class="f">Monto, en pesos
+          <input type="number" id="sMonto" inputmode="decimal" min="0" step="0.01" placeholder="279.00">
+        </label>
+        <div>
+          <div style="font-weight:600;font-size:15px">De qué apartado sale</div>
+          <div class="seg dos" role="radiogroup" aria-label="Apartado">
+            <input type="radio" name="sAp" id="sAp1" value="Material y refacciones" checked><label for="sAp1">Material y refacciones</label>
+            <input type="radio" name="sAp" id="sAp2" value="Impuestos y redes"><label for="sAp2">Impuestos y redes</label>
+            <input type="radio" name="sAp" id="sAp3" value="Crecimiento"><label for="sAp3">Crecimiento</label>
+            <input type="radio" name="sAp" id="sAp4" value="Libre"><label for="sAp4">Libre</label>
+          </div>
+          <span class="hint" id="sApHint">Filamento, boquillas, placas y repuestos.</span>
+        </div>
+        <div>
+          <div style="font-weight:600;font-size:15px">Cómo se pagó</div>
+          <div class="seg" role="radiogroup" aria-label="Forma de pago">
+            <input type="radio" name="sMet" id="sMet1" value="Efectivo" checked><label for="sMet1">Efectivo</label>
+            <input type="radio" name="sMet" id="sMet2" value="Transferencia"><label for="sMet2">Transferencia</label>
+          </div>
+        </div>
+        <button type="button" class="btn-main" id="sGuardar">Registrar salida</button>
+      </form>
+      <h2>Últimas salidas</h2>
+      <p class="tb-msg" id="sMes"></p>
+      <ul class="sal-lista" id="sLista"></ul>
+    </div>
+  </section>
+
+  <section id="vTab" hidden>
+    <div class="tb-top">
+      <h1>Tablero</h1>
+      <div class="tb-tools"><span id="tbHora"></span><button type="button" class="link" id="tbRef">Actualizar</button></div>
+    </div>
+    <dl class="tb-sum">
+      <div><dt>Por cobrar</dt><dd id="tbPorCobrar">—</dd></div>
+      <div><dt>Pedidos en proceso</dt><dd id="tbProceso">—</dd></div>
+      <div><dt>Cotizaciones abiertas</dt><dd><span id="tbAbiertas">—</span> <small id="tbAbiertasV"></small></dd></div>
+      <div><dt>Cotizaciones que se volvieron pedido</dt><dd id="tbCierre">—</dd></div>
+    </dl>
+    <p class="tb-msg" id="tbMsg" role="status"></p>
+    <div class="tb-lanes" id="tbLanes"></div>
+    <section class="tb-cots">
+      <h2>Cotizaciones abiertas</h2>
+      <ul id="tbCots"></ul>
+    </section>
+  </section>
+
+  <section id="vPan" hidden>
+    <div class="pn-top">
+      <h1>Panel</h1>
+      <div class="tb-tools"><span id="pnHora"></span><button type="button" class="link" id="pnTabla" aria-pressed="false">Ver como tabla</button><button type="button" class="link" id="pnRef">Actualizar</button></div>
+    </div>
+    <p class="tb-msg" id="pnMsg" role="status"></p>
+    <div id="pnBody" hidden>
+      <div class="pn-hero">
+        <div class="big"><b id="hRec">$0</b><span id="hMeta"></span></div>
+        <div class="meter" role="progressbar" aria-label="Avance de la meta" aria-valuemin="0" aria-valuemax="100" id="hMeter"><i id="hMeterFill" style="width:0"></i></div>
+        <p id="hTxt"></p>
+      </div>
+      <dl class="pn-kpis">
+        <div><dt>Vendido este mes</dt><dd><span id="kVend">—</span><span class="delta" id="kDelta"></span></dd></div>
+        <div><dt>Cobrado este mes</dt><dd id="kCob">—</dd></div>
+        <div><dt>Por cobrar en total</dt><dd id="kPor">—</dd></div>
+        <div><dt>Pedidos este mes</dt><dd id="kPed">—</dd></div>
+        <div><dt>Salió este mes</dt><dd id="kSal">—</dd></div>
+      </dl>
+      <div class="pn-grid">
+        <section>
+          <h2>Ventas por semana</h2>
+          <p class="sub">Las últimas 8 semanas. La semana actual va en rosa.</p>
+          <div class="viz col" id="gSem"></div>
+          <div class="vtab" id="tSem"></div>
+        </section>
+        <section>
+          <h2>A dónde se va cada venta</h2>
+          <p class="sub">Lo vendido hasta hoy, repartido con tus reglas.</p>
+          <div class="viz" id="gAp"></div>
+          <div class="vtab" id="tAp"></div>
+        </section>
+        <section>
+          <h2>Clientes que más compran</h2>
+          <p class="sub">Por total vendido, sin contar pedidos descartados.</p>
+          <div class="viz hbars" id="gCli"></div>
+          <div class="vtab" id="tCli"></div>
+        </section>
+        <section>
+          <h2>Cotizaciones</h2>
+          <p class="sub">Cuántas hiciste y en qué quedaron.</p>
+          <div class="viz hbars" id="gCot"></div>
+          <div class="vtab" id="tCot"></div>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <p class="ver">V.2.000</p>
+</div>
+
+<div class="bar" id="bar">
+  <div><small id="barLabel">Total</small><b id="barTotal">—</b></div>
+  <button type="button" id="hacerBar" disabled>Hacer cotización</button>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<div id="tip" role="tooltip"></div>
+
+<div id="hoja" aria-hidden="true">
+  <div class="h-head">
+    <div>
+      <div class="h-brand">SHAMMAH <span>CREA 3D</span></div>
+      <div class="h-tag">ESTUDIO DE MANUFACTURA ADITIVA &amp; PROTOTIPADO RÁPIDO</div>
+      <div class="h-sub">Tecnología Bambu Lab P2S + AMS 2 Pro (Multi-Material)<br>WhatsApp Oficial: +52 55 5965 0025 · Ciudad de México</div>
+    </div>
+    <div class="h-meta">
+      <span class="h-pill">COTIZACIÓN FORMAL</span>
+      <div class="h-folio">FOLIO: <b id="hFolio"></b></div>
+      <div>Fecha: <b id="hFecha"></b></div>
+      <div>Vigencia: <b>15 días naturales</b></div>
+    </div>
+  </div>
+  <div class="h-box"><small>Cotizado para:</small><strong id="hCliente"></strong></div>
+  <table>
+    <thead><tr><th>CANT</th><th>DESCRIPCIÓN TÉCNICA &amp; MATERIAL</th><th class="r">P. UNITARIO</th><th>IMPORTE</th></tr></thead>
+    <tbody id="hRows"></tbody>
+  </table>
+  <div class="h-mid">
+    <div class="h-cond">
+      <strong>Condiciones Comerciales:</strong>
+      • Producción inicia al confirmar anticipo del 50% o liquidación total.<br>
+      • Precios en Moneda Nacional (MXN). Sujeto a disponibilidad de inventario de filamentos.<br>
+      • Total de piezas del pedido: <b id="hPiezas"></b>
+    </div>
+    <div class="h-total"><small>INVERSIÓN TOTAL A PAGAR</small><b id="hTotal"></b><em>Impuestos y preparación de taller incluidos</em></div>
+  </div>
+  <div class="h-push"></div>
+  <div class="h-foot">
+    <div class="h-reco">
+      <div id="hReco" hidden><strong>RECOMENDACIÓN TÉRMICA IMPORTANTE:</strong>Las piezas impresas en PLA tienen excelente detalle visual pero no deben dejarse dentro de vehículos cerrados bajo el sol ni exponerse a temperaturas superiores a 45°C para evitar deformaciones mecánicas.</div>
+      <div class="h-gen">Generado con SHAMMAH Orden System</div>
+    </div>
+    <div class="h-qr"><img id="hQr" src="qr-whatsapp.svg" alt="QR de WhatsApp" width="120" height="120">Contacto directo</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var FILAMENTOS=[
+    {g:'PLA estándar',i:[
+      ['PLA Azul Talavera','Azul Talavera','#0047AB'],['PLA Blanco Alcatraz','Blanco Alcatraz','#F5F5F5'],
+      ['PLA Lite Cian','Cian','#00BFFF'],['PLA Lite Naranja','Naranja','#FF8C00'],
+      ['PLA Morado Bugambilia','Morado Bugambilia','#8B008B'],['PLA Negro','Negro','#1A1A1A'],
+      ['PLA Rojo Nochebuena','Rojo Nochebuena','#DC143C'],['PLA Tono Piel','Tono Piel','#FDBCB4'],
+      ['PLA Transparente','Transparente','#E0F2FF'],['PLA Verde Iguana','Verde Iguana','#52B788']]},
+    {g:'PLA mate',i:[
+      ['PLA Matte Amarillo','Amarillo','#FFD700'],['PLA Matte Café Moka','Café Moka','#8B4513'],
+      ['PLA Matte Lila','Lila','#9370DB'],['PLA Matte Rosa Axolote','Rosa Axolote','#FF69B4'],
+      ['PLA Matte Verde Militar','Verde Militar','#556B2F']]},
+    {g:'PLA seda',i:[
+      ['PLA Silk Oro Azteca','Oro Azteca','#E0B83A'],['PLA Silk Plata .925','Plata .925','#C0C0C0']]},
+    {g:'PLA especiales',i:[
+      ['PLA Creative Madera','Madera','#A0612B'],['PLA Creative Mármol','Mármol','#A9A9A9'],
+      ['PLA Creative Mercurio','Mercurio','#696969']]},
+    {g:'Técnicos',i:[
+      ['ABS Negro','ABS Negro','#1A1A1A'],['PETG Gris','PETG Gris','#808080'],['TPU 95A Blanco','TPU 95A Blanco','#F0F0F0']]}
+  ];
+  var NOTAS={
+    'TPU 95A Blanco':'El TPU va en carrete externo, no en el AMS.',
+    'ABS Negro':'El ABS necesita la cámara cerrada.'
+  };
+
+  var $=function(id){return document.getElementById(id)};
+  var st={filamento:'PLA Negro',color:'#1A1A1A',nombre:'Negro',quote:null,modo:'uno',slots:[]};
+  var seq=0,timer=null;
+
+  function buildChips(){
+    var host=$('groups');
+    FILAMENTOS.forEach(function(gr){
+      var box=document.createElement('div');box.className='group';
+      var h=document.createElement('h2');h.textContent=gr.g;box.appendChild(h);
+      var cs=document.createElement('div');cs.className='chips';
+      gr.i.forEach(function(it){
+        var b=document.createElement('button');
+        b.type='button';b.className='chip';b.setAttribute('role','radio');
+        b.setAttribute('aria-checked',it[0]===st.filamento?'true':'false');
+        b.dataset.val=it[0];b.dataset.nombre=it[1];b.dataset.color=it[2];
+        var dot=document.createElement('i');dot.style.setProperty('--c',it[2]);
+        b.appendChild(dot);b.appendChild(document.createTextNode(it[1]));
+        b.addEventListener('click',function(){pick(b)});
+        cs.appendChild(b);
+      });
+      box.appendChild(cs);host.appendChild(box);
+    });
+  }
+  var NOAMS=['TPU 95A Blanco'];
+  function itemsColor(){return st.modo==='multi'?st.slots.slice():[{val:st.filamento,nombre:st.nombre,color:st.color}]}
+  function fondo(cols){
+    if(!cols||!cols.length)return '#888';
+    if(cols.length===1)return cols[0];
+    var p=100/cols.length;
+    return 'conic-gradient('+cols.map(function(c,i){return c+' '+(p*i)+'% '+(p*(i+1))+'%'}).join(',')+')';
+  }
+  function nombreColor(){
+    if(st.modo==='uno')return st.nombre;
+    return st.slots.length?st.slots.map(function(x){return x.nombre}).join(' + '):'Elige los colores';
+  }
+  function syncChips(){
+    document.querySelectorAll('.chip').forEach(function(c){
+      var on=st.modo==='multi'?st.slots.some(function(x){return x.val===c.dataset.val}):c.dataset.val===st.filamento;
+      c.setAttribute('aria-checked',on?'true':'false');
+      var bloq=st.modo==='multi'&&NOAMS.indexOf(c.dataset.val)>=0;
+      c.disabled=bloq;c.title=bloq?'El TPU va en carrete externo y no entra al AMS':'';
+    });
+    var host=$('slots');host.textContent='';
+    for(var k=0;k<4;k++){
+      (function(k){
+        var it=st.slots[k],b=document.createElement('button');
+        b.type='button';b.className='slot'+(it?' on':'');
+        b.appendChild(celda('b','','A'+(k+1)));
+        if(it){
+          var d=document.createElement('i');d.style.setProperty('--c',it.color);
+          b.appendChild(d);b.appendChild(celda('span','',it.nombre));
+          b.setAttribute('aria-label','A'+(k+1)+': '+it.nombre+'. Quitar');
+          b.addEventListener('click',function(){st.slots.splice(k,1);syncChips();refreshHead();schedule()});
+        }else{
+          b.appendChild(celda('span','','Libre'));b.disabled=true;b.setAttribute('aria-label','A'+(k+1)+': libre');
+        }
+        host.appendChild(b);
+      })(k);
+    }
+    host.hidden=st.modo!=='multi';
+    var el=$('matnote'),n=st.modo==='multi'?'Elige de 2 a 4 colores, en el orden de los carretes del AMS (A1 a A4).':NOTAS[st.filamento];
+    el.hidden=!n;el.textContent=n||'';
+  }
+  function setModo(m){
+    if(m===st.modo)return;
+    st.modo=m;
+    if(m==='multi'&&!st.slots.length&&NOAMS.indexOf(st.filamento)<0)st.slots=[{val:st.filamento,nombre:st.nombre,color:st.color}];
+    if(m==='uno'&&st.slots.length){var s0=st.slots[0];st.filamento=s0.val;st.nombre=s0.nombre;st.color=s0.color}
+    syncChips();refreshHead();schedule();
+  }
+  function pick(b){
+    var it={val:b.dataset.val,nombre:b.dataset.nombre,color:b.dataset.color};
+    if(st.modo==='multi'){
+      var idx=-1;st.slots.forEach(function(x,k){if(x.val===it.val)idx=k});
+      if(idx>=0)st.slots.splice(idx,1);
+      else if(st.slots.length>=4){toast('Máximo 4 colores, de A1 a A4');return}
+      else st.slots.push(it);
+    }else{st.filamento=it.val;st.color=it.color;st.nombre=it.nombre}
+    syncChips();refreshHead();schedule();
+  }
+
+  function parseTiempo(s){
+    s=(s||'').trim().toLowerCase();
+    if(!s)return null;
+    var m=s.match(/^(\d+):(\d{1,2})$/);
+    if(m)return(+m[1]*60+ +m[2])/60;
+    var h=0,mi=0,ok=false,hm=s.match(/(\d+(?:[.,]\d+)?)\s*h/),mm=s.match(/(\d+(?:[.,]\d+)?)\s*m/);
+    if(hm){h=parseFloat(hm[1].replace(',','.'));ok=true}
+    if(mm){mi=parseFloat(mm[1].replace(',','.'));ok=true}
+    if(ok)return h+mi/60;
+    if(/^\d+(?:[.,]\d+)?$/.test(s))return parseFloat(s.replace(',','.'))/60;
+    return NaN;
+  }
+  function fmtTiempo(h){
+    var t=Math.round(h*60),hh=Math.floor(t/60),mm=t%60;
+    return hh?(mm?hh+' h '+mm+' min':hh+' h'):mm+' min';
+  }
+  function money(n){return '$'+n.toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2})}
+
+  function inputs(){
+    var horas=parseTiempo($('tiempo').value),
+        gramos=parseFloat($('gramos').value),
+        cant=Math.max(1,parseInt($('cantidad').value,10)||1);
+    return{horas:horas,gramos:gramos,cantidad:cant,
+      linea:document.querySelector('input[name=linea]:checked').value};
+  }
+  function ready(i){return i.horas>0&&isFinite(i.horas)&&i.gramos>0&&isFinite(i.gramos)}
+
+  function refreshHead(){
+    var p=$('pieza').value.trim(),c=$('cliente').value.trim();
+    $('tkTitle').textContent=p||'Tu pieza';
+    $('tkSub').textContent=[c,nombreColor()].filter(Boolean).join(' · ')||nombreColor();
+    $('tkSpool').style.background=fondo(itemsColor().map(function(x){return x.color}));
+  }
+
+  function show(which){
+    $('tkEmpty').hidden=which!=='empty';
+    $('tkLoading').hidden=which!=='loading';
+    $('tkError').hidden=which!=='error';
+    $('tkResult').hidden=which!=='result';
+  }
+
+  var KEY='shammah_cotizacion';
+  function validLine(l){return l&&typeof l.pieza==='string'&&isFinite(l.unit)&&isFinite(l.total)&&l.cantidad>0}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify({cliente:$('cliente').value,lineas:st.lineas,folioCot:st.folioCot||'',cotSig:st.cotSig||''}))}catch(e){}}
+  function load(){
+    try{
+      var d=JSON.parse(localStorage.getItem(KEY)||'null');
+      if(d){$('cliente').value=typeof d.cliente==='string'?d.cliente:'';
+        if(Array.isArray(d.lineas))st.lineas=d.lineas.filter(validLine);
+        if(typeof d.folioCot==='string'&&/^SHM-\d{4}-\d{3,}$/.test(d.folioCot)){st.folioCot=d.folioCot;st.cotSig=typeof d.cotSig==='string'?d.cotSig:''}}
+    }catch(e){}
+  }
+  function sum(){return st.lineas.reduce(function(a,l){return a+l.total},0)}
+
+  function currentLine(){
+    var i=inputs(),q=st.quote,it=itemsColor(),multi=st.modo==='multi';
+    return{pieza:$('pieza').value.trim()||'Pieza 3D',detalles:$('detalles').value.trim(),
+      filamento:it[0].val,colores:multi?it.map(function(x){return x.val}):null,
+      nombre:multi?'Multicolor: '+it.map(function(x){return x.nombre}).join(' + '):it[0].nombre,
+      color:it[0].color,swatches:it.map(function(x){return x.color}),
+      cantidad:q.cantidad,unit:q.unit,total:q.total,gramos:i.gramos,horas:i.horas,linea:i.linea};
+  }
+
+  function updateActions(){
+    var n=st.lineas.length,cur=!!st.quote,bar=$('hacerBar'),tot=n?sum():(cur?st.quote.total:null);
+    $('agregar').disabled=!cur;
+    $('hacer').disabled=!(n||cur);
+    $('copiar').disabled=!(n||cur);
+    $('pedido').disabled=!(n||cur);
+    $('barTotal').textContent=tot===null?'—':money(tot);
+    $('barLabel').textContent=n?(n===1?'Total, 1 partida':'Total, '+n+' partidas'):'Total';
+    if(cur){bar.textContent='Agregar';bar.dataset.a='agregar';bar.disabled=false}
+    else{bar.textContent='Hacer cotización';bar.dataset.a='hacer';bar.disabled=!n}
+  }
+
+  function renderLineas(){
+    var ul=$('lineas');ul.textContent='';
+    st.lineas.forEach(function(l,idx){
+      var li=document.createElement('li');
+      var sw=document.createElement('span');sw.className='ln-sw';sw.style.background=fondo(l.swatches||[l.color||'#888']);
+      var t=document.createElement('div');t.className='ln-t';
+      var b=document.createElement('b');b.textContent=l.cantidad+' × '+l.pieza;
+      var sm=document.createElement('small');sm.textContent=l.nombre+(l.cantidad>1?' · '+money(l.unit)+' c/u':'');
+      t.appendChild(b);t.appendChild(sm);
+      var m=document.createElement('span');m.className='ln-m';m.textContent=money(l.total);
+      var x=document.createElement('button');x.type='button';x.className='ln-x';
+      x.setAttribute('aria-label','Quitar '+l.pieza);x.textContent='×';
+      x.addEventListener('click',function(){st.lineas.splice(idx,1);save();renderLineas()});
+      li.appendChild(sw);li.appendChild(t);li.appendChild(m);li.appendChild(x);ul.appendChild(li);
+    });
+    var n=st.lineas.length;
+    $('lNone').hidden=n>0;$('sumRow').hidden=n===0;
+    $('lCount').textContent=n?(n===1?'1 partida':n+' partidas'):'';
+    $('sumTotal').textContent=money(sum());
+    updateActions();
+  }
+
+  function fitPrice(){
+    var el=$('tkPrice');if(!el||$('tkResult').hidden)return;
+    el.style.fontSize='';
+    var size=parseFloat(getComputedStyle(el).fontSize);
+    while(el.scrollWidth>el.clientWidth+1&&size>28){size-=2;el.style.fontSize=size+'px'}
+  }
+
+  function schedule(){
+    var i=inputs(),th=$('tiempoHint');
+    if($('tiempo').value.trim()&&isNaN(i.horas)){th.textContent='No entendí el tiempo. Usa 1h 20m, 1:20 o 80m.';th.className='hint bad'}
+    else if(i.horas>0){th.textContent='Equivale a '+fmtTiempo(i.horas)+'.';th.className='hint'}
+    else{th.textContent='Con cambios de filamento incluidos.';th.className='hint'}
+    clearTimeout(timer);seq++;
+    st.quote=null;
+    var faltaColor=st.modo==='multi'&&st.slots.length<2;
+    if(!ready(i)||faltaColor){
+      $('tkEmptyMsg').textContent=(ready(i)&&faltaColor)?'Elige al menos 2 colores para el multicolor.':'Escribe el tiempo total y los gramos para ver el precio.';
+      show('empty');$('tkFlag').hidden=true;updateActions();return
+    }
+    updateActions();
+    if($('tkResult').hidden)show('loading');else $('tkPrice').classList.add('stale');
+    timer=setTimeout(quote,350);
+  }
+
+  function fail(msg){
+    st.quote=null;
+    $('tkErrorMsg').textContent=msg;
+    show('error');updateActions();
+  }
+
+  function quote(){
+    var i=inputs(),my=++seq;
+    if(typeof WEB_APP_URL==='undefined'||!WEB_APP_URL||WEB_APP_URL.indexOf('PEGA_AQUI')>-1){
+      return fail('El cotizador no está conectado todavía.');
+    }
+    var clave=getClave();
+    if(!clave)return fail('Necesitas entrar con tu clave.');
+    var ctl=new AbortController(),to=setTimeout(function(){ctl.abort()},15000);
+    fetch(WEB_APP_URL,{
+      signal:ctl.signal,
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({accion:'cotizar',clave:clave,gramos:i.gramos/i.cantidad,horas:i.horas/i.cantidad,cantidad:i.cantidad,tipoNegocio:i.linea,filamento:itemsColor()[0].val,colores:st.modo==='multi'?itemsColor().map(function(x){return x.val}):undefined})
+    }).then(function(r){clearTimeout(to);return r.json()}).then(function(d){
+      if(my!==seq)return;
+      if(d&&d.error==='clave'){dropClave();setAuth(false);return}
+      if(d&&d.error==='bloqueado')return fail('Demasiados intentos fallidos. Espera unos 15 minutos.');
+      if(!d||!d.exito||!isFinite(d.precioUnitario)||!isFinite(d.totalMonto))throw new Error('respuesta');
+      st.quote={unit:d.precioUnitario,total:d.totalMonto,cantidad:i.cantidad,mayoreo:!!d.esMayoreo};
+      $('tkUnitLabel').textContent=i.cantidad>1?'Precio por pieza':'Precio de la pieza';
+      $('tkPriceVal').textContent=money(d.precioUnitario);
+      $('tkPrice').classList.remove('stale');
+      $('tkMeta').textContent=i.cantidad+(i.cantidad===1?' pieza':' piezas')+' · '+i.gramos+' g · '+fmtTiempo(i.horas);
+      $('rTotal').textContent=money(d.totalMonto)+' MXN';
+      $('tkFlag').hidden=!d.esMayoreo;
+      show('result');updateActions();fitPrice();
+    }).catch(function(){
+      clearTimeout(to);
+      if(my!==seq)return;
+      $('tkPrice').classList.remove('stale');
+      fail('Revisa tu conexión e inténtalo de nuevo.');
+    });
+  }
+
+  function agregar(){
+    if(!st.quote)return;
+    st.lineas.push(currentLine());
+    ['pieza','detalles','gramos','tiempo'].forEach(function(id){$(id).value=''});
+    $('cantidad').value=1;
+    save();renderLineas();refreshHead();schedule();
+    toast('Partida agregada');
+    if(window.innerWidth>=1100)$('pieza').focus();
+  }
+
+  function lineasDoc(){
+    var L=st.lineas.slice();
+    if(st.quote){
+      var cur=currentLine();
+      if(!L.length)return[cur];
+      if(confirm('Tienes una pieza sin agregar ('+cur.pieza+', '+money(cur.total)+'). ¿Incluirla en la cotización?'))L.push(cur);
+    }
+    return L;
+  }
+
+  function texto(L){
+    var c=$('cliente').value.trim(),o=[],t=0;
+    o.push('Cotización SHAMMAH CREA 3D');
+    if(c)o.push('Cliente: '+c);
+    o.push('');
+    L.forEach(function(l){
+      t+=l.total;
+      o.push('• '+l.cantidad+' pz · '+l.pieza+' ('+l.nombre+')');
+      if(l.detalles)o.push('  '+l.detalles);
+      o.push('  '+(l.cantidad>1?money(l.unit)+' c/u · ':'')+money(l.total)+' MXN');
+    });
+    o.push('');
+    o.push('Total: '+money(t)+' MXN');
+    o.push('Vigencia: 15 días naturales');
+    return o.join('\n');
+  }
+
+  function toast(m){
+    var t=$('toast');t.textContent=m;t.classList.add('on');
+    clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('on')},2200);
+  }
+
+  function copiar(){
+    var L=lineasDoc();if(!L.length)return;
+    var t=texto(L);
+    function ok(){toast('Cotización copiada')}
+    function fallback(){
+      var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';
+      document.body.appendChild(a);a.select();
+      try{document.execCommand('copy');ok()}catch(e){toast('No se pudo copiar')}
+      document.body.removeChild(a);
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,fallback);else fallback();
+  }
+
+  function acabado(l){
+    if(l.colores&&l.colores.length>1)return'Multicolor, carretes del AMS: '+l.colores.map(function(c,k){return'A'+(k+1)+' '+c}).join(' · ');
+    return'Acabado: '+l.filamento;
+  }
+  function celda(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
+
+  function getClave(){
+    var c='';try{c=localStorage.getItem('shammah_clave')||''}catch(e){}
+    if(c)return c;
+    return(prompt('Escribe tu clave. Solo se pide una vez en este equipo.')||'').trim();
+  }
+  function keepClave(c){if(!AUTH)return;try{localStorage.setItem('shammah_clave',c)}catch(e){}}
+  function dropClave(){try{localStorage.removeItem('shammah_clave')}catch(e){}}
+
+  function api(body,ms){
+    var ctl=new AbortController(),to=setTimeout(function(){ctl.abort()},ms||20000);
+    return fetch(WEB_APP_URL,{signal:ctl.signal,method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)})
+      .then(function(r){clearTimeout(to);return r.json()},function(e){clearTimeout(to);throw e});
+  }
+  function lineasApi(L){
+    return L.map(function(l){return{pieza:l.pieza,detalles:l.detalles,filamento:l.filamento,cantidad:l.cantidad,gramos:l.gramos,horas:l.horas,tipoNegocio:l.linea,colores:(l.colores&&l.colores.length>1)?l.colores:undefined}});
+  }
+  function firma(L,cliente){return JSON.stringify([cliente,lineasApi(L)])}
+  function folioProvisional(){
+    var n=new Date();
+    return'SHM-'+String(n.getFullYear()).slice(2)+String(n.getMonth()+1).padStart(2,'0')+'-X'+String(Math.floor(Math.random()*900)+100);
+  }
+
+  function hacerCotizacion(){
+    var L=lineasDoc();if(!L.length)return;
+    var cliente=$('cliente').value.trim()||'Cliente mostrador',sig=firma(L,cliente);
+    if(st.folioCot&&st.cotSig===sig){imprimirCotizacion(L,st.folioCot,cliente);return}
+    var conectado=typeof WEB_APP_URL!=='undefined'&&WEB_APP_URL,clave=(AUTH&&conectado)?getClave():'';
+    if(!clave){imprimirCotizacion(L,folioProvisional(),cliente,AUTH?'PDF sin registrar: falta la clave':undefined);return}
+    api({accion:'cotizacion',clave:clave,cliente:cliente,lineas:lineasApi(L)}).then(function(d){
+      if(d&&d.exito){keepClave(clave);st.folioCot=d.folio;st.cotSig=sig;save();imprimirCotizacion(L,d.folio,cliente);return}
+      if(d&&d.error==='clave')dropClave();
+      imprimirCotizacion(L,folioProvisional(),cliente,d&&d.error==='clave'?'Clave incorrecta. El PDF sale sin registrar.':'No se pudo registrar la cotización. El PDF sale sin registrar.');
+    }).catch(function(){imprimirCotizacion(L,folioProvisional(),cliente,'Sin conexión. El PDF sale sin registrar.')});
+  }
+
+  function imprimirCotizacion(L,folio,cliente,aviso){
+    var now=new Date(),mm=String(now.getMonth()+1).padStart(2,'0'),dd=String(now.getDate()).padStart(2,'0'),
+        total=0,piezas=0,pla=false,tb=$('hRows');
+    $('hFolio').textContent=folio;
+    $('hFecha').textContent=now.getFullYear()+'-'+mm+'-'+dd;
+    $('hCliente').textContent=cliente;
+    tb.textContent='';
+    L.forEach(function(l){
+      total+=l.total;piezas+=l.cantidad;if((l.colores||[l.filamento]).some(function(c){return c.indexOf('PLA')===0}))pla=true;
+      var tr=document.createElement('tr'),d=document.createElement('td');
+      d.appendChild(celda('div','h-it',l.pieza));
+      d.appendChild(celda('div','h-it2',acabado(l)));
+      if(l.detalles)d.appendChild(celda('div','h-it3',l.detalles));
+      tr.appendChild(celda('td','c',l.cantidad+' pz'));
+      tr.appendChild(d);
+      tr.appendChild(celda('td','r',money(l.unit)));
+      tr.appendChild(celda('td','r imp',money(l.total)));
+      tb.appendChild(tr);
+    });
+    $('hoja').classList.toggle('dense',L.length>6);
+    $('hPiezas').textContent=piezas+(piezas===1?' pieza':' piezas');
+    $('hTotal').textContent=money(total)+' MXN';
+    $('hReco').hidden=!pla;
+    var titulo=document.title;
+    document.title='Cotización '+folio+' - '+cliente;
+    var restaurar=function(){document.title=titulo;window.removeEventListener('afterprint',restaurar)};
+    window.addEventListener('afterprint',restaurar);
+    var img=$('hQr'),go=function(){toast(aviso||'Elige Guardar como PDF en la ventana');setTimeout(function(){window.print()},aviso?1200:350)};
+    if(img.complete&&img.naturalWidth){go();return}
+    var done=false,fin=function(){if(!done){done=true;go()}};
+    img.onload=fin;img.onerror=fin;setTimeout(fin,2500);
+  }
+
+  function hacerPedido(){
+    var L=lineasDoc();if(!L.length)return;
+    if(typeof WEB_APP_URL==='undefined'||!WEB_APP_URL){toast('El pedido no está conectado todavía');return}
+    var clave=getClave();if(!clave)return;
+    var cliente=$('cliente').value.trim()||'Cliente mostrador',
+        total=L.reduce(function(a,l){return a+l.total},0);
+    if(!confirm('¿Registrar el pedido de '+cliente+' por '+money(total)+' MXN?'))return;
+    var btn=$('pedido');btn.disabled=true;btn.textContent='Guardando…';
+    api({accion:'pedido',clave:clave,cliente:cliente,lineas:lineasApi(L),cotizacion:st.folioCot||''}).then(function(d){
+      if(d&&d.exito){
+        keepClave(clave);
+        st.lineas=[];st.folioCot='';st.cotSig='';
+        ['cliente','pieza','detalles','gramos','tiempo'].forEach(function(id){$(id).value=''});
+        $('cantidad').value=1;
+        save();renderLineas();refreshHead();schedule();
+        toast('Pedido '+d.folio+' registrado');
+      }else if(d&&d.error==='clave'){dropClave();toast('Clave incorrecta. Inténtalo de nuevo.')}
+      else if(d&&d.error==='sin_hoja'){toast('Falta una pestaña en la hoja. Corre prepararHojas.')}
+      else if(d&&d.error==='duplicado'){toast('Esa cotización ya es un pedido.')}
+      else{toast('No se pudo registrar el pedido')}
+    }).catch(function(){toast('No se pudo registrar. Revisa tu conexión.')})
+      .then(function(){btn.textContent='Hacer pedido';updateActions()});
+  }
+
+  // ---------- Venta directa ----------
+  function guardarDirecta(){
+    var desc=$('dDesc').value.trim(),monto=parseFloat($('dMonto').value),
+        piezas=Math.max(1,parseInt($('dPiezas').value,10)||1),gramos=parseFloat($('dGramos').value)||0;
+    if(!desc){toast('Escribe qué se vendió');$('dDesc').focus();return}
+    if(!(monto>0)){toast('Escribe el monto cobrado');$('dMonto').focus();return}
+    if(typeof WEB_APP_URL==='undefined'||!WEB_APP_URL){toast('El registro no está conectado todavía');return}
+    var clave=getClave();if(!clave)return;
+    var btn=$('dGuardar');btn.disabled=true;btn.textContent='Guardando…';
+    api({accion:'ventaDirecta',clave:clave,cliente:$('dCliente').value.trim()||'Cliente mostrador',descripcion:desc,piezas:piezas,monto:monto,gramos:gramos,
+      metodo:document.querySelector('input[name=dMetodo]:checked').value,pagado:$('dPagado').checked,entregado:$('dEntregado').checked}).then(function(d){
+      if(d&&d.exito){
+        keepClave(clave);
+        ['dCliente','dDesc','dMonto','dGramos'].forEach(function(id){$(id).value=''});
+        $('dPiezas').value=1;
+        toast('Venta '+d.folio+' registrada');
+      }else if(d&&d.error==='clave'){dropClave();toast('Clave incorrecta. Inténtalo de nuevo.')}
+      else if(d&&d.error==='sin_hoja'){toast('Falta una pestaña en la hoja. Corre prepararHojas.')}
+      else{toast('No se pudo registrar la venta')}
+    }).catch(function(){toast('No se pudo registrar. Revisa tu conexión.')})
+      .then(function(){btn.disabled=false;btn.textContent='Registrar venta'});
+  }
+
+  // ---------- Salidas ----------
+  var AYUDA_AP={'Material y refacciones':'Filamento, boquillas, placas y repuestos.','Impuestos y redes':'Pagos de impuestos, comisiones y publicidad.',
+                'Crecimiento':'Equipo, herramientas y la segunda impresora.','Libre':'Lo que tomas tú o Abigail.'};
+  function guardarSalida(){
+    var concepto=$('sConcepto').value.trim(),monto=parseFloat($('sMonto').value);
+    if(!concepto){toast('Escribe qué se pagó');$('sConcepto').focus();return}
+    if(!(monto>0)){toast('Escribe el monto');$('sMonto').focus();return}
+    if(typeof WEB_APP_URL==='undefined'||!WEB_APP_URL){toast('El registro no está conectado todavía');return}
+    var clave=getClave();if(!clave)return;
+    var btn=$('sGuardar');btn.disabled=true;btn.textContent='Guardando…';
+    api({accion:'salida',clave:clave,concepto:concepto,monto:monto,
+      apartado:document.querySelector('input[name=sAp]:checked').value,metodo:document.querySelector('input[name=sMet]:checked').value}).then(function(d){
+      if(!AUTH)return;
+      if(d&&d.exito){keepClave(clave);$('sConcepto').value='';$('sMonto').value='';toast('Salida '+d.folio+' registrada');cargarSalidas()}
+      else if(d&&d.error==='clave'){dropClave();setAuth(false)}
+      else if(d&&d.error==='bloqueado'){toast('Demasiados intentos. Espera unos 15 minutos.')}
+      else if(d&&d.error==='sin_hoja'){toast('Falta la pestaña de salidas. Corre prepararHojas.')}
+      else if(d&&d.error==='Acción no reconocida'){toast('El servidor todavía no tiene las salidas. Pega el Codigo.gs nuevo.')}
+      else{toast('No se pudo registrar la salida')}
+    }).catch(function(){toast('No se pudo registrar. Revisa tu conexión.')})
+      .then(function(){btn.disabled=false;btn.textContent='Registrar salida'});
+  }
+
+  function cargarSalidas(){
+    if(typeof WEB_APP_URL==='undefined'||!WEB_APP_URL)return;
+    var clave=getClave();if(!clave)return;
+    api({accion:'salidas',clave:clave}).then(function(d){
+      if(!AUTH)return;
+      if(d&&d.exito){
+        keepClave(clave);
+        $('sMes').textContent=d.mes>0?'Este mes han salido '+money(d.mes)+'.':'Este mes no ha salido dinero.';
+        var ul=$('sLista');ul.textContent='';
+        if(!d.salidas.length){var e=celda('li','empty','Todavía no hay salidas registradas.');e.style.borderBottom='0';ul.appendChild(e);return}
+        d.salidas.forEach(function(x){
+          var li=document.createElement('li');
+          li.appendChild(celda('span','c',x.concepto));
+          li.appendChild(celda('span','m',money(x.monto)));
+          li.appendChild(celda('span','meta',[x.apartado,x.metodo,fechaCorta(x.fecha)].filter(Boolean).join(' · ')+' · '+x.folio));
+          li.appendChild(boton('Anular','danger',function(){
+            if(!confirm('¿Anular la salida '+x.folio+' ('+x.concepto+' por '+money(x.monto)+')?\nSe regresa el dinero a su apartado.'))return;
+            api({accion:'anularSalida',clave:clave,folio:x.folio}).then(function(r){
+              if(r&&r.exito){toast('Salida anulada');cargarSalidas()}else toast('No se pudo anular');
+            }).catch(function(){toast('Sin conexión.')});
+          }));
+          ul.appendChild(li);
+        });
+      }else if(d&&d.error==='clave'){dropClave();setAuth(false)}
+      else if(d&&d.error==='Acción no reconocida'){$('sMes').textContent='El servidor todavía no tiene las salidas. Pega el Codigo.gs nuevo y haz Deploy.'}
+      else{$('sMes').textContent='No se pudieron cargar las salidas.'}
+    }).catch(function(){$('sMes').textContent='No se pudo cargar. Revisa tu conexión.'});
+  }
+
+  // ---------- Tablero ----------
+  var LANES=[['Por imprimir','Por imprimir'],['Imprimiendo','Imprimiendo'],['Listo','Listo para entregar'],['Entregado','Entregado']];
+  var SIG={'Por imprimir':['Imprimiendo','Empezar a imprimir'],'Imprimiendo':['Listo','Marcar listo'],'Listo':['Entregado','Marcar entregado']};
+  var refresco=null;
+
+  function fechaCorta(iso){var d=new Date(iso);return isNaN(d)?'':d.toLocaleDateString('es-MX',{day:'numeric',month:'short'})}
+  function boton(txt,cls,fn){var b=celda('button','sm '+(cls||''),txt);b.type='button';b.addEventListener('click',fn);return b}
+
+  function accionTablero(body,msg){
+    var clave=getClave();if(!clave)return;
+    api(Object.assign({clave:clave},body)).then(function(d){
+      if(d&&d.exito){keepClave(clave);if(msg)toast(msg);cargarTablero(false)}
+      else if(d&&d.error==='clave'){dropClave();toast('Clave incorrecta.')}
+      else toast('No se pudo hacer el cambio');
+    }).catch(function(){toast('Sin conexión.')});
+  }
+
+  function itemPedido(x){
+    var li=document.createElement('li');
+    var top=celda('div','it-top');top.appendChild(celda('b','',x.cliente));top.appendChild(celda('span','it-m',money(x.total)));
+    li.appendChild(top);
+    li.appendChild(celda('div','it-det',x.detalle));
+    li.appendChild(celda('div','it-meta',x.folio+' · '+fechaCorta(x.fecha)+(x.origen==='Directa'?' · venta directa':'')));
+    li.appendChild(celda('span','chip2 '+(x.pago==='Pagado'?'ok':'warn'),x.pago==='Pagado'?'Pagado'+(x.metodo?' · '+x.metodo:''):'Falta cobrar'));
+    var act=celda('div','it-act');
+    if(SIG[x.estado]){var s2=SIG[x.estado];act.appendChild(boton(s2[1],'main',function(){accionTablero({accion:'actualizar',folio:x.folio,campo:'estado',valor:s2[0]})}))}
+    if(x.pago!=='Pagado'){
+      act.appendChild(celda('span','lbl','Cobrar:'));
+      ['Efectivo','Transferencia'].forEach(function(m){act.appendChild(boton(m,'',function(){accionTablero({accion:'actualizar',folio:x.folio,campo:'pago',valor:'Pagado',metodo:m},'Cobro registrado')}))});
+    }
+    act.appendChild(boton('Descartar','danger',function(){
+      if(confirm('¿Descartar el pedido '+x.folio+' de '+x.cliente+' por '+money(x.total)+'?\nSale del tablero y de las cuentas. Si te equivocas, lo restauras en la hoja cambiando su Estado.'))
+        accionTablero({accion:'actualizar',folio:x.folio,campo:'estado',valor:'Descartado'},'Pedido descartado');
+    }));
+    li.appendChild(act);
+    return li;
+  }
+
+  function itemCotizacion(x){
+    var li=document.createElement('li');
+    var top=celda('div','it-top');top.appendChild(celda('b','',x.cliente));top.appendChild(celda('span','it-m',money(x.total)));
+    li.appendChild(top);
+    li.appendChild(celda('div','it-det',x.detalle));
+    li.appendChild(celda('div','it-meta',x.folio+' · '+fechaCorta(x.fecha)));
+    var act=celda('div','it-act');
+    act.appendChild(boton('Descartar','danger',function(){
+      if(confirm('¿Descartar la cotización '+x.folio+' de '+x.cliente+'?'))
+        accionTablero({accion:'estadoCotizacion',folio:x.folio,estado:'Descartada'},'Cotización descartada');
+    }));
+    li.appendChild(act);
+    return li;
+  }
+
+  function renderTablero(d){
+    var r=d.resumen;
+    $('tbPorCobrar').textContent=money(r.porCobrar);
+    $('tbProceso').textContent=r.enProceso;
+    $('tbAbiertas').textContent=r.abiertas;
+    $('tbAbiertasV').textContent=r.abiertas?'por '+money(r.valorAbiertas):'';
+    $('tbCierre').textContent=r.cotizadas?r.aceptadas+' de '+r.cotizadas:'—';
+    var host=$('tbLanes');host.textContent='';
+    LANES.forEach(function(ln){
+      var items=d.pedidos.filter(function(x){return x.estado===ln[0]});
+      var sec=document.createElement('section');sec.className='lane';
+      var h=document.createElement('h2');h.appendChild(celda('span','',ln[1]));h.appendChild(celda('span','',String(items.length)));
+      sec.appendChild(h);
+      var ul=document.createElement('ul');
+      if(items.length)items.forEach(function(x){ul.appendChild(itemPedido(x))});
+      else{var e=celda('li','empty','Sin pedidos');e.style.borderBottom='0';ul.appendChild(e)}
+      sec.appendChild(ul);host.appendChild(sec);
+    });
+    var cu=$('tbCots');cu.textContent='';
+    if(d.cotizaciones.length)d.cotizaciones.forEach(function(x){cu.appendChild(itemCotizacion(x))});
+    else{var e2=celda('li','empty','No hay cotizaciones abiertas.');e2.style.borderBottom='0';cu.appendChild(e2)}
+    $('tbMsg').textContent=(!d.pedidos.length&&!d.cotizaciones.length)?'Todavía no hay pedidos ni cotizaciones. Cuando registres uno, aparecerá aquí.':'';
+  }
+
+  function cargarTablero(manual){
+    if(typeof WEB_APP_URL==='undefined'||!WEB_APP_URL){$('tbMsg').textContent='El tablero no está conectado todavía.';return}
+    var clave=getClave();
+    if(!clave){$('tbMsg').textContent='Necesitas tu clave para ver el tablero. Aprieta Actualizar para escribirla.';return}
+    if(manual)$('tbMsg').textContent='Actualizando…';
+    api({accion:'tablero',clave:clave}).then(function(d){
+      if(!AUTH)return;
+      if(d&&d.exito){
+        keepClave(clave);renderTablero(d);
+        $('tbHora').textContent='Actualizado a las '+new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+      }else if(d&&d.error==='clave'){dropClave();$('tbMsg').textContent='Clave incorrecta. Aprieta Actualizar para intentar de nuevo.'}
+      else if(d&&d.error==='Acción no reconocida'){$('tbMsg').textContent='El servidor todavía no tiene el tablero. Pega el Codigo.gs nuevo y haz Deploy.'}
+      else{$('tbMsg').textContent='No se pudo cargar el tablero.'}
+    }).catch(function(){$('tbMsg').textContent='No se pudo cargar. Revisa tu conexión.'});
+  }
+
+
+  // ---------- Panel ----------
+  var NS='http://www.w3.org/2000/svg';
+  function sv(tag,attrs,txt){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(txt!==undefined)e.textContent=txt;return e}
+  function money0(n){return '$'+Math.round(n).toLocaleString('es-MX')}
+  function compact(n){return n>=1000?(Math.round(n/100)/10).toString().replace(/\.0$/,'')+'K':String(n)}
+  function niceStep(max){var st=[50,100,200,250,500,1000,2000,2500,5000,10000,20000,50000,100000];for(var i=0;i<st.length;i++)if(max/st[i]<=4)return st[i];return 100000}
+  function diaMes(iso){var d=new Date(iso+'T12:00:00');return d.toLocaleDateString('es-MX',{day:'numeric',month:'short'}).replace('.','')}
+
+  var tip=$('tip');
+  function mostrarTip(el,ev){
+    var t=el.getAttribute('data-tip');if(!t)return;
+    var partes=t.split('|');tip.textContent='';
+    var b=document.createElement('b');b.textContent=partes[0];tip.appendChild(b);
+    if(partes[1])tip.appendChild(document.createTextNode(partes[1]));
+    tip.classList.add('on');
+    var r=el.getBoundingClientRect(),x=ev&&ev.clientX?ev.clientX:r.left+r.width/2,y=ev&&ev.clientY?ev.clientY:r.top;
+    var w=tip.offsetWidth,h=tip.offsetHeight;
+    tip.style.left=Math.max(8,Math.min(innerWidth-w-8,x-w/2))+'px';
+    tip.style.top=Math.max(8,y-h-14)+'px';
+  }
+  document.addEventListener('pointerover',function(e){var el=e.target.closest&&e.target.closest('[data-tip]');if(el)mostrarTip(el,e)});
+  document.addEventListener('pointermove',function(e){var el=e.target.closest&&e.target.closest('[data-tip]');if(el&&tip.classList.contains('on'))mostrarTip(el,e)});
+  document.addEventListener('pointerout',function(e){if(e.target.closest&&e.target.closest('[data-tip]'))tip.classList.remove('on')});
+  document.addEventListener('focusin',function(e){var el=e.target.closest&&e.target.closest('[data-tip]');if(el)mostrarTip(el)});
+  document.addEventListener('focusout',function(){tip.classList.remove('on')});
+
+  function tabla(host,cols,filas){
+    host.textContent='';
+    var t=document.createElement('table'),th=document.createElement('thead'),tr=document.createElement('tr');
+    cols.forEach(function(c,i){tr.appendChild(celda('th',i>0?'n':'',c))});
+    th.appendChild(tr);t.appendChild(th);
+    var tb=document.createElement('tbody');
+    filas.forEach(function(f){var r=document.createElement('tr');f.forEach(function(v,i){r.appendChild(celda('td',i>0?'n':'',v))});tb.appendChild(r)});
+    t.appendChild(tb);host.appendChild(t);
+  }
+
+  function barPath(x,y,w,h,r){r=Math.min(r,w/2,h);return'M'+x+','+(y+h)+'V'+(y+r)+'Q'+x+','+y+' '+(x+r)+','+y+'H'+(x+w-r)+'Q'+(x+w)+','+y+' '+(x+w)+','+(y+r)+'V'+(y+h)+'Z'}
+
+  function dibujarSemanas(sem){
+    var host=$('gSem');host.textContent='';
+    var W=640,H=250,L=46,R=8,T=18,B=34,pw=W-L-R,ph=H-T-B;
+    var max=Math.max.apply(null,sem.map(function(x){return x.total}).concat([1])),step=niceStep(max),top=Math.ceil(max/step)*step;
+    var svg=sv('svg',{viewBox:'0 0 '+W+' '+H,role:'img','aria-label':'Ventas por semana, últimas 8 semanas'});
+    for(var v=0;v<=top;v+=step){
+      var y=T+ph-ph*v/top;
+      svg.appendChild(sv('line',{x1:L,x2:W-R,y1:y,y2:y,stroke:v===0?'#C3BDCC':'#E3DFEA','stroke-width':1}));
+      svg.appendChild(sv('text',{x:L-8,y:y+4,'text-anchor':'end'},compact(v)));
+    }
+    var slot=pw/sem.length,bw=Math.min(24,slot*.55),maxI=0;
+    sem.forEach(function(x,i){if(x.total>sem[maxI].total)maxI=i});
+    sem.forEach(function(x,i){
+      var cx=L+slot*i+slot/2,h=ph*x.total/top,actual=i===sem.length-1;
+      if(x.total>0)svg.appendChild(sv('path',{d:barPath(cx-bw/2,T+ph-h,bw,h,4),fill:actual?'#D12C6B':'#C9C2D1'}));
+      if(x.total>0&&(actual||i===maxI))svg.appendChild(sv('text',{x:cx,y:T+ph-h-6,'text-anchor':'middle',class:'v'},money0(x.total)));
+      svg.appendChild(sv('text',{x:cx,y:H-12,'text-anchor':'middle'},diaMes(x.inicio)));
+      var hit=sv('rect',{x:L+slot*i,y:T,width:slot,height:ph+B,class:'hit',tabindex:0,role:'img',
+        'aria-label':'Semana del '+diaMes(x.inicio)+': '+money(x.total)+', '+x.pedidos+(x.pedidos===1?' pedido':' pedidos'),
+        'data-tip':'Semana del '+diaMes(x.inicio)+'|'+money(x.total)+' · '+x.pedidos+(x.pedidos===1?' pedido':' pedidos')});
+      svg.appendChild(hit);
+    });
+    host.appendChild(svg);
+    tabla($('tSem'),['Semana del','Vendido','Pedidos'],sem.map(function(x){return[diaMes(x.inicio),money(x.total),String(x.pedidos)]}));
+  }
+
+  function moneyS(n){return(n<0?'-':'')+money(Math.abs(n))}
+  var SEGS=[['costos','Material y refacciones','var(--c-costos)','#fff'],['impuestosRedes','Impuestos y redes','var(--c-imp)','#0b0b0b'],
+            ['crecimiento','Crecimiento','var(--c-crec)','#fff'],['libre','Libre','var(--c-libre)','#fff']];
+  function dibujarApartados(a,sal){
+    var host=$('gAp');host.textContent='';
+    var tot=SEGS.reduce(function(s,g){return s+a[g[0]]},0);
+    if(tot<=0){host.appendChild(celda('p','empty','Todavía no hay ventas que repartir.'));tabla($('tAp'),['Apartado','Entró','Salió','Queda'],[]);return}
+    var bar=document.createElement('div');bar.className='stack';bar.setAttribute('role','img');bar.setAttribute('aria-label','Reparto de lo vendido');
+    var ul=document.createElement('ul');ul.className='leg';
+    var cab=document.createElement('li');cab.className='h';
+    cab.appendChild(celda('span',''));cab.appendChild(celda('span','','Apartado'));
+    ['Entró','Salió','Queda'].forEach(function(t){cab.appendChild(celda('span','n',t))});
+    ul.appendChild(cab);
+    var filas=[];
+    SEGS.forEach(function(g){
+      var v=a[g[0]],sv=sal[g[0]]||0,queda=v-sv,pct=v/tot*100,txt=Math.round(pct)+'%';
+      var seg=document.createElement('b');seg.style.flex=Math.max(v,tot*.004)+' 1 0';seg.style.background=g[2];seg.style.color=g[3];
+      seg.tabIndex=0;seg.setAttribute('data-tip',g[1]+'|Entró '+money(v)+' ('+txt+') · Salió '+money(sv)+' · Queda '+moneyS(queda));
+      seg.setAttribute('aria-label',g[1]+': entró '+money(v)+', salió '+money(sv)+', queda '+moneyS(queda));
+      if(pct>=11)seg.textContent=txt;
+      bar.appendChild(seg);
+      var li=document.createElement('li'),i=document.createElement('i');i.style.background=g[2];
+      li.appendChild(i);li.appendChild(celda('span','',g[1]));
+      li.appendChild(celda('span','n',money0(v)));li.appendChild(celda('span','n s',sv?money0(sv):'—'));li.appendChild(celda('span','n q',(queda<0?'-':'')+money0(Math.abs(queda))));
+      ul.appendChild(li);
+      filas.push([g[1],money(v),money(sv),moneyS(queda)]);
+    });
+    host.appendChild(bar);host.appendChild(ul);
+    tabla($('tAp'),['Apartado','Entró','Salió','Queda'],filas);
+  }
+
+  function barrasH(host,items,hiFn,tipFn){
+    host.textContent='';
+    var max=Math.max.apply(null,items.map(function(x){return x.v}).concat([1]));
+    items.forEach(function(x){
+      var row=document.createElement('div');row.className='hrow';
+      var l=celda('div','l',x.l);l.title=x.l;row.appendChild(l);
+      var hb=document.createElement('div');hb.className='hb'+(hiFn(x)?' hi':'');hb.tabIndex=0;
+      hb.setAttribute('data-tip',tipFn(x));hb.setAttribute('aria-label',x.l+': '+x.t);
+      var i=document.createElement('i');i.style.width=Math.max(1,x.v/max*78)+'%';
+      hb.appendChild(i);hb.appendChild(celda('span','',x.t));row.appendChild(hb);host.appendChild(row);
+    });
+  }
+  function dibujarClientes(cl){
+    var host=$('gCli');
+    if(!cl.length){host.textContent='';host.appendChild(celda('p','empty','Todavía no hay clientes.'));tabla($('tCli'),['Cliente','Total'],[]);return}
+    barrasH(host,cl.map(function(x){return{l:x.cliente,v:x.total,t:money0(x.total)}}),function(x){return x===undefined?false:x.v===cl[0].total},function(x){return x.l+'|'+money(x.v)});
+    tabla($('tCli'),['Cliente','Total'],cl.map(function(x){return[x.cliente,money(x.total)]}));
+  }
+  function dibujarCotizaciones(c){
+    var host=$('gCot');
+    if(!c.hechas){host.textContent='';host.appendChild(celda('p','empty','Todavía no has hecho cotizaciones.'));tabla($('tCot'),['Estado','Cantidad'],[]);return}
+    var it=[['Hechas',c.hechas],['Se volvieron pedido',c.aceptadas],['Siguen abiertas',c.abiertas],['Descartadas',c.descartadas]].map(function(x){return{l:x[0],v:x[1],t:String(x[1])}});
+    barrasH(host,it,function(x){return x.l==='Se volvieron pedido'},function(x){return x.l+'|'+x.v+(c.hechas?' · '+Math.round(x.v/c.hechas*100)+'% de las hechas':'')});
+    tabla($('tCot'),['Estado','Cantidad','% de las hechas'],it.map(function(x){return[x.l,x.t,Math.round(x.v/c.hechas*100)+'%']}));
+  }
+
+  function renderPanel(d){
+    var fondo=d.apartados.crecimiento-d.salidas.crecimiento;
+    var pct=Math.max(0,Math.min(100,fondo/d.meta*100));
+    $('hRec').textContent=(fondo<0?'-':'')+money0(Math.abs(fondo));
+    $('hMeta').textContent='de '+money0(d.meta)+' del '+String(d.metaNombre||'fondo').toLowerCase();
+    $('hMeterFill').style.width=pct+'%';
+    $('hMeter').setAttribute('aria-valuenow',String(Math.round(pct)));
+    $('hTxt').textContent=Math.round(pct)+'% de la meta. Faltan '+money0(Math.max(0,d.meta-fondo))+'.';
+    $('kVend').textContent=money0(d.mes.vendido);
+    var de=$('kDelta');
+    if(d.mes.anterior>0){
+      var ch=Math.round((d.mes.vendido-d.mes.anterior)/d.mes.anterior*100);
+      de.className='delta '+(ch>0?'up':ch<0?'down':'eq');
+      de.textContent=(ch>0?'▲ +':ch<0?'▼ ':'= ')+ch+'% frente al mes pasado';
+    }else{de.className='delta eq';de.textContent=d.mes.vendido>0?'El mes pasado no hubo ventas':''}
+    $('kCob').textContent=money0(d.mes.cobrado);
+    $('kPor').textContent=money0(d.porCobrar);
+    $('kPed').textContent=String(d.mes.pedidos);
+    $('kSal').textContent=money0(d.mes.salidas||0);
+    dibujarSemanas(d.semanas);dibujarApartados(d.apartados,d.salidas);dibujarClientes(d.clientes);dibujarCotizaciones(d.cotizaciones);
+    $('pnBody').hidden=false;
+  }
+
+  function cargarPanel(manual){
+    if(typeof WEB_APP_URL==='undefined'||!WEB_APP_URL){$('pnMsg').textContent='El panel no está conectado todavía.';return}
+    var clave=getClave();
+    if(!clave){$('pnMsg').textContent='Necesitas tu clave para ver el panel. Aprieta Actualizar para escribirla.';return}
+    if(manual||$('pnBody').hidden)$('pnMsg').textContent='Cargando…';
+    api({accion:'panel',clave:clave}).then(function(d){
+      if(!AUTH)return;
+      if(d&&d.exito){keepClave(clave);renderPanel(d);$('pnMsg').textContent='';
+        $('pnHora').textContent='Actualizado a las '+new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})}
+      else if(d&&d.error==='clave'){dropClave();$('pnMsg').textContent='Clave incorrecta. Aprieta Actualizar para intentar de nuevo.'}
+      else if(d&&d.error==='Acción no reconocida'){$('pnMsg').textContent='El servidor todavía no tiene el panel. Pega el Codigo.gs nuevo y haz Deploy.'}
+      else{$('pnMsg').textContent='No se pudo cargar el panel.'}
+    }).catch(function(){$('pnMsg').textContent='No se pudo cargar. Revisa tu conexión.'});
+  }
+
+
+  // ---------- Acceso ----------
+  var AUTH=false;
+  function setAuth(on){
+    var antes=AUTH;
+    AUTH=on;
+    document.body.dataset.auth=on?'1':'0';
+    $('authBtn').textContent=on?'Salir':'Entrar';
+    if(!on&&antes){
+      try{localStorage.removeItem(KEY)}catch(e){}
+      location.reload();
+    }
+  }
+  function verificar(clave,silencioso){
+    if(typeof WEB_APP_URL==='undefined'||!WEB_APP_URL)return;
+    api({accion:'verificar',clave:clave},15000).then(function(d){
+      if(d&&d.exito){setAuth(true);keepClave(clave);if(!silencioso)toast('Listo, ya puedes ver todo')}
+      else if(d&&d.error==='clave'){dropClave();setAuth(false);if(!silencioso)toast('Clave incorrecta')}
+      else if(d&&d.error==='bloqueado'){if(!silencioso)toast('Demasiados intentos. Espera unos 15 minutos.')}
+      else if(!silencioso)toast('El servidor todavía no tiene el acceso. Pega el Codigo.gs nuevo y haz Deploy.');
+    }).catch(function(){if(!silencioso)toast('No se pudo verificar. Revisa tu conexión.')});
+  }
+  function entrarSalir(){
+    if(AUTH){dropClave();setAuth(false);toast('Sesión cerrada en este equipo');return}
+    var c=(prompt('Escribe tu clave.')||'').trim();
+    if(c)verificar(c,false);
+  }
+
+  function ver(v){
+    if(!AUTH&&v!=='cot')v='cot';
+    var ids={cot:'vCot',dir:'vDir',sal:'vSal',tab:'vTab',pan:'vPan'};
+    Object.keys(ids).forEach(function(k){$(ids[k]).hidden=k!==v});
+    document.body.dataset.v=v;
+    document.querySelectorAll('.nav button').forEach(function(b){b.setAttribute('aria-selected',b.dataset.v===v?'true':'false')});
+    clearInterval(refresco);
+    if(v==='tab'){cargarTablero(true);refresco=setInterval(function(){cargarTablero(false)},60000)}
+    if(v==='pan')cargarPanel(false);
+    if(v==='sal')cargarSalidas();
+    if(v==='cot')fitPrice();
+    window.scrollTo(0,0);
+  }
+
+  function setCant(n){$('cantidad').value=Math.max(1,n);schedule()}
+
+  st.lineas=[];
+  load();buildChips();refreshHead();renderLineas();
+  document.querySelectorAll('input[name=modoColor]').forEach(function(r){r.addEventListener('change',function(){setModo(this.value)})});
+  syncChips();
+  $('tiempo').addEventListener('input',schedule);
+  $('gramos').addEventListener('input',schedule);
+  $('cantidad').addEventListener('input',schedule);
+  document.querySelectorAll('input[name=linea]').forEach(function(r){r.addEventListener('change',schedule)});
+  $('cliente').addEventListener('input',function(){refreshHead();save()});
+  $('pieza').addEventListener('input',refreshHead);
+  $('menos').addEventListener('click',function(){setCant((parseInt($('cantidad').value,10)||1)-1)});
+  $('mas').addEventListener('click',function(){setCant((parseInt($('cantidad').value,10)||1)+1)});
+  $('agregar').addEventListener('click',agregar);
+  $('copiar').addEventListener('click',copiar);
+  $('hacer').addEventListener('click',hacerCotizacion);
+  $('pedido').addEventListener('click',hacerPedido);
+  $('hacerBar').addEventListener('click',function(){if(this.dataset.a==='agregar')agregar();else hacerCotizacion()});
+  $('retry').addEventListener('click',quote);
+  $('authBtn').addEventListener('click',entrarSalir);
+  $('loginBtn').addEventListener('click',entrarSalir);
+  (function(){var g='';try{g=localStorage.getItem('shammah_clave')||''}catch(e){}
+    if(g){setAuth(true);verificar(g,true)}})();
+  document.querySelectorAll('.nav button').forEach(function(b){b.addEventListener('click',function(){ver(b.dataset.v)})});
+  $('dGuardar').addEventListener('click',guardarDirecta);
+  $('sGuardar').addEventListener('click',guardarSalida);
+  document.querySelectorAll('input[name=sAp]').forEach(function(r){r.addEventListener('change',function(){$('sApHint').textContent=AYUDA_AP[this.value]||''})});
+  $('tbRef').addEventListener('click',function(){cargarTablero(true)});
+  $('pnRef').addEventListener('click',function(){cargarPanel(true)});
+  $('pnTabla').addEventListener('click',function(){
+    var on=document.body.classList.toggle('tabla');
+    this.textContent=on?'Ver gráficas':'Ver como tabla';this.setAttribute('aria-pressed',on?'true':'false');
+  });
+  window.addEventListener('resize',fitPrice);
+})();
+</script>
+</body>
+</html>
