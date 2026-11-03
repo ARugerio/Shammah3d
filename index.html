@@ -391,6 +391,7 @@ body[data-auth="1"] #vLogin{display:none}
 .abono-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;padding:10px;border-radius:10px;background:#F3EFF7}
 .abono-form input,.abono-form select{height:34px;border-radius:8px;border:1.5px solid var(--line);background:var(--field);padding:0 8px;font:500 14px 'Schibsted Grotesk',sans-serif;color:var(--ink)}
 .abono-form input{width:110px}
+.abono-form input.quien{width:210px}
 .abonos-lista{margin-top:8px;font-size:13px;color:var(--ink-2)}
 .abonos-lista div{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line)}
 .lane h2 span+span{font-weight:600;color:var(--muted)}
@@ -1579,15 +1580,16 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     host.textContent='';host.className='abono-form';
     var m=document.createElement('input');m.type='number';m.step='0.01';m.min='0';m.inputMode='decimal';m.placeholder='Monto';
     m.value=x.abonado<=0.005?Math.ceil(x.total*0.5):x.saldo;
+    var quien=document.createElement('input');quien.type='text';quien.placeholder='¿Quién pagó? (opcional)';quien.setAttribute('list','listaClientes');quien.autocomplete='off';quien.className='quien';
     var sel=document.createElement('select');['Efectivo','Transferencia'].forEach(function(t){var o=document.createElement('option');o.value=t;o.textContent=t;sel.appendChild(o)});
-    host.appendChild(m);host.appendChild(sel);
+    host.appendChild(quien);host.appendChild(m);host.appendChild(sel);
     if(x.abonado<=0.005)host.appendChild(boton('50 %','',function(){m.value=Math.ceil(x.total*0.5)}));
     host.appendChild(boton('Saldo','',function(){m.value=x.saldo}));
     host.appendChild(boton('Guardar abono','main',function(){
       var v=parseFloat(m.value);
       if(!(v>0)){toast('Escribe el monto del abono.');return}
       if(v>x.saldo+0.005){toast('Falta cobrar solo '+money(x.saldo)+'.');return}
-      accionTablero({accion:'abono',folio:x.folio,monto:v,metodo:sel.value},'Abono registrado');
+      accionTablero({accion:'abono',folio:x.folio,monto:v,metodo:sel.value,quien:quien.value.trim()},'Abono registrado'+(quien.value.trim()?' de '+quien.value.trim():''));
     }));
     host.hidden=false;m.focus();
   }
@@ -1602,7 +1604,10 @@ h1{font-size:clamp(34px,4.6vw,50px)}
       if(!d.abonos.length){host.textContent='Todavía no hay abonos.';return}
       d.abonos.forEach(function(a){
         var row=document.createElement('div');
-        row.appendChild(celda('span','',fechaCorta(a.fecha)+' · '+money(a.monto)+' · '+a.metodo+(a.nota?' · '+a.nota:'')));
+        var tx=celda('span','');
+        if(a.quien)tx.appendChild(celda('b','',a.quien+' · '));
+        tx.appendChild(document.createTextNode(money(a.monto)+' · '+a.metodo+' · '+fechaCorta(a.fecha)+(a.nota?' · '+a.nota:'')));
+        row.appendChild(tx);
         row.appendChild(boton('Anular','danger',function(){
           if(confirm('¿Anular el abono de '+money(a.monto)+' del '+fechaCorta(a.fecha)+'? El saldo del pedido vuelve a subir.'))
             accionTablero({accion:'anularAbono',id:a.id},'Abono anulado');
@@ -1645,7 +1650,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     var mas=document.createElement('details');mas.className='mas';
     mas.appendChild(celda('summary','','Más opciones'));
     var ma=celda('div','it-act');
-    if(x.saldo>0.005)ma.appendChild(boton('Cobrar solo una parte','',function(){if(formHost.hidden)formAbono(x,formHost);else formHost.hidden=true}));
+    if(x.saldo>0.005)ma.appendChild(boton('Cobrar una parte','',function(){if(formHost.hidden)formAbono(x,formHost);else formHost.hidden=true}));
     if(x.abonado>0.005)ma.appendChild(boton('Ver abonos','',function(){if(abHost.textContent&&abHost.dataset.abierto==='1'){abHost.textContent='';abHost.dataset.abierto='0'}else{abHost.dataset.abierto='1';listaAbonos(x,abHost)}}));
     if(x.origen==='Cotizado'&&x.estado==='Por imprimir'&&x.abonado<=0.005)
       ma.appendChild(boton('Regresar a cotización','',function(){regresarACotizacion(x)}));
