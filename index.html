@@ -402,23 +402,92 @@ body[data-auth="1"] #vLogin{display:none}
 .sem-leg{display:flex;flex-wrap:wrap;gap:4px 14px;margin:8px 0 0;font-size:13px;color:var(--ink-2)}
 .sem-it{display:inline-flex;align-items:center;gap:6px}
 .sem-dot{width:10px;height:10px;border-radius:50%;background:var(--s)}
+
+/* ---- menú lateral ---- */
+.side{display:none}
+body[data-auth="1"] .side{display:flex}
+.side{position:fixed;z-index:6;background:var(--ink);color:var(--on-ink)}
+.side .nav{display:flex;gap:0}
+.side .nav button{display:flex;align-items:center;gap:14px;background:none;border:0;border-radius:12px;color:var(--on-ink-muted);text-align:left;cursor:pointer;padding:0;white-space:normal;border-bottom:0}
+.side .nav button:hover{color:var(--on-ink);background:rgba(246,243,248,.07)}
+.side .nav button[aria-selected=true]{color:#fff;background:var(--pink)}
+.side .nav svg{width:24px;height:24px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.side .nl{display:block;min-width:0}
+.side .nl b{display:block;font:700 16px/1.2 'Schibsted Grotesk',sans-serif}
+.side .nl small{display:block;font-size:12.5px;line-height:1.3;margin-top:2px;opacity:.8}
+.side .sh{display:none}
+.side-brand{font:800 24px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+.side-brand em{display:block;font-style:normal;color:var(--pink-soft);margin-top:2px}
+
+@media(min-width:1100px){
+  .side{left:0;top:0;bottom:0;width:248px;flex-direction:column;gap:30px;padding:30px 16px;
+    background:var(--ink) repeating-linear-gradient(0deg,transparent 0 9px,rgba(246,243,248,.035) 9px 10px)}
+  .side-brand{padding:0 8px}
+  .side .nav{flex-direction:column;gap:6px}
+  .side .nav button{padding:11px 12px}
+  body[data-auth="1"] .wrap{margin:0 0 0 248px;max-width:none}
+  body[data-auth="1"] .top .brand{display:none}
+  body[data-auth="1"] .top{justify-content:flex-end;margin-bottom:0}
+}
+@media(max-width:1099px){
+  .side{left:0;right:0;bottom:0;height:68px;padding:0 4px env(safe-area-inset-bottom);box-sizing:content-box}
+  .side-brand{display:none}
+  .side .nav{flex:1;flex-direction:row;align-items:stretch}
+  .side .nav button{flex:1;min-width:0;flex-direction:column;justify-content:center;gap:3px;padding:6px 2px;border-radius:10px;text-align:center}
+  .side .nav svg{width:22px;height:22px}
+  .side .nl small,.side .lg{display:none}
+  .side .sh{display:inline}
+  .side .nl b{font-size:11px;font-weight:600}
+  body[data-auth="1"] .bar{bottom:68px}
+  body[data-auth="1"] .toast{bottom:156px}
+  body[data-auth="1"] .wrap{padding-bottom:170px}
+}
+
+/* ---- botones ---- */
+#authBtn{font-weight:600;color:var(--ink-2);border:1.5px solid var(--line);border-radius:999px;padding:7px 16px;text-decoration:none;background:var(--field)}
+#authBtn:hover{border-color:var(--ink)}
+.sm{height:40px;padding:0 14px;font-size:14px;border-radius:10px}
+.sm.main{height:44px;padding:0 18px;font-size:15px}
+.sm.danger{height:40px;border:1.5px solid #E9C5C2;background:#fff;color:var(--error);text-decoration:none;padding:0 14px}
+.sm.danger:hover{background:#FDEEEC;border-color:var(--error);color:var(--error)}
+.it-act{gap:10px}
+.mas{margin-top:10px}
+.mas summary{display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:var(--ink-2);font-weight:600;font-size:14px;list-style:none;padding:6px 0}
+.mas summary::-webkit-details-marker{display:none}
+.mas summary::before{content:"+";display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--on-ink);font-size:14px;line-height:1}
+.mas[open] summary::before{content:"–"}
+.mas .it-act{margin-top:8px}
+.cobrar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;padding:10px 12px;border-radius:12px;background:#F3EFF7}
+.cobrar .lbl{font-weight:600;font-size:14px;color:var(--ink);margin-right:2px}
+.lane li{padding:16px 0}
+h1{font-size:clamp(34px,4.6vw,50px)}
+.lede{font-size:17px;max-width:56ch}
+
+@media(min-width:1200px) and (max-width:1799px){.tb-lanes{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1100px) and (max-width:1849px){
+  .layout{grid-template-columns:minmax(0,1fr) clamp(360px,28vw,440px);grid-template-areas:"head ticket" "pieza ticket" "datos ticket" "color ticket";grid-template-rows:auto auto auto 1fr}
+}
+
+@media(max-width:1099px){.top .brand{font-size:21px;white-space:nowrap}.top{flex-wrap:nowrap;align-items:center;margin-bottom:24px}}
+@media print{.side{display:none!important}}
 </style>
 </head>
 <body data-v="cot" data-auth="0">
+<aside class="side">
+  <div class="side-brand"><span>SHAMMAH</span><em>CREA 3D</em></div>
+  <nav class="nav" role="tablist" aria-label="Secciones">
+      <button type="button" class="adm" role="tab" data-v="cot" aria-selected="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18H6z"/><path d="M9 7h6M9 11h2M13 11h2M9 15h2M13 15h2"/></svg><span class="nl"><b><span class="lg">Cotizar</span><span class="sh">Cotizar</span></b><small>Calcula el precio</small></span></button>
+      <button type="button" class="adm" role="tab" data-v="cots" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4M10 12h6M10 16h6"/></svg><span class="nl"><b><span class="lg">Cotizaciones</span><span class="sh">Guardadas</span></b><small>Las que ya hiciste</small></span></button>
+      <button type="button" class="adm" role="tab" data-v="dir" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8h8v8l-9 9z"/><circle cx="15.5" cy="8.5" r="1.3"/></svg><span class="nl"><b><span class="lg">Venta directa</span><span class="sh">Venta</span></b><small>Algo vendido sin cotizar</small></span></button>
+      <button type="button" class="adm" role="tab" data-v="sal" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v13H3z"/><path d="M3 7l3-4h12l3 4M12 11v5M9.5 13.5L12 16l2.5-2.5"/></svg><span class="nl"><b><span class="lg">Salidas</span><span class="sh">Salidas</span></b><small>Dinero que gastaste</small></span></button>
+      <button type="button" class="adm" role="tab" data-v="tab" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg><span class="nl"><b><span class="lg">Pedidos</span><span class="sh">Pedidos</span></b><small>Imprimir, entregar y cobrar</small></span></button>
+      <button type="button" class="adm" role="tab" data-v="pan" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="nl"><b><span class="lg">Resumen</span><span class="sh">Resumen</span></b><small>Cómo va el mes y la meta</small></span></button>
+  </nav>
+</aside>
 <div class="wrap">
   <div class="top">
     <div class="brand">SHAMMAH <span>CREA 3D</span></div>
-    <div class="top-r">
-        <nav class="nav" role="tablist" aria-label="Secciones">
-      <button type="button" class="adm" role="tab" data-v="cot" aria-selected="true">Cotizador</button>
-      <button type="button" class="adm" role="tab" data-v="cots" aria-selected="false">Cotizaciones</button>
-      <button type="button" class="adm" role="tab" data-v="dir" aria-selected="false">Venta directa</button>
-      <button type="button" class="adm" role="tab" data-v="sal" aria-selected="false">Salidas</button>
-      <button type="button" class="adm" role="tab" data-v="tab" aria-selected="false">Tablero</button>
-      <button type="button" class="adm" role="tab" data-v="pan" aria-selected="false">Panel</button>
-    </nav>
     <button type="button" class="link" id="authBtn">Entrar</button>
-    </div>
   </div>
 
   <section id="vLogin">
@@ -596,7 +665,7 @@ body[data-auth="1"] #vLogin{display:none}
   <section id="vCots" hidden>
     <div class="cot-view">
       <h1>Cotizaciones</h1>
-      <p class="lede">Abre cualquiera para cambiarla y volver a exportar el PDF.</p>
+      <p class="lede">Abre cualquiera para cambiarla y volver a sacar el PDF.</p>
       <label class="f" style="margin-top:22px">Buscar
         <input type="text" id="cotBuscar" placeholder="Cliente, folio o pieza">
       </label>
@@ -643,7 +712,7 @@ body[data-auth="1"] #vLogin{display:none}
 
   <section id="vTab" hidden>
     <div class="tb-top">
-      <h1>Tablero</h1>
+      <div><h1>Pedidos</h1><p class="lede">Lo que hay que imprimir, entregar y cobrar. Los colores avisan qué entrega está cerca.</p></div>
       <div class="tb-tools"><span id="tbHora"></span><button type="button" class="link" id="tbRef">Actualizar</button></div>
     </div>
     <dl class="tb-sum">
@@ -663,7 +732,7 @@ body[data-auth="1"] #vLogin{display:none}
 
   <section id="vPan" hidden>
     <div class="pn-top">
-      <h1>Panel</h1>
+      <div><h1>Resumen</h1><p class="lede">Cómo va el mes: lo que vendiste, lo que cobraste y cuánto llevas para la segunda impresora.</p></div>
       <div class="tb-tools"><span id="pnHora"></span><button type="button" class="link" id="pnTabla" aria-pressed="false">Ver como tabla</button><button type="button" class="link" id="pnRef">Actualizar</button></div>
     </div>
     <p class="tb-msg" id="pnMsg" role="status"></p>
@@ -730,7 +799,7 @@ body[data-auth="1"] #vLogin{display:none}
     <div class="h-meta">
       <span class="h-pill">COTIZACIÓN FORMAL</span>
       <div class="h-folio">FOLIO: <b id="hFolio"></b></div>
-      <div id="hEntregaRow" hidden>Entrega estimada: <b id="hEntrega"></b></div>
+      <div id="hEntregaRow" hidden>Fecha tentativa de entrega: <b id="hEntrega"></b></div>
       <div>Fecha: <b id="hFecha"></b></div>
       <div>Vigencia: <b>15 días naturales</b></div>
     </div>
@@ -1378,7 +1447,7 @@ body[data-auth="1"] #vLogin{display:none}
           if(!x.abrible){ab.disabled=true;ab.title='Es anterior al guardado completo'}
           act.appendChild(ab);
           if(x.abrible&&!x.antigua)act.appendChild(boton('Copiar para otra persona','',function(){abrirCotizacion(x.folio,true)}));
-          if(x.estado==='Enviada')act.appendChild(boton('Descartar','danger',function(){
+          if(x.estado==='Enviada')act.appendChild(boton('Descartar cotización','danger',function(){
             if(confirm('¿Descartar la cotización '+x.folio+' de '+x.cliente+'?'))
               api({accion:'estadoCotizacion',clave:clave,folio:x.folio,estado:'Descartada'}).then(function(r){if(r&&r.exito){toast('Cotización descartada');cargarCotizaciones()}else toast('No se pudo descartar')});
           }));
@@ -1567,19 +1636,25 @@ body[data-auth="1"] #vLogin{display:none}
     if(SIG[x.estado]){var s2=SIG[x.estado];act.appendChild(boton(s2[1],'main',function(){accionTablero({accion:'actualizar',folio:x.folio,campo:'estado',valor:s2[0]})}))}
     var formHost=document.createElement('div');formHost.hidden=true;
     var abHost=document.createElement('div');
+    var cob=null;
     if(x.saldo>0.005){
-      act.appendChild(celda('span','lbl','Cobrar '+money(x.saldo)+':'));
-      ['Efectivo','Transferencia'].forEach(function(m){act.appendChild(boton(m,'',function(){accionTablero({accion:'abono',folio:x.folio,todo:true,metodo:m},'Cobro registrado')}))});
-      act.appendChild(boton('Abono…','',function(){if(formHost.hidden)formAbono(x,formHost);else formHost.hidden=true}));
+      cob=celda('div','cobrar');
+      cob.appendChild(celda('span','lbl','Cobrar el saldo de '+money(x.saldo)+':'));
+      [['Efectivo','En efectivo'],['Transferencia','Por transferencia']].forEach(function(m){cob.appendChild(boton(m[1],'',function(){accionTablero({accion:'abono',folio:x.folio,todo:true,metodo:m[0]},'Cobro registrado')}))});
     }
-    if(x.abonado>0.005)act.appendChild(boton('Ver abonos','',function(){if(abHost.textContent&&abHost.dataset.abierto==='1'){abHost.textContent='';abHost.dataset.abierto='0'}else{abHost.dataset.abierto='1';listaAbonos(x,abHost)}}));
+    var mas=document.createElement('details');mas.className='mas';
+    mas.appendChild(celda('summary','','Más opciones'));
+    var ma=celda('div','it-act');
+    if(x.saldo>0.005)ma.appendChild(boton('Cobrar solo una parte','',function(){if(formHost.hidden)formAbono(x,formHost);else formHost.hidden=true}));
+    if(x.abonado>0.005)ma.appendChild(boton('Ver abonos','',function(){if(abHost.textContent&&abHost.dataset.abierto==='1'){abHost.textContent='';abHost.dataset.abierto='0'}else{abHost.dataset.abierto='1';listaAbonos(x,abHost)}}));
     if(x.origen==='Cotizado'&&x.estado==='Por imprimir'&&x.abonado<=0.005)
-      act.appendChild(boton('Regresar a cotización','',function(){regresarACotizacion(x)}));
-    act.appendChild(boton('Descartar','danger',function(){
-      if(confirm('¿Descartar el pedido '+x.folio+' de '+x.cliente+' por '+money(x.total)+'?\nSale del tablero y de las cuentas. Si te equivocas, lo restauras en la hoja cambiando su Estado.'+(x.abonado>0.005?'\n\nOjo: ya tiene '+money(x.abonado)+' cobrados. Descartar no devuelve ese dinero; si se lo regresas al cliente, anótalo como una salida.':'')))
+      ma.appendChild(boton('Regresar a cotización','',function(){regresarACotizacion(x)}));
+    ma.appendChild(boton('Descartar pedido','danger',function(){
+      if(confirm('¿Descartar el pedido '+x.folio+' de '+x.cliente+' por '+money(x.total)+'?\nSale de Pedidos y de las cuentas. Si te equivocas, lo restauras en la hoja cambiando su Estado.'))
         accionTablero({accion:'actualizar',folio:x.folio,campo:'estado',valor:'Descartado'},'Pedido descartado');
     }));
-    li.appendChild(act);li.appendChild(formHost);li.appendChild(abHost);
+    mas.appendChild(ma);
+    li.appendChild(act);if(cob)li.appendChild(cob);li.appendChild(mas);li.appendChild(formHost);li.appendChild(abHost);
     return li;
   }
 
@@ -1591,7 +1666,7 @@ body[data-auth="1"] #vLogin{display:none}
     li.appendChild(celda('div','it-meta',x.folio+' · '+fechaCorta(x.fecha)));
     var act=celda('div','it-act');
     act.appendChild(boton('Abrir y editar','main',function(){abrirCotizacion(x.folio)}));
-    act.appendChild(boton('Descartar','danger',function(){
+    act.appendChild(boton('Descartar cotización','danger',function(){
       if(confirm('¿Descartar la cotización '+x.folio+' de '+x.cliente+'?'))
         accionTablero({accion:'estadoCotizacion',folio:x.folio,estado:'Descartada'},'Cotización descartada');
     }));
