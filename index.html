@@ -470,6 +470,23 @@ h1{font-size:clamp(34px,4.6vw,50px)}
 }
 
 @media(max-width:1099px){.top .brand{font-size:21px;white-space:nowrap}.top{flex-wrap:nowrap;align-items:center;margin-bottom:24px}}
+.cob-btn{width:auto;padding:0 26px;margin:6px 0 4px}
+.cob-form{display:grid;gap:16px;max-width:560px;margin:18px 0 8px;padding:20px;border-radius:14px;background:var(--field);border:1.5px solid var(--line)}
+.cob-form select{display:block;width:100%;margin-top:6px;height:50px;padding:0 12px;background:var(--field);border:1.5px solid var(--line);border-radius:var(--radius);font:500 15px 'Schibsted Grotesk',sans-serif}
+.cob-form .btn-main{width:auto;padding:0 28px}
+.cob-acts{display:flex;gap:18px;align-items:center}
+.cob-lista{list-style:none;margin:18px 0 0;padding:0;max-width:820px}
+.cob-p{padding:18px 0;border-bottom:1px solid var(--line)}
+.cob-p .it-m{font-size:20px}
+.cob-p.al-corriente .it-m{color:var(--muted);font-size:14px;font-weight:600}
+.cob-p.al-corriente{opacity:.75}
+.cob-hist{margin-top:12px;padding:6px 14px 12px;border-radius:12px;background:#F3EFF7}
+.cob-hist h3{font:700 14px 'Schibsted Grotesk',sans-serif;margin:12px 0 4px}
+.cob-hist ul{list-style:none;margin:0;padding:0}
+.cob-hist li{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.abono-form .lbl{font-weight:600;font-size:14px}
+@media(max-width:480px){.side .nl b{font-size:10px}}
+
 @media print{.side{display:none!important}}
 </style>
 </head>
@@ -482,6 +499,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
       <button type="button" class="adm" role="tab" data-v="dir" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8h8v8l-9 9z"/><circle cx="15.5" cy="8.5" r="1.3"/></svg><span class="nl"><b><span class="lg">Venta directa</span><span class="sh">Venta</span></b><small>Algo vendido sin cotizar</small></span></button>
       <button type="button" class="adm" role="tab" data-v="sal" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v13H3z"/><path d="M3 7l3-4h12l3 4M12 11v5M9.5 13.5L12 16l2.5-2.5"/></svg><span class="nl"><b><span class="lg">Salidas</span><span class="sh">Salidas</span></b><small>Dinero que gastaste</small></span></button>
       <button type="button" class="adm" role="tab" data-v="tab" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg><span class="nl"><b><span class="lg">Pedidos</span><span class="sh">Pedidos</span></b><small>Imprimir, entregar y cobrar</small></span></button>
+      <button type="button" class="adm" role="tab" data-v="cob" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M18 6v6M15 9h6"/></svg><span class="nl"><b><span class="lg">Cobranza</span><span class="sh">Cobranza</span></b><small>Quién te debe y qué pidió</small></span></button>
       <button type="button" class="adm" role="tab" data-v="pan" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="nl"><b><span class="lg">Resumen</span><span class="sh">Resumen</span></b><small>Cómo va el mes y la meta</small></span></button>
   </nav>
 </aside>
@@ -729,6 +747,36 @@ h1{font-size:clamp(34px,4.6vw,50px)}
       <h2>Cotizaciones abiertas</h2>
       <ul id="tbCots"></ul>
     </section>
+  </section>
+
+  <section id="vCob" hidden>
+    <div class="tb-top">
+      <div><h1>Cobranza</h1><p class="lede">Quién te debe, qué pidió y qué ha pagado. Cuando alguien pague, toca "Me pagó".</p></div>
+      <div class="tb-tools"><button type="button" class="link" id="cobRef">Actualizar</button></div>
+    </div>
+    <dl class="tb-sum">
+      <div><dt>Por cobrar en total</dt><dd id="cobTotal">—</dd></div>
+      <div><dt>Personas con deuda</dt><dd id="cobN">—</dd></div>
+    </dl>
+    <button type="button" class="btn-main cob-btn" id="cobNuevo">Anotar lo que alguien pidió</button>
+    <form class="cob-form" id="cobForm" onsubmit="return false" autocomplete="off" hidden>
+      <label class="f">¿Quién lo pidió?
+        <input type="text" id="cbPersona" list="listaClientes" placeholder="Nombre de la persona">
+      </label>
+      <label class="f">¿Qué pidió?
+        <input type="text" id="cbConcepto" placeholder="1 clicker de árbol de navidad">
+      </label>
+      <label class="f">¿Cuánto debe por eso? (en pesos)
+        <input type="number" id="cbMonto" inputmode="decimal" min="0" step="0.01" placeholder="46.00">
+      </label>
+      <label class="f">¿Sale de un pedido tuyo, como el lote?
+        <select id="cbPedido"></select>
+        <span class="hint" id="cbPedidoHint">Si no, déjalo como deuda suelta.</span>
+      </label>
+      <div class="cob-acts"><button type="button" class="btn-main" id="cbGuardar">Guardar</button><button type="button" class="link" id="cbCancelar">Cancelar</button></div>
+    </form>
+    <p class="tb-msg" id="cobMsg" role="status"></p>
+    <ul class="cob-lista" id="cobLista"></ul>
   </section>
 
   <section id="vPan" hidden>
@@ -1654,6 +1702,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     if(x.abonado>0.005)ma.appendChild(boton('Ver abonos','',function(){if(abHost.textContent&&abHost.dataset.abierto==='1'){abHost.textContent='';abHost.dataset.abierto='0'}else{abHost.dataset.abierto='1';listaAbonos(x,abHost)}}));
     if(x.origen==='Cotizado'&&x.estado==='Por imprimir'&&x.abonado<=0.005)
       ma.appendChild(boton('Regresar a cotización','',function(){regresarACotizacion(x)}));
+    if(x.estado!=='Entregado'||x.saldo>0.005)ma.appendChild(boton('Asignar a una persona','',function(){COB_PRE=x.folio;ver('cob')}));
     ma.appendChild(boton('Descartar pedido','danger',function(){
       if(confirm('¿Descartar el pedido '+x.folio+' de '+x.cliente+' por '+money(x.total)+'?\nSale de Pedidos y de las cuentas. Si te equivocas, lo restauras en la hoja cambiando su Estado.'))
         accionTablero({accion:'actualizar',folio:x.folio,campo:'estado',valor:'Descartado'},'Pedido descartado');
@@ -1738,6 +1787,136 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     }).catch(function(){$('tbMsg').textContent='No se pudo cargar. Revisa tu conexión.'});
   }
 
+
+  // ---------- Cobranza ----------
+  var COB_PRE='',COB_PEDIDOS=[];
+  function cobError(d){
+    if(d&&d.error==='clave'){dropClave();setAuth(false)}
+    else if(d&&d.error==='sin_hoja')toast('Falta la pestaña Cobranza. Corre prepararHojas.');
+    else if(d&&d.error==='excede_pedido')toast('Ese pedido solo tiene '+money(d.disponible)+' sin asignar.');
+    else if(d&&d.error==='excede')toast('Esa persona solo debe '+money(d.saldo)+'.');
+    else if(d&&d.error==='cobrado')toast('Ya tiene cobros. Anula primero el pago.');
+    else if(d&&d.error==='Acción no reconocida')toast('El servidor todavía no tiene la cobranza. Pega el Codigo.gs nuevo y haz Deploy.');
+    else toast('No se pudo hacer el cambio.');
+  }
+  function accionCobranza(body,msg){
+    var clave=getClave();if(!clave)return;
+    api(Object.assign({clave:clave},body)).then(function(d){
+      if(!AUTH)return;
+      if(d&&d.exito){keepClave(clave);if(msg)toast(msg);cargarCobranza()}
+      else cobError(d);
+    }).catch(function(){toast('Sin conexión.')});
+  }
+  function llenarPedidos(){
+    var sel=$('cbPedido'),prev=sel.value;sel.textContent='';
+    var o0=document.createElement('option');o0.value='';o0.textContent='No, es una deuda suelta';sel.appendChild(o0);
+    COB_PEDIDOS.forEach(function(x){
+      var o=document.createElement('option');o.value=x.folio;
+      o.textContent=x.folio+' · '+(x.cliente||'')+' · '+x.detalle+' (sin asignar '+money(x.disponible)+')';sel.appendChild(o);
+    });
+    if([].some.call(sel.options,function(o){return o.value===prev}))sel.value=prev;
+    pedidoHint();
+  }
+  function pedidoHint(){
+    var f=$('cbPedido').value,x=COB_PEDIDOS.filter(function(y){return y.folio===f})[0];
+    $('cbPedidoHint').textContent=x?'De este pedido quedan '+money(x.disponible)+' sin asignar a alguien.':'Si no, déjalo como deuda suelta.';
+  }
+  function abrirFormCobranza(folio){
+    var f=$('cobForm');f.hidden=false;
+    if(folio){$('cbPedido').value=folio;pedidoHint();var x=COB_PEDIDOS.filter(function(y){return y.folio===folio})[0];if(x&&!$('cbConcepto').value)$('cbConcepto').value='1 pz · '+x.detalle.replace(/^\d+\s*pz\s*·\s*/,'')}
+    $('cbPersona').focus();
+  }
+  function guardarCargo(){
+    var persona=$('cbPersona').value.trim(),concepto=$('cbConcepto').value.trim(),monto=parseFloat($('cbMonto').value);
+    if(!persona){toast('Escribe quién lo pidió');$('cbPersona').focus();return}
+    if(!concepto){toast('Escribe qué pidió');$('cbConcepto').focus();return}
+    if(!(monto>0)){toast('Escribe cuánto debe');$('cbMonto').focus();return}
+    var clave=getClave();if(!clave)return;
+    var btn=$('cbGuardar');btn.disabled=true;
+    api({accion:'cargo',clave:clave,persona:persona,concepto:concepto,monto:monto,pedido:$('cbPedido').value}).then(function(d){
+      if(!AUTH)return;
+      if(d&&d.exito){keepClave(clave);toast('Anotado: '+d.persona+' debe '+money(monto));
+        ['cbPersona','cbConcepto','cbMonto'].forEach(function(id){$(id).value=''});$('cbPedido').value='';$('cobForm').hidden=true;cargarCobranza();cargarClientes()}
+      else cobError(d);
+    }).catch(function(){toast('Sin conexión.')}).then(function(){btn.disabled=false});
+  }
+  function formPago(o,host){
+    host.textContent='';host.className='abono-form';
+    var m=document.createElement('input');m.type='number';m.step='0.01';m.min='0';m.inputMode='decimal';m.value=o.debe;
+    var sel=document.createElement('select');['Efectivo','Transferencia'].forEach(function(t){var op=document.createElement('option');op.value=t;op.textContent=t;sel.appendChild(op)});
+    host.appendChild(celda('span','lbl','¿Cuánto pagó?'));host.appendChild(m);host.appendChild(sel);
+    host.appendChild(boton('Todo ('+money(o.debe)+')','',function(){m.value=o.debe}));
+    host.appendChild(boton('Guardar pago','main',function(){
+      var v=parseFloat(m.value);
+      if(!(v>0)){toast('Escribe cuánto pagó.');return}
+      if(v>o.debe+0.005){toast('Solo debe '+money(o.debe)+'.');return}
+      accionCobranza({accion:'cobrar',persona:o.persona,monto:v,metodo:sel.value},'Pago de '+o.persona+' guardado');
+    }));
+    host.hidden=false;m.focus();m.select();
+  }
+  function historial(o,host){
+    host.textContent='';host.className='cob-hist';
+    host.appendChild(celda('h3','','Lo que pidió'));
+    var u1=document.createElement('ul');
+    o.cargos.forEach(function(c){
+      var li=document.createElement('li');
+      var t=celda('span','');t.appendChild(celda('b','',c.concepto));
+      t.appendChild(document.createTextNode(' · '+money(c.monto)+' · '+fechaCorta(c.fecha)+(c.pedido?' · del pedido '+c.pedido:'')));
+      li.appendChild(t);
+      var falta=c.monto-c.cobrado;
+      li.appendChild(celda('span','chip2 '+(falta<=0.005?'ok':c.cobrado>0?'gris':'warn'),falta<=0.005?'Pagado':c.cobrado>0?'Falta '+money(falta):'Sin pagar'));
+      if(c.cobrado<=0.005)li.appendChild(boton('Quitar','danger',function(){
+        if(confirm('¿Quitar "'+c.concepto+'" ('+money(c.monto)+') de la cuenta de '+o.persona+'?'))accionCobranza({accion:'anularCargo',folio:c.folio},'Quitado');
+      }));
+      u1.appendChild(li);
+    });
+    host.appendChild(u1);
+    host.appendChild(celda('h3','','Lo que ha pagado'));
+    var u2=document.createElement('ul');
+    if(!o.pagos.length)u2.appendChild(celda('li','empty','Todavía no ha pagado nada.'));
+    o.pagos.forEach(function(g){
+      var li=document.createElement('li');
+      li.appendChild(celda('span','',money(g.monto)+' · '+g.metodo+' · '+fechaCorta(g.fecha)));
+      li.appendChild(boton('Anular pago','danger',function(){
+        if(confirm('¿Anular el pago de '+money(g.monto)+' de '+o.persona+'? La deuda vuelve a subir.'))accionCobranza({accion:'anularPago',folio:g.folio},'Pago anulado');
+      }));
+      u2.appendChild(li);
+    });
+    host.appendChild(u2);
+  }
+  function renderCobranza(d){
+    COB_PEDIDOS=d.pedidos||[];llenarPedidos();
+    var con=d.personas.filter(function(o){return o.debe>0.005});
+    $('cobTotal').textContent=money(d.porCobrar);$('cobN').textContent=con.length;
+    var ul=$('cobLista');ul.textContent='';
+    $('cobMsg').textContent=d.personas.length?'':'Todavía no hay nada anotado. Toca "Anotar lo que alguien pidió" para empezar.';
+    d.personas.forEach(function(o){
+      var li=document.createElement('li');li.className='cob-p'+(o.debe>0.005?'':' al-corriente');
+      var top=celda('div','it-top');top.appendChild(celda('b','',o.persona));
+      top.appendChild(celda('span','it-m',o.debe>0.005?money(o.debe):'Al corriente'));li.appendChild(top);
+      var pend=o.cargos.filter(function(c){return c.monto-c.cobrado>0.005});
+      li.appendChild(celda('div','it-meta',o.debe>0.005?'Debe '+pend.length+(pend.length===1?' cosa':' cosas')+'. Lo que pague se descuenta primero de lo más antiguo.':'No debe nada.'));
+      var act=celda('div','it-act');
+      var fh=document.createElement('div');fh.hidden=true;
+      var hh=document.createElement('div');
+      if(o.debe>0.005)act.appendChild(boton('Me pagó','main',function(){if(fh.hidden)formPago(o,fh);else fh.hidden=true}));
+      act.appendChild(boton('Ver historial','',function(){if(hh.dataset.abierto==='1'){hh.textContent='';hh.dataset.abierto='0'}else{hh.dataset.abierto='1';historial(o,hh)}}));
+      li.appendChild(act);li.appendChild(fh);li.appendChild(hh);ul.appendChild(li);
+    });
+    if(COB_PRE){abrirFormCobranza(COB_PRE);COB_PRE=''}
+  }
+  function cargarCobranza(){
+    if(typeof WEB_APP_URL==='undefined'||!WEB_APP_URL)return;
+    var clave=getClave();if(!clave)return;
+    $('cobMsg').textContent='Cargando…';
+    api({accion:'cobranza',clave:clave}).then(function(d){
+      if(!AUTH)return;
+      if(d&&d.exito){keepClave(clave);renderCobranza(d)}
+      else if(d&&d.error==='clave'){dropClave();setAuth(false)}
+      else if(d&&d.error==='Acción no reconocida')$('cobMsg').textContent='El servidor todavía no tiene la cobranza. Pega el Codigo.gs nuevo y haz Deploy.';
+      else $('cobMsg').textContent='No se pudo cargar la cobranza.';
+    }).catch(function(){$('cobMsg').textContent='No se pudo cargar. Revisa tu conexión.'});
+  }
 
   // ---------- Panel ----------
   var NS='http://www.w3.org/2000/svg';
@@ -1928,7 +2107,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
 
   function ver(v){
     if(!AUTH&&v!=='cot')v='cot';
-    var ids={cot:'vCot',cots:'vCots',dir:'vDir',sal:'vSal',tab:'vTab',pan:'vPan'};
+    var ids={cot:'vCot',cots:'vCots',dir:'vDir',sal:'vSal',tab:'vTab',cob:'vCob',pan:'vPan'};
     Object.keys(ids).forEach(function(k){$(ids[k]).hidden=k!==v});
     document.body.dataset.v=v;
     document.querySelectorAll('.nav button').forEach(function(b){b.setAttribute('aria-selected',b.dataset.v===v?'true':'false')});
@@ -1936,6 +2115,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     if(v==='tab'){cargarTablero(true);refresco=setInterval(function(){cargarTablero(false)},60000)}
     if(v==='pan')cargarPanel(false);
     if(v==='sal')cargarSalidas();
+    if(v==='cob')cargarCobranza();
     if(v==='cots')cargarCotizaciones();
     if(v==='cot')fitPrice();
     window.scrollTo(0,0);
@@ -1976,6 +2156,11 @@ h1{font-size:clamp(34px,4.6vw,50px)}
   $('dGuardar').addEventListener('click',guardarDirecta);
   $('sGuardar').addEventListener('click',guardarSalida);
   document.querySelectorAll('input[name=sAp]').forEach(function(r){r.addEventListener('change',function(){$('sApHint').textContent=AYUDA_AP[this.value]||''})});
+  $('cobNuevo').addEventListener('click',function(){var f=$('cobForm');if(f.hidden)abrirFormCobranza();else f.hidden=true});
+  $('cbCancelar').addEventListener('click',function(){$('cobForm').hidden=true});
+  $('cbGuardar').addEventListener('click',guardarCargo);
+  $('cbPedido').addEventListener('change',pedidoHint);
+  $('cobRef').addEventListener('click',cargarCobranza);
   $('tbRef').addEventListener('click',function(){cargarTablero(true)});
   $('pnRef').addEventListener('click',function(){cargarPanel(true)});
   $('pnTabla').addEventListener('click',function(){
