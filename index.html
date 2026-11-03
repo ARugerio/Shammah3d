@@ -395,6 +395,13 @@ body[data-auth="1"] #vLogin{display:none}
 .abonos-lista div{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line)}
 .lane h2 span+span{font-weight:600;color:var(--muted)}
 .cola-nota{color:var(--muted);font-size:13px;margin:6px 0 0}
+.lane li.sem{border-left:6px solid var(--s);padding-left:12px;background:linear-gradient(90deg,var(--sb),transparent 70%)}
+.sem-verde{--s:#1BAF7A;--sb:rgba(27,175,122,.10)}
+.sem-ambar{--s:#EDA100;--sb:rgba(237,161,0,.16)}
+.sem-rojo{--s:#D12C2C;--sb:rgba(209,44,44,.13)}
+.sem-leg{display:flex;flex-wrap:wrap;gap:4px 14px;margin:8px 0 0;font-size:13px;color:var(--ink-2)}
+.sem-it{display:inline-flex;align-items:center;gap:6px}
+.sem-dot{width:10px;height:10px;border-radius:50%;background:var(--s)}
 </style>
 </head>
 <body data-v="cot" data-auth="0">
@@ -1473,6 +1480,16 @@ body[data-auth="1"] #vLogin{display:none}
 
   var TB_HOY='';
 
+  function diasEntrega(x){
+    if(!x.entrega||x.estado==='Entregado'||!TB_HOY)return null;
+    return Math.round((new Date(x.entrega+'T12:00:00')-new Date(TB_HOY+'T12:00:00'))/86400000);
+  }
+  function semaforo(x){
+    var d=diasEntrega(x);
+    if(d===null)return'';
+    return d<=0?'sem-rojo':d<=2?'sem-ambar':'sem-verde';
+  }
+
   function chipsPedido(x){
     var c=[];
     if(x.pago==='Pagado')c.push(['ok','Pagado'+(x.metodo?' · '+x.metodo:'')]);
@@ -1528,6 +1545,7 @@ body[data-auth="1"] #vLogin{display:none}
 
   function itemPedido(x,pos){
     var li=document.createElement('li');
+    var sem=semaforo(x);if(sem)li.className='sem '+sem;
     var top=celda('div','it-top');
     var nm=document.createElement('b');
     if(pos)nm.appendChild(celda('span','qn',String(pos)));
@@ -1605,6 +1623,13 @@ body[data-auth="1"] #vLogin{display:none}
       h.appendChild(celda('span','',items.length+(horas>0&&ln[0]!=='Entregado'?' · '+hhmm(horas):'')));
       sec.appendChild(h);
       if(cola&&items.length)sec.appendChild(celda('p','cola-nota','En orden de impresión: primero los que ya dejaron anticipo y la entrega más próxima.'));
+      if(cola&&items.some(function(x){return semaforo(x)})){
+        var lg=celda('p','sem-leg');
+        [['sem-verde','Hay tiempo'],['sem-ambar','Faltan 2 días o menos'],['sem-rojo','Hoy o atrasado']].forEach(function(s){
+          var b=celda('span','sem-it');b.appendChild(celda('i','sem-dot '+s[0]));b.appendChild(document.createTextNode(s[1]));lg.appendChild(b);
+        });
+        sec.appendChild(lg);
+      }
       var ul=document.createElement('ul');
       var n=0;
       if(items.length)items.forEach(function(x){ul.appendChild(itemPedido(x,cola&&x.listo?++n:0))});
