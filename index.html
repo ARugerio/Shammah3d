@@ -1575,6 +1575,8 @@ h1{font-size:clamp(34px,4.6vw,50px)}
       else if(d&&d.error==='clave'){dropClave();toast('Clave incorrecta.')}
       else if(d&&d.error==='excede')toast('El abono es mayor que lo que falta ('+money(d.saldo)+').');
       else if(d&&d.error==='liquidado')toast('Ese pedido ya está pagado.');
+      else if(d&&d.error==='menor_abonado')toast('Ya se cobraron '+money(d.abonado)+', más que el nuevo total.');
+      else if(d&&d.error==='asignado')toast('Ya asignaste '+money(d.asignado)+' a personas en Cobranza. Quita eso primero.');
       else if(d&&d.error==='Acción no reconocida')toast('El servidor todavía no tiene esta función. Pega el Codigo.gs nuevo.');
       else toast('No se pudo hacer el cambio');
     }).catch(function(){toast('Sin conexión.')});
@@ -1642,6 +1644,23 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     host.hidden=false;m.focus();
   }
 
+  function formPrecio(x,host){
+    host.textContent='';host.className='abono-form';
+    var pz=Math.max(1,x.piezas||1);
+    var m=document.createElement('input');m.type='number';m.step='0.01';m.min='0';m.inputMode='decimal';m.value=Math.round(x.total/pz*100)/100;
+    var res=celda('span','lbl','');
+    var act=function(){var v=parseFloat(m.value);res.textContent=v>0?'Total nuevo: '+money(Math.round(v*pz*100)/100)+' (antes '+money(x.total)+')':''};
+    m.addEventListener('input',act);act();
+    host.appendChild(celda('span','lbl','Precio por pieza ('+pz+(pz===1?' pieza':' piezas')+'):'));host.appendChild(m);host.appendChild(res);
+    host.appendChild(boton('Guardar precio','main',function(){
+      var v=parseFloat(m.value);
+      if(!(v>0)){toast('Escribe el precio por pieza.');return}
+      if(!confirm('¿Cambiar el pedido '+x.folio+' a '+money(v)+' por pieza?\nEl total pasa de '+money(x.total)+' a '+money(Math.round(v*pz*100)/100)+' y se recalculan los apartados.'))return;
+      accionTablero({accion:'cambiarPrecio',folio:x.folio,precio:v},'Precio actualizado');
+    }));
+    host.hidden=false;m.focus();m.select();
+  }
+
   function listaAbonos(x,host){
     var clave=getClave();if(!clave)return;
     host.textContent='Cargando…';host.className='abonos-lista';
@@ -1689,6 +1708,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     if(SIG[x.estado]){var s2=SIG[x.estado];act.appendChild(boton(s2[1],'main',function(){accionTablero({accion:'actualizar',folio:x.folio,campo:'estado',valor:s2[0]})}))}
     var formHost=document.createElement('div');formHost.hidden=true;
     var abHost=document.createElement('div');
+    var prHost=document.createElement('div');prHost.hidden=true;
     var cob=null;
     if(x.saldo>0.005){
       cob=celda('div','cobrar');
@@ -1698,6 +1718,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     var mas=document.createElement('details');mas.className='mas';
     mas.appendChild(celda('summary','','Más opciones'));
     var ma=celda('div','it-act');
+    ma.appendChild(boton('Cambiar precio','',function(){if(prHost.hidden)formPrecio(x,prHost);else prHost.hidden=true}));
     if(x.saldo>0.005)ma.appendChild(boton('Cobrar una parte','',function(){if(formHost.hidden)formAbono(x,formHost);else formHost.hidden=true}));
     if(x.abonado>0.005)ma.appendChild(boton('Ver abonos','',function(){if(abHost.textContent&&abHost.dataset.abierto==='1'){abHost.textContent='';abHost.dataset.abierto='0'}else{abHost.dataset.abierto='1';listaAbonos(x,abHost)}}));
     if(x.origen==='Cotizado'&&x.estado==='Por imprimir'&&x.abonado<=0.005)
@@ -1708,7 +1729,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
         accionTablero({accion:'actualizar',folio:x.folio,campo:'estado',valor:'Descartado'},'Pedido descartado');
     }));
     mas.appendChild(ma);
-    li.appendChild(act);if(cob)li.appendChild(cob);li.appendChild(mas);li.appendChild(formHost);li.appendChild(abHost);
+    li.appendChild(act);if(cob)li.appendChild(cob);li.appendChild(mas);li.appendChild(prHost);li.appendChild(formHost);li.appendChild(abHost);
     return li;
   }
 
