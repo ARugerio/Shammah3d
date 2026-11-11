@@ -1361,7 +1361,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     var cliente=$('cliente').value.trim()||'Cliente mostrador',
         total=L.reduce(function(a,l){return a+l.total},0);
     if(!confirm('¿Registrar el pedido de '+cliente+' por '+money(total)+' MXN?'))return;
-    var btn=$('pedido');btn.disabled=true;btn.textContent='Guardando…';
+    var btn=$('pedido');btn.disabled=true;btn.textContent='Guardando la cotización…';
     var lineas=lineasApi(L),entrega=$('fechaEntrega').value;
     // Primero la cotización (si aún no existe), luego el pedido ligado a ella: un solo botón, sin pasar por PDF.
     var paso1=st.folioCot?Promise.resolve({exito:true,folio:st.folioCot})
@@ -1373,6 +1373,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
         return;
       }
       st.folioCot=c.folio;save();
+      btn.textContent='Registrando el pedido…';
       return api({accion:'pedido',clave:clave,cliente:cliente,lineas:lineas,cotizacion:c.folio,entrega:entrega}).then(function(d){
         if(d&&d.exito){
           keepClave(clave);
