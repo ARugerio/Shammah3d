@@ -1149,7 +1149,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
       if(d&&d.error==='clave'){dropClave();setAuth(false);return}
       if(d&&d.error==='bloqueado')return fail('Demasiados intentos fallidos. Espera unos 15 minutos.');
       if(!d||!d.exito||!isFinite(d.precioUnitario)||!isFinite(d.totalMonto))throw new Error('respuesta');
-      st.calc={unit:d.precioUnitario,total:d.totalMonto,cantidad:i.cantidad,mayoreo:!!d.esMayoreo};
+      st.calc={unit:d.precioUnitario,total:d.totalMonto,cantidad:i.cantidad,mayoreo:false,sugerido:d.mayoreoSugerido||null};
       aplicarPrecio();
     }).catch(function(){
       clearTimeout(to);
@@ -1241,7 +1241,13 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     $('rTotal').textContent=money(total)+' MXN';
     var fl=$('tkFlag');
     if(manual){fl.hidden=false;fl.textContent=unit<c.unit?'Precio ajustado a mano: '+money(c.unit-unit)+' menos por pieza que el calculado ('+money(c.unit)+').':'Precio ajustado a mano. El sistema calculó '+money(c.unit)+' por pieza.'}
-    else if(c.mayoreo){fl.hidden=false;fl.textContent='Precio de mayoreo aplicado.'}
+    if(manual&&c.sugerido&&unit<c.sugerido.precioUnitario-0.005)fl.textContent+=' Cuidado: con '+c.cantidad+' piezas, este precio queda por debajo del mayoreo sugerido ('+money(c.sugerido.precioUnitario)+' c/u). Podría salir más barato que pedir 11.';
+    else if(c.sugerido){
+      fl.hidden=false;fl.textContent='Mayoreo sugerido: '+money(c.sugerido.precioUnitario)+' por pieza (ahorras '+money(c.sugerido.ahorroUnitario)+' c/u). Si no lo aplicas, el total se queda igual.';
+      var ub=document.createElement('button');ub.type='button';ub.className='link';ub.textContent='Usar este precio';
+      ub.addEventListener('click',function(){$('precioManual').value=c.sugerido.precioUnitario;aplicarPrecio()});
+      fl.appendChild(document.createTextNode(' '));fl.appendChild(ub);
+    }
     else fl.hidden=true;
     $('precioHint').textContent='El sistema calculó '+money(c.unit)+' por pieza.';
     show('result');updateActions();fitPrice();
