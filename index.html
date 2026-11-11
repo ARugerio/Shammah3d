@@ -1306,8 +1306,8 @@ h1{font-size:clamp(34px,4.6vw,50px)}
   }
 
   function acabado(l){
-    if(l.colores&&l.colores.length>1)return'Multicolor: '+l.colores.map(colorCorto).join(' · ');
-    return'Filamento '+colorCorto(l.filamento);
+    if(l.colores&&l.colores.length>1)return'Multicolor PLA: '+l.colores.map(colorCorto).join(' · ');
+    return'Filamento PLA '+colorCorto(l.filamento);
   }
   function celda(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
 
