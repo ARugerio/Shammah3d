@@ -766,10 +766,6 @@ h1{font-size:clamp(34px,4.6vw,50px)}
       <label class="f">¿Cuánto debe por eso? (en pesos)
         <input type="number" id="cbMonto" inputmode="decimal" min="0" step="0.01" placeholder="46.00">
       </label>
-      <label class="f">¿Sale de un pedido tuyo, como el lote?
-        <select id="cbPedido"></select>
-        <span class="hint" id="cbPedidoHint">Si no, déjalo como deuda suelta.</span>
-      </label>
       <div class="cob-acts"><button type="button" class="btn-main" id="cbGuardar">Guardar</button><button type="button" class="link" id="cbCancelar">Cancelar</button></div>
     </form>
     <p class="tb-msg" id="cobMsg" role="status"></p>
@@ -1355,6 +1351,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
   }
 
   function hacerPedido(){
+    if(!$('cliente').value.trim()){toast('Escribe el nombre de quien pide');$('cliente').focus();return}
     var L=lineasDoc();if(!L.length)return;
     if(typeof WEB_APP_URL==='undefined'||!WEB_APP_URL){toast('El pedido no está conectado todavía');return}
     var clave=getClave();if(!clave)return;
@@ -1397,6 +1394,8 @@ h1{font-size:clamp(34px,4.6vw,50px)}
         piezas=Math.max(1,parseInt($('dPiezas').value,10)||1),gramos=parseFloat($('dGramos').value)||0;
     if(!desc){toast('Escribe qué se vendió');$('dDesc').focus();return}
     if(!(monto>0)){toast('Escribe el monto cobrado');$('dMonto').focus();return}
+    var cliDir=$('dCliente').value.trim();
+    if(!$('dPagado').checked&&(!cliDir||/^cliente mostrador$/i.test(cliDir))){toast('Escribe el nombre de quien compró');$('dCliente').focus();return}
     if(typeof WEB_APP_URL==='undefined'||!WEB_APP_URL){toast('El registro no está conectado todavía');return}
     var clave=getClave();if(!clave)return;
     var btn=$('dGuardar');btn.disabled=true;btn.textContent='Guardando…';
@@ -1619,24 +1618,6 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     return c;
   }
 
-  function formAbono(x,host){
-    host.textContent='';host.className='abono-form';
-    var m=document.createElement('input');m.type='number';m.step='0.01';m.min='0';m.inputMode='decimal';m.placeholder='Monto';
-    m.value=x.abonado<=0.005?Math.ceil(x.total*0.5):x.saldo;
-    var quien=document.createElement('input');quien.type='text';quien.placeholder='¿Quién pagó? (opcional)';quien.setAttribute('list','listaClientes');quien.autocomplete='off';quien.className='quien';
-    var sel=document.createElement('select');['Efectivo','Transferencia'].forEach(function(t){var o=document.createElement('option');o.value=t;o.textContent=t;sel.appendChild(o)});
-    host.appendChild(quien);host.appendChild(m);host.appendChild(sel);
-    if(x.abonado<=0.005)host.appendChild(boton('50 %','',function(){m.value=Math.ceil(x.total*0.5)}));
-    host.appendChild(boton('Saldo','',function(){m.value=x.saldo}));
-    host.appendChild(boton('Guardar abono','main',function(){
-      var v=parseFloat(m.value);
-      if(!(v>0)){toast('Escribe el monto del abono.');return}
-      if(v>x.saldo+0.005){toast('Falta cobrar solo '+money(x.saldo)+'.');return}
-      accionTablero({accion:'abono',folio:x.folio,monto:v,metodo:sel.value,quien:quien.value.trim()},'Abono registrado'+(quien.value.trim()?' de '+quien.value.trim():''));
-    }));
-    host.hidden=false;m.focus();
-  }
-
   function formPrecio(x,host){
     host.textContent='';host.className='abono-form';
     var pz=Math.max(1,x.piezas||1);
@@ -1702,27 +1683,19 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     var formHost=document.createElement('div');formHost.hidden=true;
     var abHost=document.createElement('div');
     var prHost=document.createElement('div');prHost.hidden=true;
-    var cob=null;
-    if(x.saldo>0.005){
-      cob=celda('div','cobrar');
-      cob.appendChild(celda('span','lbl','Cobrar el saldo de '+money(x.saldo)+':'));
-      [['Efectivo','En efectivo'],['Transferencia','Por transferencia']].forEach(function(m){cob.appendChild(boton(m[1],'',function(){accionTablero({accion:'abono',folio:x.folio,todo:true,metodo:m[0]},'Cobro registrado')}))});
-    }
     var mas=document.createElement('details');mas.className='mas';
     mas.appendChild(celda('summary','','Más opciones'));
     var ma=celda('div','it-act');
     ma.appendChild(boton('Cambiar precio','',function(){if(prHost.hidden)formPrecio(x,prHost);else prHost.hidden=true}));
-    if(x.saldo>0.005)ma.appendChild(boton('Cobrar una parte','',function(){if(formHost.hidden)formAbono(x,formHost);else formHost.hidden=true}));
     if(x.abonado>0.005)ma.appendChild(boton('Ver abonos','',function(){if(abHost.textContent&&abHost.dataset.abierto==='1'){abHost.textContent='';abHost.dataset.abierto='0'}else{abHost.dataset.abierto='1';listaAbonos(x,abHost)}}));
     if(x.origen==='Cotizado'&&x.estado==='Por imprimir'&&x.abonado<=0.005)
       ma.appendChild(boton('Regresar a cotización','',function(){regresarACotizacion(x)}));
-    if(x.estado!=='Entregado'||x.saldo>0.005)ma.appendChild(boton('Asignar a una persona','',function(){COB_PRE=x.folio;ver('cob')}));
     ma.appendChild(boton('Descartar pedido','danger',function(){
       if(confirm('¿Descartar el pedido '+x.folio+' de '+x.cliente+' por '+money(x.total)+'?\nSale de Pedidos y de las cuentas. Si te equivocas, lo restauras en la hoja cambiando su Estado.'))
         accionTablero({accion:'actualizar',folio:x.folio,campo:'estado',valor:'Descartado'},'Pedido descartado');
     }));
     mas.appendChild(ma);
-    li.appendChild(act);if(cob)li.appendChild(cob);li.appendChild(mas);li.appendChild(prHost);li.appendChild(formHost);li.appendChild(abHost);
+    li.appendChild(act);li.appendChild(mas);li.appendChild(prHost);li.appendChild(formHost);li.appendChild(abHost);
     return li;
   }
 
@@ -1814,11 +1787,11 @@ h1{font-size:clamp(34px,4.6vw,50px)}
 
 
   // ---------- Cobranza ----------
-  var COB_PRE='',COB_PEDIDOS=[];
+  var COB_PRE='';
   function cobError(d){
     if(d&&d.error==='clave'){dropClave();setAuth(false)}
     else if(d&&d.error==='sin_hoja')toast('Falta la pestaña Cobranza. Corre prepararHojas.');
-    else if(d&&d.error==='excede_pedido')toast('Ese pedido solo tiene '+money(d.disponible)+' sin asignar.');
+    else if(d&&d.error==='sin_deuda')toast('Esa persona no tiene nada que pagar.');
     else if(d&&d.error==='excede')toast('Esa persona solo debe '+money(d.saldo)+'.');
     else if(d&&d.error==='cobrado')toast('Ya tiene cobros. Anula primero el pago.');
     else if(d&&d.error==='Acción no reconocida')toast('El servidor todavía no tiene la cobranza. Pega el Codigo.gs nuevo y haz Deploy.');
@@ -1832,66 +1805,58 @@ h1{font-size:clamp(34px,4.6vw,50px)}
       else cobError(d);
     }).catch(function(){toast('Sin conexión.')});
   }
-  function llenarPedidos(){
-    var sel=$('cbPedido'),prev=sel.value;sel.textContent='';
-    var o0=document.createElement('option');o0.value='';o0.textContent='No, es una deuda suelta';sel.appendChild(o0);
-    COB_PEDIDOS.forEach(function(x){
-      var o=document.createElement('option');o.value=x.folio;
-      o.textContent=x.folio+' · '+(x.cliente||'')+' · '+x.detalle+' (sin asignar '+money(x.disponible)+')';sel.appendChild(o);
-    });
-    if([].some.call(sel.options,function(o){return o.value===prev}))sel.value=prev;
-    pedidoHint();
-  }
-  function pedidoHint(){
-    var f=$('cbPedido').value,x=COB_PEDIDOS.filter(function(y){return y.folio===f})[0];
-    $('cbPedidoHint').textContent=x?'De este pedido quedan '+money(x.disponible)+' sin asignar a alguien.':'Si no, déjalo como deuda suelta.';
-  }
-  function abrirFormCobranza(folio){
-    var f=$('cobForm');f.hidden=false;
-    if(folio){$('cbPedido').value=folio;pedidoHint();var x=COB_PEDIDOS.filter(function(y){return y.folio===folio})[0];if(x&&!$('cbConcepto').value)$('cbConcepto').value='1 pz · '+x.detalle.replace(/^\d+\s*pz\s*·\s*/,'')}
+  function abrirFormCobranza(){
+    $('cobForm').hidden=false;
     $('cbPersona').focus();
   }
   function guardarCargo(){
     var persona=$('cbPersona').value.trim(),concepto=$('cbConcepto').value.trim(),monto=parseFloat($('cbMonto').value);
-    if(!persona){toast('Escribe quién lo pidió');$('cbPersona').focus();return}
-    if(!concepto){toast('Escribe qué pidió');$('cbConcepto').focus();return}
+    if(!persona){toast('Escribe quién debe');$('cbPersona').focus();return}
+    if(!concepto){toast('Escribe por qué');$('cbConcepto').focus();return}
     if(!(monto>0)){toast('Escribe cuánto debe');$('cbMonto').focus();return}
     var clave=getClave();if(!clave)return;
     var btn=$('cbGuardar');btn.disabled=true;
-    api({accion:'cargo',clave:clave,persona:persona,concepto:concepto,monto:monto,pedido:$('cbPedido').value}).then(function(d){
+    api({accion:'cargo',clave:clave,persona:persona,concepto:concepto,monto:monto}).then(function(d){
       if(!AUTH)return;
       if(d&&d.exito){keepClave(clave);toast('Anotado: '+d.persona+' debe '+money(monto));
-        ['cbPersona','cbConcepto','cbMonto'].forEach(function(id){$(id).value=''});$('cbPedido').value='';$('cobForm').hidden=true;cargarCobranza();cargarClientes()}
+        ['cbPersona','cbConcepto','cbMonto'].forEach(function(id){$(id).value=''});$('cobForm').hidden=true;cargarCobranza();cargarClientes()}
       else cobError(d);
     }).catch(function(){toast('Sin conexión.')}).then(function(){btn.disabled=false});
   }
   function formPago(o,host){
     host.textContent='';host.className='abono-form';
     var m=document.createElement('input');m.type='number';m.step='0.01';m.min='0';m.inputMode='decimal';m.value=o.debe;
+    var quien=document.createElement('input');quien.type='text';quien.placeholder='¿Quién pagó? (si es otra persona)';quien.setAttribute('list','listaClientes');quien.autocomplete='off';quien.className='quien';
     var sel=document.createElement('select');['Efectivo','Transferencia'].forEach(function(t){var op=document.createElement('option');op.value=t;op.textContent=t;sel.appendChild(op)});
-    host.appendChild(celda('span','lbl','¿Cuánto pagó?'));host.appendChild(m);host.appendChild(sel);
+    host.appendChild(celda('span','lbl','¿Cuánto pagó?'));host.appendChild(m);host.appendChild(sel);host.appendChild(quien);
     host.appendChild(boton('Todo ('+money(o.debe)+')','',function(){m.value=o.debe}));
     host.appendChild(boton('Guardar pago','main',function(){
       var v=parseFloat(m.value);
       if(!(v>0)){toast('Escribe cuánto pagó.');return}
       if(v>o.debe+0.005){toast('Solo debe '+money(o.debe)+'.');return}
-      accionCobranza({accion:'cobrar',persona:o.persona,monto:v,metodo:sel.value},'Pago de '+o.persona+' guardado');
+      accionCobranza({accion:'cobrar',persona:o.persona,monto:v,metodo:sel.value,quien:quien.value.trim()},'Pago de '+o.persona+' guardado');
     }));
     host.hidden=false;m.focus();m.select();
   }
   function historial(o,host){
     host.textContent='';host.className='cob-hist';
-    host.appendChild(celda('h3','','Lo que pidió'));
+    host.appendChild(celda('h3','','Lo que debe'));
     var u1=document.createElement('ul');
-    o.cargos.forEach(function(c){
+    if(!o.items.length)u1.appendChild(celda('li','empty','No debe nada.'));
+    o.items.forEach(function(it){
       var li=document.createElement('li');
-      var t=celda('span','');t.appendChild(celda('b','',c.concepto));
-      t.appendChild(document.createTextNode(' · '+money(c.monto)+' · '+fechaCorta(c.fecha)+(c.pedido?' · del pedido '+c.pedido:'')));
+      var t=celda('span','');
+      if(it.tipo==='pedido'){
+        t.appendChild(celda('b','','Pedido '+it.folio));
+        t.appendChild(document.createTextNode(' · '+it.detalle+' · total '+money(it.total)+' · '+fechaCorta(it.fecha)));
+      }else{
+        t.appendChild(celda('b','',it.detalle));
+        t.appendChild(document.createTextNode(' · '+money(it.total)+' · '+fechaCorta(it.fecha)+' · deuda suelta'));
+      }
       li.appendChild(t);
-      var falta=c.monto-c.cobrado;
-      li.appendChild(celda('span','chip2 '+(falta<=0.005?'ok':c.cobrado>0?'gris':'warn'),falta<=0.005?'Pagado':c.cobrado>0?'Falta '+money(falta):'Sin pagar'));
-      if(c.cobrado<=0.005)li.appendChild(boton('Quitar','danger',function(){
-        if(confirm('¿Quitar "'+c.concepto+'" ('+money(c.monto)+') de la cuenta de '+o.persona+'?'))accionCobranza({accion:'anularCargo',folio:c.folio},'Quitado');
+      li.appendChild(celda('span','chip2 warn','Falta '+money(it.saldo)));
+      if(it.tipo==='suelta'&&it.cobrado<=0.005)li.appendChild(boton('Quitar','danger',function(){
+        if(confirm('¿Quitar "'+it.detalle+'" ('+money(it.total)+') de la cuenta de '+o.persona+'?'))accionCobranza({accion:'anularCargo',folio:it.folio},'Quitado');
       }));
       u1.appendChild(li);
     });
@@ -1910,17 +1875,20 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     host.appendChild(u2);
   }
   function renderCobranza(d){
-    COB_PEDIDOS=d.pedidos||[];llenarPedidos();
     var con=d.personas.filter(function(o){return o.debe>0.005});
     $('cobTotal').textContent=money(d.porCobrar);$('cobN').textContent=con.length;
     var ul=$('cobLista');ul.textContent='';
-    $('cobMsg').textContent=d.personas.length?'':'Todavía no hay nada anotado. Toca "Anotar lo que alguien pidió" para empezar.';
+    var msg=d.personas.length?'':'Todavía no hay nada que cobrar. Los pedidos sin pagar aparecen aquí solos.';
+    if(d.viejas)msg=(msg?msg+' ':'')+d.viejas+(d.viejas===1?' deuda vieja necesita revisión.':' deudas viejas necesitan revisión.');
+    $('cobMsg').textContent=msg;
     d.personas.forEach(function(o){
       var li=document.createElement('li');li.className='cob-p'+(o.debe>0.005?'':' al-corriente');
       var top=celda('div','it-top');top.appendChild(celda('b','',o.persona));
       top.appendChild(celda('span','it-m',o.debe>0.005?money(o.debe):'Al corriente'));li.appendChild(top);
-      var pend=o.cargos.filter(function(c){return c.monto-c.cobrado>0.005});
-      li.appendChild(celda('div','it-meta',o.debe>0.005?'Debe '+pend.length+(pend.length===1?' cosa':' cosas')+'. Lo que pague se descuenta primero de lo más antiguo.':'No debe nada.'));
+      var np=o.items.filter(function(i){return i.tipo==='pedido'}).length, ns=o.items.length-np;
+      var resumen=np?np+(np===1?' pedido':' pedidos'):'';
+      if(ns)resumen+=(resumen?' y ':'')+ns+(ns===1?' deuda suelta':' deudas sueltas');
+      li.appendChild(celda('div','it-meta',o.debe>0.005?'Debe '+resumen+'. Lo que pague se reparte del más antiguo al más nuevo.':'No debe nada.'));
       var act=celda('div','it-act');
       var fh=document.createElement('div');fh.hidden=true;
       var hh=document.createElement('div');
@@ -1928,7 +1896,6 @@ h1{font-size:clamp(34px,4.6vw,50px)}
       act.appendChild(boton('Ver historial','',function(){if(hh.dataset.abierto==='1'){hh.textContent='';hh.dataset.abierto='0'}else{hh.dataset.abierto='1';historial(o,hh)}}));
       li.appendChild(act);li.appendChild(fh);li.appendChild(hh);ul.appendChild(li);
     });
-    if(COB_PRE){abrirFormCobranza(COB_PRE);COB_PRE=''}
   }
   function cargarCobranza(){
     if(typeof WEB_APP_URL==='undefined'||!WEB_APP_URL)return;
@@ -2183,7 +2150,6 @@ h1{font-size:clamp(34px,4.6vw,50px)}
   $('cobNuevo').addEventListener('click',function(){var f=$('cobForm');if(f.hidden)abrirFormCobranza();else f.hidden=true});
   $('cbCancelar').addEventListener('click',function(){$('cobForm').hidden=true});
   $('cbGuardar').addEventListener('click',guardarCargo);
-  $('cbPedido').addEventListener('change',pedidoHint);
   $('cobRef').addEventListener('click',cargarCobranza);
   $('tbRef').addEventListener('click',function(){cargarTablero(true)});
   $('pnRef').addEventListener('click',function(){cargarPanel(true)});
