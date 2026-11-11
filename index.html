@@ -843,7 +843,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     <div>
       <div class="h-brand">SHAMMAH <span>CREA 3D</span></div>
       <div class="h-tag">ESTUDIO DE MANUFACTURA ADITIVA &amp; PROTOTIPADO RÁPIDO</div>
-      <div class="h-sub">Tecnología Bambu Lab P2S + AMS 2 Pro (Multi-Material)<br>WhatsApp Oficial: +52 55 5965 0025 · Ciudad de México</div>
+      <div class="h-sub">Impresión 3D y prototipado rápido<br>WhatsApp Oficial: +52 55 5965 0025 · Ciudad de México</div>
     </div>
     <div class="h-meta">
       <span class="h-pill">COTIZACIÓN FORMAL</span>
@@ -902,6 +902,19 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     'TPU 95A Blanco':'El TPU va en carrete externo, no en el AMS.',
     'ABS Negro':'El ABS necesita la cámara cerrada.'
   };
+
+  // Lo que ve el cliente: solo el color. El nombre comercial del filamento queda interno.
+  var COLOR_CORTO={
+    'PLA Azul Talavera':'azul','PLA Blanco Alcatraz':'blanco','PLA Lite Cian':'cian','PLA Lite Naranja':'naranja',
+    'PLA Morado Bugambilia':'morado','PLA Negro':'negro','PLA Rojo Nochebuena':'rojo','PLA Tono Piel':'piel',
+    'PLA Transparente':'transparente','PLA Verde Iguana':'verde',
+    'PLA Matte Amarillo':'amarillo','PLA Matte Café Moka':'café','PLA Matte Lila':'lila','PLA Matte Rosa Axolote':'rosa',
+    'PLA Matte Verde Militar':'verde militar',
+    'PLA Silk Oro Azteca':'oro','PLA Silk Plata .925':'plata',
+    'PLA Creative Madera':'madera','PLA Creative Mármol':'mármol','PLA Creative Mercurio':'gris metálico',
+    'ABS Negro':'negro','PETG Gris':'gris','TPU 95A Blanco':'blanco'
+  };
+  function colorCorto(v){return COLOR_CORTO[v]||'otro'}
 
   var $=function(id){return document.getElementById(id)};
   var st={filamento:'PLA Negro',color:'#1A1A1A',nombre:'Negro',quote:null,modo:'uno',slots:[],editIdx:null,calc:null};
@@ -1264,7 +1277,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     o.push('');
     L.forEach(function(l){
       t+=l.total;
-      o.push('• '+l.cantidad+' pz · '+l.pieza+' ('+l.nombre+')');
+      o.push('• '+l.cantidad+' pz · '+l.pieza+' ('+acabado(l)+')');
       if(l.detalles)o.push('  '+l.detalles);
       o.push('  '+(l.cantidad>1?money(l.unit)+' c/u · ':'')+money(l.total)+' MXN');
     });
@@ -1293,8 +1306,8 @@ h1{font-size:clamp(34px,4.6vw,50px)}
   }
 
   function acabado(l){
-    if(l.colores&&l.colores.length>1)return'Multicolor, carretes del AMS: '+l.colores.map(function(c,k){return'A'+(k+1)+' '+c}).join(' · ');
-    return'Acabado: '+l.filamento;
+    if(l.colores&&l.colores.length>1)return'Multicolor: '+l.colores.map(colorCorto).join(' · ');
+    return'Filamento '+colorCorto(l.filamento);
   }
   function celda(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
 
