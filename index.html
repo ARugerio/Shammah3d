@@ -647,6 +647,15 @@ h1{font-size:clamp(34px,4.6vw,50px)}
           <input type="text" id="dCliente" list="listaClientes" placeholder="Cliente mostrador" autocomplete="off">
           <span class="hint">Escribe o elige de la lista. Si es nuevo, se agrega solo.</span>
         </label>
+        <div>
+          <div style="font-weight:600;font-size:15px">¿De qué negocio es?</div>
+          <div class="seg" role="radiogroup" aria-label="Negocio">
+            <input type="radio" name="dNegocio" id="dNeg3d" value="3D" checked>
+            <label for="dNeg3d">3D</label>
+            <input type="radio" name="dNegocio" id="dNegCro" value="Crochet">
+            <label for="dNegCro">Crochet</label>
+          </div>
+        </div>
         <label class="f">Qué se vendió
           <input type="text" id="dDesc" placeholder="Llavero impreso en PLA negro">
         </label>
@@ -769,6 +778,11 @@ h1{font-size:clamp(34px,4.6vw,50px)}
       <div class="cob-acts"><button type="button" class="btn-main" id="cbGuardar">Guardar</button><button type="button" class="link" id="cbCancelar">Cancelar</button></div>
     </form>
     <p class="tb-msg" id="cobMsg" role="status"></p>
+    <div class="seg cob-filtro" role="radiogroup" aria-label="Filtrar por negocio">
+      <input type="radio" name="cobNeg" id="cfTodo" value="Todo" checked><label for="cfTodo">Todo</label>
+      <input type="radio" name="cobNeg" id="cf3d" value="3D"><label for="cf3d">3D</label>
+      <input type="radio" name="cobNeg" id="cfCro" value="Crochet"><label for="cfCro">Crochet</label>
+    </div>
     <ul class="cob-lista" id="cobLista"></ul>
   </section>
 
@@ -791,6 +805,14 @@ h1{font-size:clamp(34px,4.6vw,50px)}
         <div><dt>Pedidos este mes</dt><dd id="kPed">—</dd></div>
         <div><dt>Salió este mes</dt><dd id="kSal">—</dd></div>
       </dl>
+      <div class="pn-crochet">
+        <h2>Crochet</h2>
+        <p class="sub">Aparte del taller. Solo lo que falta cobrar y lo que es de ella.</p>
+        <dl class="pn-kpis">
+          <div><dt>Por cobrar</dt><dd id="crPor">—</dd></div>
+          <div><dt>De ella</dt><dd id="crElla">—</dd></div>
+        </dl>
+      </div>
       <div class="pn-grid">
         <section>
           <h2>Ventas por semana</h2>
@@ -1406,7 +1428,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     var clave=getClave();if(!clave)return;
     var btn=$('dGuardar');btn.disabled=true;btn.textContent='Guardando…';
     api({accion:'ventaDirecta',clave:clave,cliente:$('dCliente').value.trim()||'Cliente mostrador',descripcion:desc,piezas:piezas,monto:monto,gramos:gramos,
-      metodo:document.querySelector('input[name=dMetodo]:checked').value,pagado:$('dPagado').checked,entregado:$('dEntregado').checked}).then(function(d){
+      negocio:document.querySelector('input[name=dNegocio]:checked').value,metodo:document.querySelector('input[name=dMetodo]:checked').value,pagado:$('dPagado').checked,entregado:$('dEntregado').checked}).then(function(d){
       if(d&&d.exito){
         keepClave(clave);
         ['dCliente','dDesc','dMonto','dGramos'].forEach(function(id){$(id).value=''});
@@ -1840,7 +1862,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
       var v=parseFloat(m.value);
       if(!(v>0)){toast('Escribe cuánto pagó.');return}
       if(v>o.debe+0.005){toast('Solo debe '+money(o.debe)+'.');return}
-      accionCobranza({accion:'cobrar',persona:o.persona,monto:v,metodo:sel.value,quien:quien.value.trim()},'Pago de '+o.persona+' guardado');
+      accionCobranza({accion:'cobrar',persona:o.persona,monto:v,metodo:sel.value,quien:quien.value.trim(),negocio:o.negocio||''},'Pago de '+o.persona+' guardado');
     }));
     host.hidden=false;m.focus();m.select();
   }
@@ -1880,21 +1902,32 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     });
     host.appendChild(u2);
   }
-  function renderCobranza(d){
-    var con=d.personas.filter(function(o){return o.debe>0.005});
-    $('cobTotal').textContent=money(d.porCobrar);$('cobN').textContent=con.length;
+  var COB_NEG='Todo',COB_DATA=null;
+  function renderCobranza(d){ COB_DATA=d; pintarCobranza(); }
+  function pintarCobranza(){
+    var d=COB_DATA; if(!d)return;
+    var lista=[], total=0;
+    d.personas.forEach(function(o){
+      var its=o.items.filter(function(i){return COB_NEG==='Todo'||i.negocio===COB_NEG});
+      if(COB_NEG!=='Todo'&&!its.length)return;
+      var debe=Math.round(its.reduce(function(a,i){return a+i.saldo},0)*100)/100;
+      total+=Math.max(0,debe);
+      lista.push({persona:o.persona,debe:debe,items:its,pagos:o.pagos,negocio:COB_NEG==='Todo'?'':COB_NEG});
+    });
+    var con=lista.filter(function(o){return o.debe>0.005});
+    $('cobTotal').textContent=money(Math.round(total*100)/100);$('cobN').textContent=con.length;
     var ul=$('cobLista');ul.textContent='';
     var msg=d.personas.length?'':'Todavía no hay nada que cobrar. Los pedidos sin pagar aparecen aquí solos.';
     if(d.viejas)msg=(msg?msg+' ':'')+d.viejas+(d.viejas===1?' deuda vieja necesita revisión.':' deudas viejas necesitan revisión.');
     $('cobMsg').textContent=msg;
-    d.personas.forEach(function(o){
+    lista.forEach(function(o){
       var li=document.createElement('li');li.className='cob-p'+(o.debe>0.005?'':' al-corriente');
       var top=celda('div','it-top');top.appendChild(celda('b','',o.persona));
       top.appendChild(celda('span','it-m',o.debe>0.005?money(o.debe):'Al corriente'));li.appendChild(top);
       var np=o.items.filter(function(i){return i.tipo==='pedido'}).length, ns=o.items.length-np;
       var resumen=np?np+(np===1?' pedido':' pedidos'):'';
       if(ns)resumen+=(resumen?' y ':'')+ns+(ns===1?' deuda suelta':' deudas sueltas');
-      li.appendChild(celda('div','it-meta',o.debe>0.005?'Debe '+resumen+'. Lo que pague se reparte del más antiguo al más nuevo.':'No debe nada.'));
+      li.appendChild(celda('div','it-meta',o.debe>0.005?'Debe '+resumen+(o.negocio?' ('+o.negocio+')':'')+'. Lo que pague se reparte del más antiguo al más nuevo.':'No debe nada.'));
       var act=celda('div','it-act');
       var fh=document.createElement('div');fh.hidden=true;
       var hh=document.createElement('div');
@@ -2038,6 +2071,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
   }
 
   function renderPanel(d){
+    $('crPor').textContent=money(d.crochet.porCobrar);$('crElla').textContent=money(d.crochet.deElla);
     var fondo=d.apartados.crecimiento-d.salidas.crecimiento;
     var pct=Math.max(0,Math.min(100,fondo/d.meta*100));
     $('hRec').textContent=(fondo<0?'-':'')+money0(Math.abs(fondo));
@@ -2155,6 +2189,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
   document.querySelectorAll('input[name=sAp]').forEach(function(r){r.addEventListener('change',function(){$('sApHint').textContent=AYUDA_AP[this.value]||''})});
   $('cobNuevo').addEventListener('click',function(){var f=$('cobForm');if(f.hidden)abrirFormCobranza();else f.hidden=true});
   $('cbCancelar').addEventListener('click',function(){$('cobForm').hidden=true});
+  document.querySelectorAll('input[name=cobNeg]').forEach(function(r){r.addEventListener('change',function(){COB_NEG=r.value;pintarCobranza()})});
   $('cbGuardar').addEventListener('click',guardarCargo);
   $('cobRef').addEventListener('click',cargarCobranza);
   $('tbRef').addEventListener('click',function(){cargarTablero(true)});
