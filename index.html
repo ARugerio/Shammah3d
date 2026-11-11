@@ -1577,6 +1577,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
   var LANES=[['Por imprimir','Por imprimir'],['Imprimiendo','Imprimiendo'],['Listo','Listo para entregar'],['Entregado','Entregado']];
   var SIG={'Por imprimir':['Imprimiendo','Empezar a imprimir'],'Imprimiendo':['Listo','Marcar listo'],'Listo':['Entregado','Marcar entregado']};
   var refresco=null;
+  var TB_VER_ENT=false,TB_DATA=null;
 
   function fechaCorta(iso){var d=new Date(iso);return isNaN(d)?'':d.toLocaleDateString('es-MX',{day:'numeric',month:'short'})}
   function boton(txt,cls,fn){var b=celda('button','sm '+(cls||''),txt);b.type='button';b.addEventListener('click',fn);return b}
@@ -1763,7 +1764,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
   }
 
   function renderTablero(d){
-    var r=d.resumen;TB_HOY=d.hoy||TB_HOY;
+    var r=d.resumen;TB_HOY=d.hoy||TB_HOY;TB_DATA=d;
     $('tbPorCobrar').textContent=money(r.porCobrar);
     $('tbProceso').textContent=r.enProceso;
     $('tbAtras').textContent=r.atrasados||0;
@@ -1773,6 +1774,12 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     var host=$('tbLanes');host.textContent='';
     LANES.forEach(function(ln){
       var items=d.pedidos.filter(function(x){return x.estado===ln[0]});
+      var ocultos=0;
+      if(ln[0]==='Entregado'&&!TB_VER_ENT){
+        var total0=items.length;
+        items=items.filter(function(x){return x.saldo>0.005});
+        ocultos=total0-items.length;
+      }
       var cola=ln[0]==='Por imprimir';
       if(cola)items.sort(function(a,b){
         if(a.listo!==b.listo)return a.listo?-1:1;
@@ -1797,7 +1804,12 @@ h1{font-size:clamp(34px,4.6vw,50px)}
       var n=0;
       if(items.length)items.forEach(function(x){ul.appendChild(itemPedido(x,cola&&x.listo?++n:0))});
       else{var e=celda('li','empty','Sin pedidos');e.style.borderBottom='0';ul.appendChild(e)}
-      sec.appendChild(ul);host.appendChild(sec);
+      sec.appendChild(ul);
+      if(ln[0]==='Entregado'&&(ocultos||TB_VER_ENT)){
+        var tg=boton(TB_VER_ENT?'Ocultar entregados pagados':'Ver '+ocultos+' entregado'+(ocultos===1?'':'s')+' pagado'+(ocultos===1?'':'s'),'',function(){TB_VER_ENT=!TB_VER_ENT;renderTablero(TB_DATA)});
+        tg.classList.add('tb-toggle');sec.appendChild(tg);
+      }
+      host.appendChild(sec);
     });
     var cu=$('tbCots');cu.textContent='';
     if(d.cotizaciones.length)d.cotizaciones.forEach(function(x){cu.appendChild(itemCotizacion(x))});
