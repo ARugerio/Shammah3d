@@ -717,6 +717,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
             <input type="radio" name="sAp" id="sAp2" value="Impuestos y redes"><label for="sAp2">Impuestos y redes</label>
             <input type="radio" name="sAp" id="sAp3" value="Crecimiento"><label for="sAp3">Crecimiento</label>
             <input type="radio" name="sAp" id="sAp4" value="Libre"><label for="sAp4">Libre</label>
+            <input type="radio" name="sAp" id="sAp5" value="Crochet"><label for="sAp5">Crochet</label>
           </div>
           <span class="hint" id="sApHint">Filamento, boquillas, placas y repuestos.</span>
         </div>
@@ -1528,7 +1529,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
   }
 
   // ---------- Salidas ----------
-  var AYUDA_AP={'Material y refacciones':'Filamento, boquillas, placas y repuestos.','Impuestos y redes':'Pagos de impuestos, comisiones y publicidad.',
+  var AYUDA_AP={'Crochet':'Pago a tu esposa por lo vendido de crochet. No cuenta como gasto del taller.','Material y refacciones':'Filamento, boquillas, placas y repuestos.','Impuestos y redes':'Pagos de impuestos, comisiones y publicidad.',
                 'Crecimiento':'Equipo, herramientas y la segunda impresora.','Libre':'Retiros personales.'};
   function guardarSalida(){
     var concepto=$('sConcepto').value.trim(),monto=parseFloat($('sMonto').value);
