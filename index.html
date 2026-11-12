@@ -1392,7 +1392,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     var clave=getClave();if(!clave)return;
     var cliente=$('cliente').value.trim()||'Cliente mostrador',
         total=L.reduce(function(a,l){return a+l.total},0);
-    if(!confirm('¿Registrar el pedido de '+cliente+' por '+money(total)+' MXN?'))return;
+    if(!confirm('¿Registrar el pedido de '+cliente+' por '+money(total)+' MXN?\n\nAnticipo antes de imprimir (50%): '+money(Math.ceil(total*50)/100)+'.'))return;
     var btn=$('pedido');btn.disabled=true;btn.textContent='Guardando la cotización…';
     var lineas=lineasApi(L),entrega=$('fechaEntrega').value;
     // Primero la cotización (si aún no existe), luego el pedido ligado a ella: un solo botón, sin pasar por PDF.
@@ -1413,7 +1413,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
           ['cliente','pieza','detalles','gramos','tiempo','fechaEntrega'].forEach(function(id){$(id).value=''});
           $('cantidad').value=1;
           save();renderLineas();refreshHead();schedule();
-          toast('Pedido '+d.folio+' registrado');cargarClientes();
+          toast('Pedido '+d.folio+' registrado. Anticipo de '+money(Math.ceil(total*50)/100)+' antes de imprimir.');cargarClientes();
         }else if(d&&d.error==='clave'){dropClave();toast('Clave incorrecta. Inténtalo de nuevo.')}
         else if(d&&d.error==='sin_hoja'){toast('Falta una pestaña en la hoja. Corre prepararHojas.')}
         else if(d&&d.error==='duplicado'){toast('Esa cotización ya es un pedido.')}
@@ -1503,7 +1503,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
   // Convierte una cotizacion abierta en pedido sin abrirla. Respeta el precio que se le dio al cliente.
   function cotizacionAPedido(x,despues){
     if(typeof WEB_APP_URL==='undefined'||!WEB_APP_URL)return;
-    if(!confirm('¿Hacer pedido de la cotización '+x.folio+' de '+x.cliente+' por '+money(x.total)+'?'))return;
+    if(!confirm('¿Hacer pedido de la cotización '+x.folio+' de '+x.cliente+' por '+money(x.total)+'?\n\nAnticipo antes de imprimir (50%): '+money(Math.ceil(x.total*50)/100)+'.'))return;
     var clave=getClave();if(!clave)return;
     api({accion:'cotizacionDetalle',clave:clave,folio:x.folio}).then(function(d){
       if(d&&d.error==='clave'){dropClave();setAuth(false);return}
@@ -1678,7 +1678,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     if(x.pago==='Pagado')c.push(['ok','Pagado'+(x.metodo?' · '+x.metodo:'')]);
     else if(x.pago==='Anticipo')c.push(['gris','Anticipo '+money(x.abonado)+' · falta '+money(x.saldo)]);
     else c.push(['warn','Sin pagar · '+money(x.saldo)]);
-    if(x.estado==='Por imprimir')c.push(x.listo?['ok','Listo para imprimir']:['warn','Esperando anticipo']);
+    if(x.estado==='Por imprimir')c.push(x.listo?['ok','Listo para imprimir']:['warn','Falta anticipo de '+money(Math.max(0,Math.ceil(x.total*50)/100-x.abonado))]);
     if(x.entrega&&x.estado!=='Entregado'){
       var dif=Math.round((new Date(x.entrega+'T12:00:00')-new Date(TB_HOY+'T12:00:00'))/86400000);
       if(dif<0)c.push(['warn','Atrasado '+(-dif)+(dif===-1?' día':' días')]);
