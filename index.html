@@ -503,6 +503,16 @@ h1{font-size:clamp(34px,4.6vw,50px)}
   .ticket{border-radius:18px}
 }
 </style>
+<style id="colores">
+@media(max-width:1099px){
+  details.colores>summary{list-style:none;cursor:pointer;min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border:1px solid var(--line);border-radius:14px;background:#fff;font-weight:600;font-size:16px}
+  details.colores>summary::-webkit-details-marker{display:none}
+  details.colores>summary b{font-weight:700}
+  details.colores>summary::after{content:"Cambiar";font-weight:500;color:#c97b3f;font-size:14px;flex:none}
+  details.colores[open]>summary::after{content:"Ocultar"}
+  details.colores[open]>.groups{margin-top:12px}
+}
+</style>
 </head>
 <body data-v="cot" data-auth="0">
 <aside class="side">
@@ -595,7 +605,10 @@ h1{font-size:clamp(34px,4.6vw,50px)}
             <label for="modoMulti">Multicolor, hasta 4</label>
           </div>
           <div class="slots" id="slots" hidden aria-label="Carretes del AMS"></div>
-          <div class="groups" id="groups" role="radiogroup" aria-label="Filamento"></div>
+          <details class="colores" id="coloresBox" open>
+            <summary><span>Color: <b id="colorSum">Negro</b></span></summary>
+            <div class="groups" id="groups" role="radiogroup" aria-label="Filamento"></div>
+          </details>
           <p class="matnote" id="matnote" hidden></p>
         </fieldset>
     </form>
@@ -1055,6 +1068,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
 
   function refreshHead(){
     var p=$('pieza').value.trim(),c=$('cliente').value.trim();
+    $('colorSum').textContent=nombreColor();
     $('tkTitle').textContent=p||'Tu pieza';
     $('tkSub').textContent=[c,nombreColor()].filter(Boolean).join(' · ')||nombreColor();
     $('tkSpool').style.background=fondo(itemsColor().map(function(x){return x.color}));
@@ -2259,5 +2273,6 @@ h1{font-size:clamp(34px,4.6vw,50px)}
   window.addEventListener('resize',fitPrice);
 })();
 </script>
+<script>if(window.innerWidth<1100){var cb=document.getElementById("coloresBox");if(cb)cb.open=false}</script>
 </body>
 </html>
