@@ -567,7 +567,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
             </div>
             <label class="f">Precio por pieza a mano
               <input type="number" id="precioManual" inputmode="decimal" min="0" step="0.01" placeholder="Opcional">
-              <span class="hint" id="precioHint">Vacío: se usa el precio calculado.</span>
+              <span class="hint" id="precioHint">Vacío: se usa el precio calculado. Sin gramos ni tiempo: precio fijo.</span>
             </label>
           </div>
         </fieldset>
@@ -1073,7 +1073,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
       filamento:it[0].val,colores:multi?it.map(function(x){return x.val}):null,
       nombre:multi?'Multicolor: '+it.map(function(x){return x.nombre}).join(' + '):it[0].nombre,
       color:it[0].color,swatches:it.map(function(x){return x.color}),
-      cantidad:q.cantidad,unit:q.unit,total:q.total,gramos:i.gramos,horas:i.horas,linea:i.linea,manual:q.manual===true};
+      cantidad:q.cantidad,unit:q.unit,total:q.total,gramos:q.sinDatos?0:i.gramos,horas:q.sinDatos?0:i.horas,linea:i.linea,manual:q.manual===true,sinDatos:q.sinDatos===true};
   }
 
   function updateActions(){
@@ -1138,8 +1138,13 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     clearTimeout(timer);seq++;
     st.quote=null;st.calc=null;
     var faltaColor=st.modo==='multi'&&st.slots.length<2;
+    var pf=parseFloat($('precioManual').value);
+    if(!$('gramos').value.trim()&&!$('tiempo').value.trim()&&pf>0){
+      st.calc={unit:Math.round(pf*100)/100,total:Math.round(pf*i.cantidad*100)/100,cantidad:i.cantidad,mayoreo:false,sugerido:null,fijo:true};
+      aplicarPrecio();return
+    }
     if(!ready(i)||faltaColor){
-      $('tkEmptyMsg').textContent=(ready(i)&&faltaColor)?'Elige al menos 2 colores para el multicolor.':'Escribe el tiempo total y los gramos para ver el precio.';
+      $('tkEmptyMsg').textContent=(ready(i)&&faltaColor)?'Elige al menos 2 colores para el multicolor.':'Escribe el tiempo total y los gramos, o solo el precio por pieza si ya lo decidiste.';
       show('empty');$('tkFlag').hidden=true;updateActions();return
     }
     updateActions();
@@ -1255,15 +1260,17 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     var c=st.calc;if(!c)return;
     var i=inputs(),m=parseFloat($('precioManual').value),manual=isFinite(m)&&m>0;
     var unit=manual?Math.round(m*100)/100:c.unit,total=manual?Math.round(unit*c.cantidad*100)/100:c.total;
-    st.quote={unit:unit,total:total,cantidad:c.cantidad,mayoreo:c.mayoreo,manual:manual,calcUnit:c.unit};
+    st.quote={unit:unit,total:total,cantidad:c.cantidad,mayoreo:c.mayoreo,manual:manual,calcUnit:c.unit,sinDatos:!!c.fijo};
     $('tkUnitLabel').textContent=c.cantidad>1?'Precio por pieza':'Precio de la pieza';
     $('tkPriceVal').textContent=money(unit);
     $('tkPrice').classList.remove('stale');
-    $('tkMeta').textContent=c.cantidad+(c.cantidad===1?' pieza':' piezas')+' · '+i.gramos+' g · '+fmtTiempo(i.horas);
+    $('tkMeta').textContent=c.cantidad+(c.cantidad===1?' pieza':' piezas')+(c.fijo?' · precio fijo':' · '+i.gramos+' g · '+fmtTiempo(i.horas));
     $('rTotal').textContent=money(total)+' MXN';
     var fl=$('tkFlag');
-    if(manual){fl.hidden=false;fl.textContent=unit<c.unit?'Precio ajustado a mano: '+money(c.unit-unit)+' menos por pieza que el calculado ('+money(c.unit)+').':'Precio ajustado a mano. El sistema calculó '+money(c.unit)+' por pieza.'}
-    if(manual&&c.sugerido&&unit<c.sugerido.precioUnitario-0.005)fl.textContent+=' Cuidado: con '+c.cantidad+' piezas, este precio queda por debajo del mayoreo sugerido ('+money(c.sugerido.precioUnitario)+' c/u). Podría salir más barato que pedir 11.';
+    if(c.fijo){fl.hidden=false;fl.textContent='Precio fijo: sin gramos ni tiempo. No queda registro de filamento ni horas de impresora.'}
+    else if(manual){fl.hidden=false;fl.textContent=unit<c.unit?'Precio ajustado a mano: '+money(c.unit-unit)+' menos por pieza que el calculado ('+money(c.unit)+').':'Precio ajustado a mano. El sistema calculó '+money(c.unit)+' por pieza.'
+      if(c.sugerido&&unit<c.sugerido.precioUnitario-0.005)fl.textContent+=' Cuidado: con '+c.cantidad+' piezas, este precio queda por debajo del mayoreo sugerido ('+money(c.sugerido.precioUnitario)+' c/u). Podría salir más barato que pedir 11.';
+    }
     else if(c.sugerido){
       fl.hidden=false;fl.textContent='Mayoreo sugerido: '+money(c.sugerido.precioUnitario)+' por pieza (ahorras '+money(c.sugerido.ahorroUnitario)+' c/u). Si no lo aplicas, el total se queda igual.';
       var ub=document.createElement('button');ub.type='button';ub.className='link';ub.textContent='Usar este precio';
@@ -1271,7 +1278,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
       fl.appendChild(document.createTextNode(' '));fl.appendChild(ub);
     }
     else fl.hidden=true;
-    $('precioHint').textContent='El sistema calculó '+money(c.unit)+' por pieza.';
+    $('precioHint').textContent=c.fijo?'Precio fijo por pieza.':'El sistema calculó '+money(c.unit)+' por pieza.';
     show('result');updateActions();fitPrice();
   }
 
@@ -2174,7 +2181,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
   $('retry').addEventListener('click',quote);
   $('authBtn').addEventListener('click',entrarSalir);
   $('fechaEntrega').addEventListener('change',save);
-  $('precioManual').addEventListener('input',aplicarPrecio);
+  $('precioManual').addEventListener('input',function(){if(ready(inputs()))aplicarPrecio();else schedule()});
   $('cancelarEdicion').addEventListener('click',cancelarEdicion);
   $('nuevaCot').addEventListener('click',nuevaCotizacion);
   $('nuevaCot2').addEventListener('click',nuevaCotizacion);
