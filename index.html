@@ -1500,6 +1500,34 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     }).catch(function(){toast('Sin conexión.')});
   }
 
+  // Convierte una cotizacion abierta en pedido sin abrirla. Respeta el precio que se le dio al cliente.
+  function cotizacionAPedido(x,despues){
+    if(typeof WEB_APP_URL==='undefined'||!WEB_APP_URL)return;
+    if(!confirm('¿Hacer pedido de la cotización '+x.folio+' de '+x.cliente+' por '+money(x.total)+'?'))return;
+    var clave=getClave();if(!clave)return;
+    api({accion:'cotizacionDetalle',clave:clave,folio:x.folio}).then(function(d){
+      if(d&&d.error==='clave'){dropClave();setAuth(false);return}
+      if(!d||!d.exito){toast('No se pudo leer la cotización.');return}
+      if(d.antigua||!Array.isArray(d.lineas)||!d.lineas.length){toast('Es una cotización antigua: ábrela y completa gramos y tiempo.');return}
+      var cliente=String(d.cliente||'').trim();
+      if(!cliente||/^cliente mostrador$/i.test(cliente)){
+        cliente=(prompt('¿A nombre de quién va el pedido? Es para saber a quién cobrarle.')||'').trim();
+        if(!cliente)return;
+      }
+      var lineas=d.lineas.map(function(l){return{pieza:l.pieza,detalles:l.detalles,filamento:l.filamento,cantidad:l.cantidad,
+        gramos:l.gramos,horas:l.horas,tipoNegocio:l.linea,colores:(l.colores&&l.colores.length>1)?l.colores:undefined,
+        nombre:l.nombre,color:l.color,swatches:l.swatches,precioManual:l.unit,sinDatos:l.sinDatos?true:undefined}});
+      return api({accion:'pedido',clave:clave,cliente:cliente,lineas:lineas,cotizacion:x.folio,entrega:d.entrega||''}).then(function(r){
+        if(r&&r.exito){keepClave(clave);toast('Pedido '+r.folio+' registrado');cargarClientes();if(despues)despues()}
+        else if(r&&r.error==='clave'){dropClave();setAuth(false)}
+        else if(r&&r.error==='duplicado')toast('Esa cotización ya es un pedido.');
+        else if(r&&r.error==='sin_nombre')toast('Falta el nombre de quien pide.');
+        else toast('No se pudo hacer el pedido.');
+      });
+    }).catch(function(){toast('Sin conexión.')});
+  }
+
+  var COT_VER_DESC=false;
   var buscarT=null;
   function cargarCotizaciones(){
     if(typeof WEB_APP_URL==='undefined'||!WEB_APP_URL)return;
@@ -1511,7 +1539,9 @@ h1{font-size:clamp(34px,4.6vw,50px)}
       if(d&&d.exito){
         keepClave(clave);ul.textContent='';
         $('cotMsg').textContent=d.total?(d.cotizaciones.length<d.total?'Mostrando las '+d.cotizaciones.length+' más recientes de '+d.total+'.':d.total+(d.total===1?' cotización.':' cotizaciones.')):'No hay cotizaciones con ese criterio.';
-        d.cotizaciones.forEach(function(x){
+        var nDesc=d.cotizaciones.filter(function(x){return x.estado==='Descartada'}).length;
+        var visibles=COT_VER_DESC?d.cotizaciones:d.cotizaciones.filter(function(x){return x.estado!=='Descartada'});
+        visibles.forEach(function(x){
           var li=document.createElement('li');
           var top=celda('div','it-top');top.appendChild(celda('b','',x.cliente));top.appendChild(celda('span','it-m',money(x.total)));li.appendChild(top);
           li.appendChild(celda('div','it-det',x.detalle));
@@ -1521,6 +1551,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
           var ab=boton('Abrir y editar','main',function(){abrirCotizacion(x.folio)});
           if(!x.abrible){ab.disabled=true;ab.title='Es anterior al guardado completo'}
           act.appendChild(ab);
+          if(x.estado==='Enviada'&&x.abrible&&!x.antigua)act.appendChild(boton('Hacer pedido','main',function(){cotizacionAPedido(x,cargarCotizaciones)}));
           if(x.abrible&&!x.antigua)act.appendChild(boton('Copiar para otra persona','',function(){abrirCotizacion(x.folio,true)}));
           if(x.estado==='Enviada')act.appendChild(boton('Descartar cotización','danger',function(){
             if(confirm('¿Descartar la cotización '+x.folio+' de '+x.cliente+'?'))
@@ -1528,6 +1559,11 @@ h1{font-size:clamp(34px,4.6vw,50px)}
           }));
           li.appendChild(act);ul.appendChild(li);
         });
+        if(nDesc||COT_VER_DESC){
+          var tl=document.createElement('li');tl.className='empty';
+          tl.appendChild(boton(COT_VER_DESC?'Ocultar descartadas':'Ver '+nDesc+(nDesc===1?' descartada':' descartadas'),'',function(){COT_VER_DESC=!COT_VER_DESC;cargarCotizaciones()}));
+          ul.appendChild(tl);
+        }
       }else if(d&&d.error==='clave'){dropClave();setAuth(false)}
       else if(d&&d.error==='Acción no reconocida'){$('cotMsg').textContent='El servidor todavía no tiene esta función. Pega el Codigo.gs nuevo y haz Deploy.'}
       else $('cotMsg').textContent='No se pudieron cargar las cotizaciones.';
@@ -1741,7 +1777,8 @@ h1{font-size:clamp(34px,4.6vw,50px)}
     li.appendChild(celda('div','it-det',x.detalle));
     li.appendChild(celda('div','it-meta',x.folio+' · '+fechaCorta(x.fecha)));
     var act=celda('div','it-act');
-    act.appendChild(boton('Abrir y editar','main',function(){abrirCotizacion(x.folio)}));
+    act.appendChild(boton('Hacer pedido','main',function(){cotizacionAPedido(x,function(){cargarTablero(false)})}));
+    act.appendChild(boton('Abrir y editar','',function(){abrirCotizacion(x.folio)}));
     act.appendChild(boton('Descartar cotización','danger',function(){
       if(confirm('¿Descartar la cotización '+x.folio+' de '+x.cliente+'?'))
         accionTablero({accion:'estadoCotizacion',folio:x.folio,estado:'Descartada'},'Cotización descartada');
