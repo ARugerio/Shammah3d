@@ -717,7 +717,6 @@ h1{font-size:clamp(34px,4.6vw,50px)}
             <input type="radio" name="sAp" id="sAp2" value="Impuestos y redes"><label for="sAp2">Impuestos y redes</label>
             <input type="radio" name="sAp" id="sAp3" value="Crecimiento"><label for="sAp3">Crecimiento</label>
             <input type="radio" name="sAp" id="sAp4" value="Libre"><label for="sAp4">Libre</label>
-            <input type="radio" name="sAp" id="sAp5" value="Crochet"><label for="sAp5">Crochet</label>
           </div>
           <span class="hint" id="sApHint">Filamento, boquillas, placas y repuestos.</span>
         </div>
@@ -808,10 +807,10 @@ h1{font-size:clamp(34px,4.6vw,50px)}
       </dl>
       <div class="pn-crochet">
         <h2>Crochet</h2>
-        <p class="sub">Aparte del taller. Solo lo que falta cobrar y lo que es de ella.</p>
+        <p class="sub">Aparte del taller. Lo que falta cobrar y lo que llevas cobrado (es de tu esposa).</p>
         <dl class="pn-kpis">
           <div><dt>Por cobrar</dt><dd id="crPor">—</dd></div>
-          <div><dt>De ella</dt><dd id="crElla">—</dd></div>
+          <div><dt>Cobrado de crochet</dt><dd id="crElla">—</dd></div>
         </dl>
       </div>
       <div class="pn-grid">
@@ -1529,7 +1528,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
   }
 
   // ---------- Salidas ----------
-  var AYUDA_AP={'Crochet':'Pago a tu esposa por lo vendido de crochet. No cuenta como gasto del taller.','Material y refacciones':'Filamento, boquillas, placas y repuestos.','Impuestos y redes':'Pagos de impuestos, comisiones y publicidad.',
+  var AYUDA_AP={'Material y refacciones':'Filamento, boquillas, placas y repuestos.','Impuestos y redes':'Pagos de impuestos, comisiones y publicidad.',
                 'Crecimiento':'Equipo, herramientas y la segunda impresora.','Libre':'Retiros personales.'};
   function guardarSalida(){
     var concepto=$('sConcepto').value.trim(),monto=parseFloat($('sMonto').value);
@@ -2072,7 +2071,7 @@ h1{font-size:clamp(34px,4.6vw,50px)}
   }
 
   function renderPanel(d){
-    $('crPor').textContent=money(d.crochet.porCobrar);$('crElla').textContent=money(d.crochet.deElla);
+    $('crPor').textContent=money(d.crochet.porCobrar);$('crElla').textContent=money(d.crochet.cobrado);
     var fondo=d.apartados.crecimiento-d.salidas.crecimiento;
     var pct=Math.max(0,Math.min(100,fondo/d.meta*100));
     $('hRec').textContent=(fondo<0?'-':'')+money0(Math.abs(fondo));
