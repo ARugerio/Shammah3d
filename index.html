@@ -491,6 +491,18 @@ h1{font-size:clamp(34px,4.6vw,50px)}
 
 @media print{.side{display:none!important}}
 </style>
+<style id="b-skin">
+/* Estilo B: solo movil (<1100px). No cambia escritorio. */
+@media(max-width:1099px){
+  .form{gap:16px}
+  .z-pieza,.z-datos,.z-color{background:var(--field);border:1px solid var(--line);border-radius:18px;padding:18px 16px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  .z-pieza legend::before{content:"1  ";color:#c97b3f}
+  .z-datos legend::before{content:"2  ";color:#c97b3f}
+  .z-color legend::before{content:"3  ";color:#c97b3f}
+  legend{font-size:17px;margin-bottom:12px}
+  .ticket{border-radius:18px}
+}
+</style>
 </head>
 <body data-v="cot" data-auth="0">
 <aside class="side">
