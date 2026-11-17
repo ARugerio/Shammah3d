@@ -922,21 +922,21 @@ h1{font-size:clamp(34px,4.6vw,50px)}
 <script>
 (function(){
   var FILAMENTOS=[
-    {g:'PLA estándar',i:[
+    {g:'PLA PRO',i:[
       ['PLA Azul Talavera','Azul Talavera','#0047AB'],['PLA Blanco Alcatraz','Blanco Alcatraz','#F5F5F5'],
       ['PLA Lite Cian','Cian','#00BFFF'],['PLA Lite Naranja','Naranja','#FF8C00'],
       ['PLA Morado Bugambilia','Morado Bugambilia','#8B008B'],['PLA Negro','Negro','#1A1A1A'],
-      ['PLA Rojo Nochebuena','Rojo Nochebuena','#DC143C'],['PLA Tono Piel','Tono Piel','#FDBCB4'],
-      ['PLA Transparente','Transparente','#E0F2FF'],['PLA Verde Iguana','Verde Iguana','#52B788']]},
+      ['PLA Rojo Nochebuena','Rojo Nochebuena','#DC143C'],['PLA Pro Rosa Coral','Rosa Coral','#F88379'],['PLA Tono Piel','Tono Piel','#FDBCB4'],
+      ['PLA Transparente','Transparente','#E0F2FF'],['PLA Verde Iguana','Verde Iguana','#52B788'],['PLA Pro Verde Esmeralda','Verde Esmeralda','#2FB872']]},
     {g:'PLA mate',i:[
-      ['PLA Matte Amarillo','Amarillo','#FFD700'],['PLA Matte Café Moka','Café Moka','#8B4513'],
-      ['PLA Matte Lila','Lila','#9370DB'],['PLA Matte Rosa Axolote','Rosa Axolote','#FF69B4'],
+      ['PLA Matte Amarillo','Amarillo','#FFD700'],['PLA Matte Azul Ballena','Azul Ballena','#35507A'],['PLA Matte Azul Cenote','Azul Cenote','#3DBFAF'],['PLA Matte Café Moka','Café Moka','#8B4513'],
+      ['PLA Matte Lila','Lila','#9370DB'],['PLA Matte Negro Carbón','Negro Carbón','#2B2B2B'],['PLA Matte Rosa Axolote','Rosa Axolote','#FF69B4'],
       ['PLA Matte Verde Militar','Verde Militar','#556B2F']]},
     {g:'PLA seda',i:[
       ['PLA Silk Oro Azteca','Oro Azteca','#E0B83A'],['PLA Silk Plata .925','Plata .925','#C0C0C0']]},
     {g:'PLA especiales',i:[
       ['PLA Creative Madera','Madera','#A0612B'],['PLA Creative Mármol','Mármol','#A9A9A9'],
-      ['PLA Creative Mercurio','Mercurio','#696969']]},
+      ['PLA Creative Mercurio','Mercurio','#696969'],['PLA Creative Cometa','Cometa','#4B3F72']]},
     {g:'Técnicos',i:[
       ['ABS Negro','ABS Negro','#1A1A1A'],['PETG Gris','PETG Gris','#808080'],['TPU 95A Blanco','TPU 95A Blanco','#F0F0F0']]}
   ];
@@ -947,13 +947,13 @@ h1{font-size:clamp(34px,4.6vw,50px)}
 
   // Lo que ve el cliente: solo el color. El nombre comercial del filamento queda interno.
   var COLOR_CORTO={
-    'PLA Azul Talavera':'azul','PLA Blanco Alcatraz':'blanco','PLA Lite Cian':'cian','PLA Lite Naranja':'naranja',
-    'PLA Morado Bugambilia':'morado','PLA Negro':'negro','PLA Rojo Nochebuena':'rojo','PLA Tono Piel':'piel',
-    'PLA Transparente':'transparente','PLA Verde Iguana':'verde',
-    'PLA Matte Amarillo':'amarillo','PLA Matte Café Moka':'café','PLA Matte Lila':'lila','PLA Matte Rosa Axolote':'rosa',
+    'PLA Azul Talavera':'azul rey','PLA Blanco Alcatraz':'blanco','PLA Lite Cian':'cian','PLA Lite Naranja':'naranja',
+    'PLA Morado Bugambilia':'morado','PLA Negro':'negro','PLA Rojo Nochebuena':'rojo','PLA Pro Rosa Coral':'rosa','PLA Tono Piel':'piel',
+    'PLA Transparente':'transparente','PLA Verde Iguana':'verde','PLA Pro Verde Esmeralda':'verde esmeralda',
+    'PLA Matte Amarillo':'amarillo','PLA Matte Azul Ballena':'azul marino','PLA Matte Azul Cenote':'verde azulado','PLA Matte Café Moka':'café','PLA Matte Lila':'lila','PLA Matte Negro Carbón':'negro','PLA Matte Rosa Axolote':'rosa',
     'PLA Matte Verde Militar':'verde militar',
     'PLA Silk Oro Azteca':'oro','PLA Silk Plata .925':'plata',
-    'PLA Creative Madera':'madera','PLA Creative Mármol':'mármol','PLA Creative Mercurio':'gris metálico',
+    'PLA Creative Madera':'madera','PLA Creative Mármol':'mármol','PLA Creative Mercurio':'gris metálico','PLA Creative Cometa':'cometa',
     'ABS Negro':'negro','PETG Gris':'gris','TPU 95A Blanco':'blanco'
   };
   function colorCorto(v){return COLOR_CORTO[v]||'otro'}
